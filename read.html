@@ -3,41 +3,86 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>شاعری پڑھیں</title>
+<title>Shafay Ali - Read Poetry</title>
 <style>
-body{background:#0f1115;color:#fff;font-family:Inter,system-ui;padding:20px;}
-h1{font-family:"Noto Nastaliq Urdu",serif;font-size:2rem;}
-p{line-height:2;direction:rtl;text-align:right;}
+:root{
+  --bg:#0f1115;
+  --card:#161a22;
+  --text:#ffffff;
+  --muted:#9aa4b2;
+  --accent:#ad0000;
+  --border:#000000;
+}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,system-ui;
+  margin:0;
+  padding:20px;
+}
+.wrap{
+  max-width:800px;
+  margin:auto;
+  padding:16px;
+}
+.card{
+  background:var(--card);
+  border-radius:12px;
+  padding:16px;
+  margin-bottom:16px;
+}
+h2{
+  font-family:"Noto Nastaliq Urdu",serif;
+  font-size:2rem;
+}
+.meta{
+  font-size:14px;
+  color:var(--muted);
+  margin-bottom:12px;
+}
 </style>
 </head>
 <body>
 
-<h1 id="title"></h1>
-<p id="text"></p>
+<div class="wrap">
+  <div id="poetry" class="card">
+    <h2 id="title">Loading...</h2>
+    <div class="meta" id="type"></div>
+    <div id="text"></div>
+  </div>
+</div>
 
 <script>
 const API="https://sheetdb.io/api/v1/dl6yhkvu4ynyy";
 
-// URL se id lena
-const params = new URLSearchParams(window.location.search);
-const id = params.get("id");
+// Get ID from URL
+const params=new URLSearchParams(window.location.search);
+const id=params.get('id');
 
-fetch(API)
-.then(r=>r.json())
-.then(data=>{
-    const item = data.find(d=>d.id==id);
-    if(item){
-        document.getElementById("title").innerText = item.title;
-        document.getElementById("text").innerText = item.text;
-    } else {
-        document.getElementById("title").innerText = "شاعری دستیاب نہیں";
-        document.getElementById("text").innerText = "";
-    }
-});
+async function fetchData(){
+  const res=await fetch(API);
+  const data=await res.json();
+  return data;
+}
+
+async function render(){
+  const DATA=await fetchData();
+  const poetry=DATA.find(p=>p.id===id || p.A===id || p.B===id);
+  if(poetry){
+    document.getElementById('title').textContent=poetry.title || poetry.C;
+    document.getElementById('type').textContent=poetry.type || poetry.B;
+    document.getElementById('text').innerHTML=poetry.text.replace(/\n/g,'<br>') || poetry.D.replace(/\n/g,'<br>');
+  } else {
+    document.getElementById('title').textContent="شاعری دستیاب نہیں";
+    document.getElementById('type').textContent="";
+    document.getElementById('text').textContent="";
+  }
+}
+
+render();
 </script>
 
 </body>
 </html>
-
 
 
