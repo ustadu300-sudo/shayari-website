@@ -20,6 +20,7 @@ pre{white-space:pre-wrap;background:rgba(0,0,0,0.2);padding:10px;border-radius:8
 </style>
 </head>
 <body>
+
 <div id="login">
   <h2>Admin Login</h2>
   <input type="password" id="pass" placeholder="Password">
@@ -44,12 +45,7 @@ pre{white-space:pre-wrap;background:rgba(0,0,0,0.2);padding:10px;border-radius:8
 
 <script>
 const PASSWORD="shafayalikhan1234";
-const API="https://sheetdb.io/api/v1/dl6yhkvu4ynyy"; // Tumhari API
-
-async function fetchData(){ 
-  const res=await fetch(API);
-  return await res.json();
-}
+const API="https://sheetdb.io/api/v1/dl6yhkvu4ynyy"; 
 
 const loginDiv=document.getElementById("login");
 const panelDiv=document.getElementById("panel");
@@ -59,34 +55,56 @@ const title=document.getElementById("title");
 const text=document.getElementById("text");
 const list=document.getElementById("list");
 
+// Admin login
 function login(){
-  if(pass.value===PASSWORD){loginDiv.hidden=true;panelDiv.hidden=false; render();}
-  else alert("Wrong password");
+  if(pass.value===PASSWORD){
+    loginDiv.hidden=true;
+    panelDiv.hidden=false;
+    render();
+  } else {
+    alert("Wrong password");
+  }
 }
 
+// Fetch data from SheetDB
+async function fetchData(){ 
+  const res = await fetch(API);
+  return await res.json();
+}
+
+// Add new poetry
 async function addItem(){
   if(!title.value || !text.value) return;
-  const data={data:{type:type.value,title:title.value,text:text.value}};
-  await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
-  title.value=''; text.value=''; render();
-}
-
-async function del(id){
-  if(!confirm("Are you sure to delete?")) return;
-  await fetch(`${API}/${id}`,{method:'DELETE'});
+  const data = { data: { type: type.value, title: title.value, text: text.value } };
+  await fetch(API, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(data)
+  });
+  title.value=''; 
+  text.value='';
   render();
 }
 
+// Delete poetry
+async function del(id){
+  if(!confirm("Are you sure to delete?")) return;
+  await fetch(`${API}/${id}`, { method:'DELETE' });
+  render();
+}
+
+// Render existing entries
 async function render(){
-  const DATA=await fetchData();
+  const DATA = await fetchData();
   list.innerHTML='';
   DATA.forEach(d=>{
-    const div=document.createElement('div');
+    const div = document.createElement('div');
     div.className='item';
-    div.innerHTML=`<b>[${d.type}]</b> ${d.title}<button onclick="del('${d.id}')">Delete</button><pre>${d.text}</pre>`;
+    div.innerHTML=`<b>[${d.type}]</b> ${d.title} <button onclick="del('${d.id}')">Delete</button><pre>${d.text}</pre>`;
     list.appendChild(div);
   });
 }
 </script>
+
 </body>
 </html>
