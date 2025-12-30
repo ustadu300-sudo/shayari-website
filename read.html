@@ -4,9 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Poetry - Shafay Ali</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-
 <style>
 body{
   background:#0f1115;
@@ -57,7 +55,6 @@ button:hover{opacity:0.85;}
 .back-btn{background:#315a80;}
 </style>
 </head>
-
 <body>
 
 <div class="wrap">
@@ -77,7 +74,6 @@ button:hover{opacity:0.85;}
 const API="https://sheetdb.io/api/v1/dl6yhkvu4ynyy";
 const params=new URLSearchParams(window.location.search);
 const id=params.get("id");
-
 const favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
 
 async function fetchData(){
@@ -88,7 +84,8 @@ async function fetchData(){
 async function render(){
   const DATA=await fetchData();
 
-  const poetry = DATA.find(p => p.id === id);
+  // Find poetry with new id or old fallback (A,B)
+  const poetry = DATA.find(p => p.id === id || p.A===id || p.B===id);
 
   if(!poetry){
     document.getElementById("title").textContent="شاعری دستیاب نہیں";
@@ -98,9 +95,9 @@ async function render(){
     return;
   }
 
-  document.getElementById("title").textContent = poetry.title || "عنوان موجود نہیں";
-  document.getElementById("type").textContent  = poetry.type || "";
-  document.getElementById("text").innerHTML   = (poetry.text || "").replace(/\n/g,"<br>");
+  document.getElementById("title").textContent = poetry.title || poetry.C || "عنوان دستیاب نہیں";
+  document.getElementById("type").textContent  = poetry.type || poetry.B || "";
+  document.getElementById("text").innerHTML   = (poetry.text || poetry.D || "مواد دستیاب نہیں").replace(/\n/g,"<br>");
 
   const favBtn=document.getElementById("favBtn");
   favBtn.textContent = favs.has(poetry.id) ? "پسندیدہ ہٹائیں" : "پسندیدہ";
