@@ -46,7 +46,6 @@ pre{white-space:pre-wrap;background:rgba(0,0,0,0.2);padding:10px;border-radius:8
 const PASSWORD="shafayalikhan1234";
 const API="https://sheetdb.io/api/v1/dl6yhkvu4ynyy";
 
-// DOM elements
 const loginDiv=document.getElementById("login");
 const panelDiv=document.getElementById("panel");
 const pass=document.getElementById("pass");
@@ -55,18 +54,31 @@ const title=document.getElementById("title");
 const text=document.getElementById("text");
 const list=document.getElementById("list");
 
-// login
 function login(){
   if(pass.value===PASSWORD){ loginDiv.hidden=true; panelDiv.hidden=false; render();}
   else alert("Wrong password");
 }
 
-// fetch data
+// fetch data and clean undefined/old header
 async function fetchData(){ 
   const res = await fetch(API);
-  const data = await res.json();
-  // Remove header row if exists
-  if(data.length && data[0].A && data[0].B && data[0].C && data[0].D) data.shift();
+  let data = await res.json();
+
+  // remove header row if exists
+  if(data.length && data[0].A && data[0].B && data[0].C && data[0].D){
+    data = data.slice(1); // remove first row
+  }
+
+  // fix undefined issues from old entries
+  data = data.map(d=>{
+    return {
+      id: d.id || d.A || Date.now().toString(),
+      type: d.type || d.B || "",
+      title: d.title || d.C || "",
+      text: d.text || d.D || ""
+    }
+  });
+
   return data;
 }
 
@@ -83,19 +95,14 @@ async function addItem(){
   render();
 }
 
-// delete entry properly
+// delete entry
 async function del(id){
   if(!confirm("Are you sure to delete?")) return;
-  
-  const data = await fetchData(); // get latest
-  const item = data.find(d => d.id==id);
-  if(!item){ alert("Item not found"); return; }
-
   await fetch(`${API}/${id}`, { method:'DELETE' });
   render();
 }
 
-// render
+// render existing entries
 async function render(){
   const DATA = await fetchData();
   list.innerHTML='';
