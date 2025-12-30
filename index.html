@@ -205,10 +205,19 @@ function render(filter="all"){
   });
 }
 
+// --- Updated fetch logic to map SheetDB keys ---
 fetch(API)
 .then(r=>r.json())
 .then(data=>{
-  ALL_DATA=data;
+  // Map A,B,C,D to id,type,title,text
+  ALL_DATA = data
+    .filter(d => d.A !== "id") // skip header row
+    .map(d => ({
+      id: d.A,
+      type: d.B,
+      title: d.C,
+      text: d.D
+    }));
   render();
 });
 
@@ -223,3 +232,4 @@ document.querySelectorAll(".nav button").forEach(btn=>{
 
 </body>
 </html>
+
