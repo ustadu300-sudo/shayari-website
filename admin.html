@@ -149,11 +149,9 @@ async function addItem(){
 async function del(id, rowIndex){
   if(!confirm("Are you sure to delete?")) return;
 
-  // Try deleting by SheetDB id first
-  try {
+  if(id){ // New entries
     await fetch(`${API}/${id}`, { method:'DELETE' });
-  } catch(e){
-    // If fails, delete by row number (old entries)
+  } else { // Old entries without id
     await fetch(`${API}?row=${rowIndex}`, { method:'DELETE' });
   }
 
@@ -165,7 +163,7 @@ async function render(){
   list.innerHTML='';
 
   DATA.forEach((d, index)=>{
-    const itemId = d.id || d.A; // nayi ya purani entry
+    const itemId = d.id || d.A; 
     const itemType = d.type || d.B;
     const itemTitle = d.title || d.C;
     const itemText = d.text || d.D;
@@ -183,9 +181,5 @@ async function render(){
 </script>
 </body>
 </html>
-
-
-
- 
 
 
