@@ -46,6 +46,7 @@ pre{white-space:pre-wrap;background:rgba(0,0,0,0.2);padding:10px;border-radius:8
 const PASSWORD="shafayalikhan1234";
 const API="https://sheetdb.io/api/v1/dl6yhkvu4ynyy";
 
+// DOM elements
 const loginDiv=document.getElementById("login");
 const panelDiv=document.getElementById("panel");
 const pass=document.getElementById("pass");
@@ -54,11 +55,13 @@ const title=document.getElementById("title");
 const text=document.getElementById("text");
 const list=document.getElementById("list");
 
+// login
 function login(){
   if(pass.value===PASSWORD){ loginDiv.hidden=true; panelDiv.hidden=false; render();}
   else alert("Wrong password");
 }
 
+// fetch data
 async function fetchData(){ 
   const res = await fetch(API);
   const data = await res.json();
@@ -67,17 +70,11 @@ async function fetchData(){
   return data;
 }
 
+// add new entry
 async function addItem(){
   if(!title.value || !text.value) return;
-  const data = {
-    data: {
-      id: Date.now().toString(),
-      type: type.value,
-      title: title.value,
-      text: text.value
-    }
-  };
-  await fetch(API, {
+  const data = {data:{id:Date.now().toString(),type:type.value,title:title.value,text:text.value}};
+  await fetch(API,{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify(data)
@@ -86,12 +83,19 @@ async function addItem(){
   render();
 }
 
+// delete entry properly
 async function del(id){
   if(!confirm("Are you sure to delete?")) return;
+  
+  const data = await fetchData(); // get latest
+  const item = data.find(d => d.id==id);
+  if(!item){ alert("Item not found"); return; }
+
   await fetch(`${API}/${id}`, { method:'DELETE' });
   render();
 }
 
+// render
 async function render(){
   const DATA = await fetchData();
   list.innerHTML='';
