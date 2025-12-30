@@ -53,12 +53,7 @@ button:hover{opacity:0.85;}
   margin-top:10px;
   word-break:break-word;
 }
-.item button{
-  margin-top:6px;
-  width:auto;
-  padding:6px 12px;
-  font-size:0.85rem;
-}
+.item button{margin-top:6px;width:auto;padding:6px 12px;font-size:0.85rem;}
 pre{
   white-space:pre-wrap;
   background:rgba(0,0,0,0.2);
@@ -108,6 +103,7 @@ const title=document.getElementById("title");
 const text=document.getElementById("text");
 const list=document.getElementById("list");
 
+// Admin login
 function login(){
   if(pass.value===PASSWORD){
     loginDiv.hidden=true;
@@ -118,11 +114,16 @@ function login(){
   }
 }
 
+// Fetch data from SheetDB
 async function fetchData(){ 
   const res = await fetch(API);
-  return await res.json();
+  const data = await res.json();
+  // Remove the header row if exists
+  if(data.length && data[0].A==="id") data.shift();
+  return data;
 }
 
+// Add new poetry with unique ID
 async function addItem(){
   if(!title.value || !text.value) return;
 
@@ -135,7 +136,7 @@ async function addItem(){
     }
   };
 
-  await fetch(API, {
+  await fetch(API,{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify(data)
@@ -146,43 +147,30 @@ async function addItem(){
   render();
 }
 
-async function del(id, rowIndex){
+// Delete poetry
+async function del(id){
   if(!confirm("Are you sure to delete?")) return;
 
-  // Try deleting by SheetDB id first
-  try {
-    await fetch(`${API}/${id}`, { method:'DELETE' });
-  } catch(e){
-    // If fails, delete by row number (old entries)
-    await fetch(`${API}?row=${rowIndex}`, { method:'DELETE' });
-  }
-
+  await fetch(`${API}/${id}`,{method:'DELETE'});
   render();
 }
 
+// Render existing entries
 async function render(){
   const DATA = await fetchData();
   list.innerHTML='';
-
-  DATA.forEach((d, index)=>{
-    const itemId = d.id || d.A; // nayi ya purani entry
-    const itemType = d.type || d.B;
-    const itemTitle = d.title || d.C;
-    const itemText = d.text || d.D;
-
+  DATA.forEach(d=>{
     const div = document.createElement('div');
     div.className='item';
-    div.innerHTML=`
-      <b>[${itemType}]</b> ${itemTitle} 
-      <button onclick="del('${itemId}', ${index+1})">Delete</button>
-      <pre>${itemText}</pre>
+    div.innerHTML = `
+      <b>[${d.type}]</b> ${d.title} 
+      <button onclick="del('${d.id}')">Delete</button>
+      <pre>${d.text}</pre>
     `;
     list.appendChild(div);
   });
 }
 </script>
+
 </body>
 </html>
-
-
-
