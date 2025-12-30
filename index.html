@@ -28,7 +28,6 @@ body{
 .banner{
   height:240px;
   background:url('BANNER/unsplash.png.jpg.jpg') center/cover no-repeat;
-
   border-bottom:1px solid var(--border);
 }
 .banner-inner{
@@ -131,8 +130,7 @@ footer{
 
 <header class="banner">
   <div class="banner-inner">
-    <div class="logo"><img src="logo/proble.png.png">
-
+    <div class="logo"><img src="logo/proble.png.png"></div>
     <div class="author-meta">
       <h1>شافع علی</h1>
       <p>احمد فراز کی شاعری سے فیض یافتہ لفظیات</p>
@@ -170,7 +168,7 @@ footer{
 <footer>© Shafay Ali 2025</footer>
 
 <script>
-const API="https://sheetdb.io/api/v1/dl6yhkvu4ynyy"; // tumhari ready API
+const API="https://sheetdb.io/api/v1/dl6yhkvu4ynyy";
 let ALL_DATA=[];
 const list=document.getElementById("list");
 const favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
@@ -207,7 +205,6 @@ function render(filter="all"){
   });
 }
 
-// fetch data from SheetDB
 fetch(API)
 .then(r=>r.json())
 .then(data=>{
@@ -226,4 +223,3 @@ document.querySelectorAll(".nav button").forEach(btn=>{
 
 </body>
 </html>
-
