@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shafay Ali - Shayari</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#0f1115;
+  --card:#161a22;
+  --text:#ffffff;
+  --muted:#9aa4b2;
+  --accent:#ad0000;
+  --border:#000000;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui;}
+.banner{height:240px;background:url('BANNER/unsplash.png.jpg') center/cover no-repeat;border-bottom:1px solid var(--border);}
+.banner-inner{max-width:1200px;margin:auto;height:100%;padding:20px;display:flex;align-items:flex-end;gap:20px;}
+.logo{width:100px;height:100px;border-radius:50%;overflow:hidden;border:2px solid var(--border);}
+.logo img{width:100%;height:100%;object-fit:cover}
+.author-meta h1{font-family:"Noto Nastaliq Urdu",serif;font-size:2.2rem;}
+.nav{position:sticky;top:0;background:#0f1115;border-bottom:1px solid var(--border);}
+.nav ul{max-width:1200px;margin:auto;display:flex;gap:6px;padding:8px;list-style:none;}
+.nav button{background:none;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;}
+.nav button.active{background:#315a80}
+.wrap{max-width:1200px;margin:auto;padding:16px;}
+.card{background:var(--card);border-radius:14px;padding:16px;margin-bottom:16px;}
+.intro{direction:rtl;text-align:right;font-family:"Noto Nastaliq Urdu",serif;line-height:2.3;}
+footer{text-align:center;padding:20px;color:var(--muted);}
+</style>
+</head>
+
+<body>
+
+<header class="banner">
+  <div class="banner-inner">
+    <div class="logo"><img src="logo/proble.png"></div>
+    <div class="author-meta">
+      <h1>شافع علی</h1>
+      <p>احمد فراز کی شاعری سے فیض یافتہ لفظیات</p>
+    </div>
+  </div>
+</header>
+
+<nav class="nav">
+<ul>
+  <li><button class="active" data-tab="all">سب</button></li>
+  <li><button data-tab="ghazal">غزل</button></li>
+  <li><button data-tab="nazm">نظم</button></li>
+  <li><button data-tab="sher">شعر</button></li>
+  <li><button data-tab="favs">پسندیدہ</button></li>
+</ul>
+</nav>
+
+<main class="wrap">
+<section class="card">
+<div id="content" class="intro">Loading...</div>
+</section>
+</main>
+
+<footer>© Shafay Ali 2025</footer>
+
+<script>
+const API="https://sheetdb.io/api/v1/dl6yhkvu4ynyy"; // Tumhari API
+const contentDiv=document.getElementById("content");
+
+// URL se id le rahe hain
+const params=new URLSearchParams(window.location.search);
+const id=params.get('id');
+
+// Fetch data from SheetDB
+fetch(API)
+.then(r=>r.json())
+.then(data=>{
+  const item=data.find(d=>d.id===id);
+  if(item){
+    contentDiv.innerHTML=`<h2>${item.title}</h2><p>${item.text}</p>`;
+  } else {
+    contentDiv.innerHTML="شاعری دستیاب نہیں ہے۔";
+  }
+});
+
+// Nav buttons (optional, same as index.html)
+document.querySelectorAll(".nav button").forEach(btn=>{
+  btn.onclick=()=>{alert("Navigation kaam index page par hota hai.");};
+});
+</script>
+
+</body>
+</html>

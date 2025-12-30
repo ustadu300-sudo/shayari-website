@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel - Shafay Ali</title>
+<style>
+:root{--bg:#0f1115;--card:#161a22;--text:#eef1f5;--border:#232836;--accent:#c9a24d;--accent-text:#000;}
+body{font-family:Inter,system-ui;background:var(--bg);color:var(--text);padding:20px;margin:0;display:flex;flex-direction:column;min-height:100vh;}
+h2,h3{margin-bottom:10px;}
+input,textarea,select,button{width:100%;padding:10px;margin:6px 0;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:0.95rem;}
+textarea{height:120px;resize:vertical;}
+button{background:var(--accent);border:none;color:var(--accent-text);font-weight:600;cursor:pointer;transition:0.2s;}
+button:hover{opacity:0.85;}
+#login,#panel{max-width:600px;margin:auto;padding:20px;}
+.item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;margin-top:10px;word-break:break-word;}
+.item button{margin-top:6px;width:auto;padding:6px 12px;font-size:0.85rem;}
+pre{white-space:pre-wrap;background:rgba(0,0,0,0.2);padding:10px;border-radius:8px;overflow-x:auto;}
+@media(max-width:480px){#login,#panel{padding:16px;}input,textarea,select,button{font-size:0.9rem;}.item button{width:100%;}}
+</style>
+</head>
+<body>
+<div id="login">
+  <h2>Admin Login</h2>
+  <input type="password" id="pass" placeholder="Password">
+  <button onclick="login()">Login</button>
+</div>
+
+<div id="panel" hidden>
+<h2>Add Poetry</h2>
+<select id="type">
+  <option value="ghazal">غزل</option>
+  <option value="nazm">نظم</option>
+  <option value="sher">شعر</option>
+  <option value="books">Books</option>
+</select>
+<input id="title" placeholder="Title">
+<textarea id="text" placeholder="Content"></textarea>
+<button onclick="addItem()">Add</button>
+
+<h3>Existing Entries</h3>
+<div id="list"></div>
+</div>
+
+<script>
+const PASSWORD="shafayalikhan1234";
+const API="https://sheetdb.io/api/v1/dl6yhkvu4ynyy"; // Tumhari API
+
+async function fetchData(){ 
+  const res=await fetch(API);
+  return await res.json();
+}
+
+const loginDiv=document.getElementById("login");
+const panelDiv=document.getElementById("panel");
+const pass=document.getElementById("pass");
+const type=document.getElementById("type");
+const title=document.getElementById("title");
+const text=document.getElementById("text");
+const list=document.getElementById("list");
+
+function login(){
+  if(pass.value===PASSWORD){loginDiv.hidden=true;panelDiv.hidden=false; render();}
+  else alert("Wrong password");
+}
+
+async function addItem(){
+  if(!title.value || !text.value) return;
+  const data={data:{type:type.value,title:title.value,text:text.value}};
+  await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  title.value=''; text.value=''; render();
+}
+
+async function del(id){
+  if(!confirm("Are you sure to delete?")) return;
+  await fetch(`${API}/${id}`,{method:'DELETE'});
+  render();
+}
+
+async function render(){
+  const DATA=await fetchData();
+  list.innerHTML='';
+  DATA.forEach(d=>{
+    const div=document.createElement('div');
+    div.className='item';
+    div.innerHTML=`<b>[${d.type}]</b> ${d.title}<button onclick="del('${d.id}')">Delete</button><pre>${d.text}</pre>`;
+    list.appendChild(div);
+  });
+}
+</script>
+</body>
+</html>
