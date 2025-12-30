@@ -3,79 +3,108 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shafay Ali - Read Poetry</title>
+<title>Poetry - Shafay Ali</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#0f1115;
-  --card:#161a22;
-  --text:#ffffff;
-  --muted:#9aa4b2;
-  --accent:#ad0000;
-  --border:#000000;
-}
-body{
-  background:var(--bg);
-  color:var(--text);
+body {
+  background:#0f1115;
+  color:#ffffff;
   font-family:Inter,system-ui;
   margin:0;
   padding:20px;
 }
-.wrap{
-  max-width:800px;
+.wrap {
+  max-width:900px;
   margin:auto;
-  padding:16px;
 }
-.card{
-  background:var(--card);
-  border-radius:12px;
-  padding:16px;
-  margin-bottom:16px;
+.card {
+  background:#161a22;
+  border-radius:14px;
+  padding:20px;
+  margin-top:20px;
 }
-h2{
-  font-family:"Noto Nastaliq Urdu",serif;
+#title {
+  font-family:"Noto Nastaliq Urdu", serif;
   font-size:2rem;
+  text-align:center;
+  margin-bottom:10px;
 }
-.meta{
-  font-size:14px;
-  color:var(--muted);
-  margin-bottom:12px;
+#text {
+  font-family:"Noto Nastaliq Urdu", serif;
+  font-size:1.5rem;
+  text-align:center;
+  line-height:2;
+  white-space:pre-wrap;
+  margin-top:15px;
+}
+#type {
+  text-align:center;
+  color:#9aa4b2;
+  margin-bottom:10px;
+}
+button {
+  background:#ad0000;
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  padding:8px 16px;
+  cursor:pointer;
+  margin-top:15px;
+}
+button:hover {
+  opacity:0.85;
+}
+.back-btn {
+  background:#315a80;
+  margin-left:10px;
 }
 </style>
 </head>
 <body>
 
 <div class="wrap">
-  <div id="poetry" class="card">
+  <div class="card">
     <h2 id="title">Loading...</h2>
-    <div class="meta" id="type"></div>
-    <div id="text"></div>
+    <div id="type"></div>
+    <p id="text"></p>
+    <button id="favBtn">پسندیدہ</button>
+    <button class="back-btn" onclick="window.history.back();">واپس</button>
   </div>
 </div>
 
 <script>
 const API="https://sheetdb.io/api/v1/dl6yhkvu4ynyy";
-
-// Get ID from URL
 const params=new URLSearchParams(window.location.search);
-const id=params.get('id');
+const id=params.get('id');  // Get ID from URL
+const favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
 
-async function fetchData(){
+async function fetchData(){ 
   const res=await fetch(API);
-  const data=await res.json();
-  return data;
+  return await res.json();
 }
 
 async function render(){
   const DATA=await fetchData();
   const poetry=DATA.find(p=>p.id===id || p.A===id || p.B===id);
+  
   if(poetry){
     document.getElementById('title').textContent=poetry.title || poetry.C;
     document.getElementById('type').textContent=poetry.type || poetry.B;
-    document.getElementById('text').innerHTML=poetry.text.replace(/\n/g,'<br>') || poetry.D.replace(/\n/g,'<br>');
+    document.getElementById('text').innerHTML=(poetry.text || poetry.D).replace(/\n/g,'<br>');
+
+    const favBtn=document.getElementById('favBtn');
+    favBtn.textContent=favs.has(poetry.id)?"پسندیدہ ہٹائیں":"پسندیدہ";
+    favBtn.onclick=()=>{
+      if(favs.has(poetry.id)) favs.delete(poetry.id);
+      else favs.add(poetry.id);
+      localStorage.setItem("favs",JSON.stringify([...favs]));
+      favBtn.textContent=favs.has(poetry.id)?"پسندیدہ ہٹائیں":"پسندیدہ";
+    }
   } else {
     document.getElementById('title').textContent="شاعری دستیاب نہیں";
     document.getElementById('type').textContent="";
     document.getElementById('text').textContent="";
+    document.getElementById('favBtn').style.display="none";
   }
 }
 
