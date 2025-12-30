@@ -33,7 +33,6 @@ pre{white-space:pre-wrap;background:rgba(0,0,0,0.2);padding:10px;border-radius:8
   <option value="ghazal">غزل</option>
   <option value="nazm">نظم</option>
   <option value="sher">شعر</option>
-  <option value="books">Books</option>
 </select>
 <input id="title" placeholder="Title">
 <textarea id="text" placeholder="Content"></textarea>
@@ -55,7 +54,6 @@ const title=document.getElementById("title");
 const text=document.getElementById("text");
 const list=document.getElementById("list");
 
-// Admin login
 function login(){
   if(pass.value===PASSWORD){
     loginDiv.hidden=true;
@@ -69,21 +67,26 @@ function login(){
 // Fetch data from SheetDB
 async function fetchData(){ 
   const res = await fetch(API);
-  return await res.json();
+  const data = await res.json();
+  // Map A,B,C,D keys to id,type,title,text & skip header row
+  return data.filter(d=>d.A!=="id").map(d=>({
+    id:d.A,
+    type:d.B,
+    title:d.C,
+    text:d.D
+  }));
 }
 
-// Add new poetry with unique ID
+// Add new poetry
 async function addItem(){
   if(!title.value || !text.value) return;
 
-  const data = {
-    data: {
-      id: Date.now().toString(),  // unique ID
-      type: type.value,
-      title: title.value,
-      text: text.value
-    }
-  };
+  const data = { data: {
+    A: Date.now().toString(), // unique ID
+    B: type.value,
+    C: title.value,
+    D: text.value
+  }};
 
   await fetch(API, {
     method:'POST',
