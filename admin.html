@@ -146,11 +146,17 @@ async function addItem(){
   render();
 }
 
-async function del(id){
+async function del(id, rowIndex){
   if(!confirm("Are you sure to delete?")) return;
 
-  // Delete by id or by SheetDB's A column if id not exists
-  await fetch(`${API}/${id}`, { method:'DELETE' });
+  // Try deleting by SheetDB id first
+  try {
+    await fetch(`${API}/${id}`, { method:'DELETE' });
+  } catch(e){
+    // If fails, delete by row number (old entries)
+    await fetch(`${API}?row=${rowIndex}`, { method:'DELETE' });
+  }
+
   render();
 }
 
@@ -158,14 +164,18 @@ async function render(){
   const DATA = await fetchData();
   list.innerHTML='';
 
-  DATA.forEach(d=>{
-    const itemId = d.id || d.A; // old entries ke liye A column
+  DATA.forEach((d, index)=>{
+    const itemId = d.id || d.A; // nayi ya purani entry
+    const itemType = d.type || d.B;
+    const itemTitle = d.title || d.C;
+    const itemText = d.text || d.D;
+
     const div = document.createElement('div');
     div.className='item';
     div.innerHTML=`
-      <b>[${d.type || d.B}]</b> ${d.title || d.C} 
-      <button onclick="del('${itemId}')">Delete</button>
-      <pre>${d.text || d.D}</pre>
+      <b>[${itemType}]</b> ${itemTitle} 
+      <button onclick="del('${itemId}', ${index+1})">Delete</button>
+      <pre>${itemText}</pre>
     `;
     list.appendChild(div);
   });
@@ -173,5 +183,6 @@ async function render(){
 </script>
 </body>
 </html>
+
 
 
