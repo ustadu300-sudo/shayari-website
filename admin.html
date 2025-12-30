@@ -45,7 +45,7 @@ pre{white-space:pre-wrap;background:rgba(0,0,0,0.2);padding:10px;border-radius:8
 
 <script>
 const PASSWORD="shafayalikhan1234";
-const API="https://sheetdb.io/api/v1/dl6yhkvu4ynyy"; 
+const API="https://sheetdb.io/api/v1/dl6yhkvu4ynyy";
 
 const loginDiv=document.getElementById("login");
 const panelDiv=document.getElementById("panel");
@@ -72,16 +72,26 @@ async function fetchData(){
   return await res.json();
 }
 
-// Add new poetry
+// Add new poetry with unique ID
 async function addItem(){
   if(!title.value || !text.value) return;
-  const data = { data: { type: type.value, title: title.value, text: text.value } };
+
+  const data = {
+    data: {
+      id: Date.now().toString(),  // unique ID
+      type: type.value,
+      title: title.value,
+      text: text.value
+    }
+  };
+
   await fetch(API, {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify(data)
   });
-  title.value=''; 
+
+  title.value='';
   text.value='';
   render();
 }
