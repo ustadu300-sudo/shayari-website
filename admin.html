@@ -5,18 +5,72 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Panel - Shafay Ali</title>
 <style>
-:root{--bg:#0f1115;--card:#161a22;--text:#eef1f5;--border:#232836;--accent:#c9a24d;--accent-text:#000;}
-body{font-family:Inter,system-ui;background:var(--bg);color:var(--text);padding:20px;margin:0;display:flex;flex-direction:column;min-height:100vh;}
+:root{
+  --bg:#0f1115;
+  --card:#161a22;
+  --text:#eef1f5;
+  --border:#232836;
+  --accent:#c9a24d;
+  --accent-text:#000;
+}
+body{
+  font-family:Inter,system-ui;
+  background:var(--bg);
+  color:var(--text);
+  padding:20px;
+  margin:0;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+}
 h2,h3{margin-bottom:10px;}
-input,textarea,select,button{width:100%;padding:10px;margin:6px 0;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:0.95rem;}
+input,textarea,select,button{
+  width:100%;
+  padding:10px;
+  margin:6px 0;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+  font-size:0.95rem;
+}
 textarea{height:120px;resize:vertical;}
-button{background:var(--accent);border:none;color:var(--accent-text);font-weight:600;cursor:pointer;transition:0.2s;}
+button{
+  background:var(--accent);
+  border:none;
+  color:var(--accent-text);
+  font-weight:600;
+  cursor:pointer;
+  transition:0.2s;
+}
 button:hover{opacity:0.85;}
 #login,#panel{max-width:600px;margin:auto;padding:20px;}
-.item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;margin-top:10px;word-break:break-word;}
-.item button{margin-top:6px;width:auto;padding:6px 12px;font-size:0.85rem;}
-pre{white-space:pre-wrap;background:rgba(0,0,0,0.2);padding:10px;border-radius:8px;overflow-x:auto;}
-@media(max-width:480px){#login,#panel{padding:16px;}input,textarea,select,button{font-size:0.9rem;}.item button{width:100%;}}
+.item{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:12px;
+  margin-top:10px;
+  word-break:break-word;
+}
+.item button{
+  margin-top:6px;
+  width:auto;
+  padding:6px 12px;
+  font-size:0.85rem;
+}
+pre{
+  white-space:pre-wrap;
+  background:rgba(0,0,0,0.2);
+  padding:10px;
+  border-radius:8px;
+  overflow-x:auto;
+}
+@media(max-width:480px){
+  #login,#panel{padding:16px;}
+  input,textarea,select,button{font-size:0.9rem;}
+  .item button{width:100%;}
+}
 </style>
 </head>
 <body>
@@ -54,6 +108,7 @@ const title=document.getElementById("title");
 const text=document.getElementById("text");
 const list=document.getElementById("list");
 
+// Admin login
 function login(){
   if(pass.value===PASSWORD){
     loginDiv.hidden=true;
@@ -67,26 +122,21 @@ function login(){
 // Fetch data from SheetDB
 async function fetchData(){ 
   const res = await fetch(API);
-  const data = await res.json();
-  // Map A,B,C,D keys to id,type,title,text & skip header row
-  return data.filter(d=>d.A!=="id").map(d=>({
-    id:d.A,
-    type:d.B,
-    title:d.C,
-    text:d.D
-  }));
+  return await res.json();
 }
 
-// Add new poetry
+// Add new poetry with unique ID
 async function addItem(){
   if(!title.value || !text.value) return;
 
-  const data = { data: {
-    A: Date.now().toString(), // unique ID
-    B: type.value,
-    C: title.value,
-    D: text.value
-  }};
+  const data = {
+    data: {
+      id: Date.now().toString(),  // unique ID
+      type: type.value,
+      title: title.value,
+      text: text.value
+    }
+  };
 
   await fetch(API, {
     method:'POST',
@@ -111,13 +161,20 @@ async function render(){
   const DATA = await fetchData();
   list.innerHTML='';
   DATA.forEach(d=>{
+    // Ensure id exists for delete
+    const itemId = d.id || d.A || Date.now().toString();
     const div = document.createElement('div');
     div.className='item';
-    div.innerHTML=`<b>[${d.type}]</b> ${d.title} <button onclick="del('${d.id}')">Delete</button><pre>${d.text}</pre>`;
+    div.innerHTML=`
+      <b>[${d.type || d.B}]</b> ${d.title || d.C}
+      <button onclick="del('${itemId}')">Delete</button>
+      <pre>${d.text || d.D}</pre>
+    `;
     list.appendChild(div);
   });
 }
-</script>
 
+</script>
 </body>
 </html>
+
