@@ -84,8 +84,8 @@ async function fetchData(){
 async function render(){
   const DATA=await fetchData();
 
-  // Find poetry with new id or old fallback (A,B)
-  const poetry = DATA.find(p => p.id === id || p.A===id || p.B===id);
+  // Find poetry by new id or old keys fallback
+  const poetry = DATA.find(p => p.id===id || p.A===id || p.B===id);
 
   if(!poetry){
     document.getElementById("title").textContent="شاعری دستیاب نہیں";
@@ -96,7 +96,7 @@ async function render(){
   }
 
   document.getElementById("title").textContent = poetry.title || poetry.C || "عنوان دستیاب نہیں";
-  document.getElementById("type").textContent  = poetry.type || poetry.B || "";
+  document.getElementById("type").textContent  = poetry.type  || poetry.B || "";
   document.getElementById("text").innerHTML   = (poetry.text || poetry.D || "مواد دستیاب نہیں").replace(/\n/g,"<br>");
 
   const favBtn=document.getElementById("favBtn");
@@ -115,4 +115,3 @@ render();
 
 </body>
 </html>
-
