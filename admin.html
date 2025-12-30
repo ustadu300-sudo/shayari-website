@@ -53,12 +53,18 @@ button:hover{opacity:0.85;}
   margin-top:10px;
   word-break:break-word;
 }
-.item button{
+.item button, .item a{
   margin-top:6px;
   width:auto;
   padding:6px 12px;
   font-size:0.85rem;
+  text-decoration:none;
+  color:#fff;
+  background:#315a80;
+  border:none;
+  border-radius:6px;
 }
+.item button:hover, .item a:hover{opacity:0.85;}
 pre{
   white-space:pre-wrap;
   background:rgba(0,0,0,0.2);
@@ -69,7 +75,7 @@ pre{
 @media(max-width:480px){
   #login,#panel{padding:16px;}
   input,textarea,select,button{font-size:0.9rem;}
-  .item button{width:100%;}
+  .item button, .item a{width:100%;}
 }
 </style>
 </head>
@@ -149,7 +155,7 @@ async function addItem(){
 async function del(id, rowIndex){
   if(!confirm("Are you sure to delete?")) return;
 
-  if(id){ // New entries
+  if(id){ // New entries with id
     await fetch(`${API}/${id}`, { method:'DELETE' });
   } else { // Old entries without id
     await fetch(`${API}?row=${rowIndex}`, { method:'DELETE' });
@@ -172,14 +178,14 @@ async function render(){
     div.className='item';
     div.innerHTML=`
       <b>[${itemType}]</b> ${itemTitle} 
+      <a href="read.html?id=${itemId}">Read</a>
       <button onclick="del('${itemId}', ${index+1})">Delete</button>
       <pre>${itemText}</pre>
     `;
     list.appendChild(div);
   });
 }
+render();
 </script>
 </body>
 </html>
-
-
