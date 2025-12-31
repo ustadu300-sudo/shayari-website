@@ -79,8 +79,7 @@ footer{text-align:center;padding:20px;color:var(--muted);}
 <footer>© Shafay Ali 2025</footer>
 
 <script>
-const API="data.json";   // ✅ SheetDB removed
-
+const API="data.json"; // local JSON file
 let ALL_DATA=[];
 const list=document.getElementById("list");
 const favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
@@ -92,7 +91,6 @@ function saveFavs(){
 function render(filter="all"){
   list.innerHTML="";
   let items=[...ALL_DATA];
-
   if(filter==="favs") items=items.filter(i=>favs.has(i.id));
   else if(filter!=="all") items=items.filter(i=>i.type===filter);
 
@@ -111,33 +109,27 @@ function render(filter="all"){
       </div>
       <button class="fav ${favs.has(d.id)?"active":""}">❤</button>
     `;
-
-    el.querySelector("h3").onclick=()=>{
-      location.href=\`read.html?id=\${d.id}\`;
-    };
-
+    el.querySelector("h3").onclick=()=>{ location.href=`read.html?id=${d.id}`; };
     el.querySelector(".fav").onclick=e=>{
       e.stopPropagation();
       favs.has(d.id)?favs.delete(d.id):favs.add(d.id);
       saveFavs();
       render(filter);
     };
-
     list.appendChild(el);
   });
 }
 
-async function fetchData(){
-  try{
-    const r=await fetch(API);
-    ALL_DATA=await r.json();
+// fetch local JSON
+fetch(API)
+  .then(r=>r.json())
+  .then(data=>{
+    ALL_DATA=data;
     render();
-  }catch{
-    list.innerHTML="<p style='color:red'>ڈیٹا لوڈ نہیں ہو سکا</p>";
-  }
-}
-fetchData();
+  })
+  .catch(()=>{ list.innerHTML="<p style='color:red'>ڈیٹا لوڈ نہیں ہو سکا</p>"; });
 
+// nav filter
 document.querySelectorAll(".nav button").forEach(btn=>{
   btn.onclick=()=>{
     document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
