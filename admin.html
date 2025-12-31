@@ -5,33 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Panel</title>
 <style>
-body{
-  background:#0f1115;
-  color:#fff;
-  font-family:Inter,system-ui;
-  padding:20px;
-}
-input,textarea,select,button{
-  width:100%;
-  margin:6px 0;
-  padding:10px;
-  border-radius:8px;
-  border:1px solid #2a2f3a;
-  background:#161a22;
-  color:#fff;
-}
-button{
-  background:#c9a24d;
-  color:#000;
-  font-weight:600;
-  cursor:pointer;
-}
-.item{
-  background:#161a22;
-  border-radius:10px;
-  padding:10px;
-  margin-top:10px;
-}
+body{background:#0f1115;color:#fff;font-family:Inter,system-ui;padding:20px;}
+input,textarea,select,button{width:100%;margin:6px 0;padding:10px;border-radius:8px;border:1px solid #2a2f3a;background:#161a22;color:#fff;}
+button{background:#c9a24d;color:#000;font-weight:600;cursor:pointer;}
+.item{background:#161a22;border-radius:10px;padding:10px;margin-top:10px;}
 pre{white-space:pre-wrap;}
 </style>
 </head>
@@ -55,48 +32,34 @@ pre{white-space:pre-wrap;}
 <script>
 const API="https://sheetdb.io/api/v1/dl6yhkvu4ynyy";
 
-async function fetchData(){
-  const r = await fetch(API);
-  return await r.json();
-}
+async function fetchData(){ const r=await fetch(API); return await r.json(); }
 
 async function addItem(){
   if(!title.value || !text.value) return alert("Title & Content required");
-
   await fetch(API,{
     method:"POST",
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      data:{
-        id:Date.now().toString(),
-        type:type.value,
-        title:title.value,
-        text:text.value
-      }
-    })
+    body:JSON.stringify({data:{id:Date.now().toString(),type:type.value,title:title.value,text:text.value}})
   });
-
-  title.value="";
-  text.value="";
+  title.value=""; text.value="";
   render();
 }
 
-async function delRow(row){
+async function delRow(rowId){
   if(!confirm("Delete this poetry?")) return;
-  await fetch(`${API}?row=${row}`,{method:"DELETE"});
+  await fetch(`${API}/${rowId}`,{method:"DELETE"});
   render();
 }
 
 async function render(){
-  const data = await fetchData();
+  const data=await fetchData();
   list.innerHTML="";
-
-  data.forEach((d,i)=>{
+  data.forEach(d=>{
     const div=document.createElement("div");
     div.className="item";
     div.innerHTML=`
       <b>[${d.type}]</b> ${d.title}
-      <button onclick="delRow(${i+2})">Delete</button>
+      <button onclick="delRow('${d.id}')">Delete</button>
       <pre>${d.text}</pre>
       <a href="read.html?id=${d.id}" target="_blank">Read</a>
     `;
