@@ -12,6 +12,26 @@ body{background:#0f1115;color:#fff;font-family:Inter,system-ui;padding:20px;}
 #type{color:#aaa;margin-bottom:10px;}
 #text{font-family:"Noto Nastaliq Urdu",serif;font-size:1.5rem;line-height:2;white-space:pre-wrap;}
 button{margin-top:20px;padding:8px 16px;border:none;border-radius:8px;cursor:pointer;}
+#favBtn{
+  background:#000;
+  color:#fff;
+  font-weight:bold;
+  margin-left:10px;
+  padding:8px 16px;
+  border-radius:8px;
+  border:none;
+  cursor:pointer;
+}
+#favBtn.active{
+  background:red;
+  color:#fff;
+}
+.btn-container{
+  display:flex;
+  justify-content:center;
+  margin-top:20px;
+  gap:10px;
+}
 </style>
 </head>
 <body>
@@ -20,12 +40,16 @@ button{margin-top:20px;padding:8px 16px;border:none;border-radius:8px;cursor:poi
   <h2 id="title">Loading...</h2>
   <div id="type"></div>
   <div id="text"></div>
-  <button onclick="history.back()">واپس</button>
+  <div class="btn-container">
+    <button onclick="history.back()">واپس</button>
+    <button id="favBtn">پسندیدہ</button>
+  </div>
 </div>
 
 <script>
 const API="https://sheetdb.io/api/v1/dl6yhkvu4ynyy";
 const id=new URLSearchParams(location.search).get("id");
+const favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
 
 async function run(){
   const r=await fetch(API);
@@ -35,17 +59,33 @@ async function run(){
   const titleEl=document.getElementById("title");
   const typeEl=document.getElementById("type");
   const textEl=document.getElementById("text");
+  const favBtn=document.getElementById("favBtn");
 
   if(!p){
     titleEl.innerText="شاعری دستیاب نہیں";
     typeEl.innerText="";
     textEl.innerText="";
+    favBtn.style.display="none";
     return;
   }
 
   titleEl.innerText=p.title;
   typeEl.innerText=p.type;
   textEl.innerText=p.text;
+
+  // Favorite button state
+  if(favs.has(p.id)) favBtn.classList.add("active");
+  else favBtn.classList.remove("active");
+
+  favBtn.onclick=()=>{
+    if(favs.has(p.id)){
+      favs.delete(p.id);
+    } else {
+      favs.add(p.id);
+    }
+    localStorage.setItem("favs",JSON.stringify([...favs]));
+    favBtn.classList.toggle("active");
+  }
 }
 run();
 </script>
