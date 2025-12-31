@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin – Shayari Add</title>
+<style>
+body{
+  background:#0f1115;
+  color:#fff;
+  font-family:system-ui;
+  padding:20px;
+}
+input, select, textarea, button{
+  width:100%;
+  margin:8px 0;
+  padding:10px;
+  border-radius:6px;
+  border:none;
+}
+textarea{height:120px}
+button{
+  background:#ad0000;
+  color:#fff;
+  font-weight:bold;
+}
+pre{
+  background:#161a22;
+  padding:10px;
+  overflow:auto;
+}
+</style>
+</head>
+<body>
+
+<h2>➕ Shayari Add Karo</h2>
+
+<input id="title" placeholder="عنوان / Title">
+<select id="type">
+  <option value="ghazal">غزل</option>
+  <option value="nazm">نظم</option>
+  <option value="sher">شعر</option>
+</select>
+<textarea id="text" placeholder="شاعری یہاں لکھیں"></textarea>
+
+<button onclick="generate()">JSON Bana Do</button>
+
+<h3>📋 Copy this:</h3>
+<pre id="output"></pre>
+
+<script>
+function generate(){
+  const obj={
+    id: Date.now().toString(),
+    title: title.value,
+    type: type.value,
+    text: text.value
+  };
+  output.textContent = JSON.stringify(obj, null, 2) + ",";
+}
+</script>
+
+</body>
+</html>
