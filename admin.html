@@ -5,42 +5,84 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin – Shayari Add</title>
 <style>
-body{background:#0f1115;color:#fff;font-family:system-ui;padding:20px;}
-input, select, textarea, button{width:100%;margin:8px 0;padding:10px;border-radius:6px;border:none;}
-textarea{height:120px;}
-button{background:#ad0000;color:#fff;font-weight:bold;}
-pre{background:#161a22;padding:10px;overflow:auto;}
+body{
+  background:#0f1115;
+  color:#fff;
+  font-family:system-ui;
+  padding:20px;
+}
+input, select, textarea, button{
+  width:100%;
+  margin:8px 0;
+  padding:10px;
+  border-radius:6px;
+  border:none;
+}
+textarea{height:120px}
+button{
+  background:#ad0000;
+  color:#fff;
+  font-weight:bold;
+  font-size:1rem;
+}
+pre{
+  background:#161a22;
+  padding:10px;
+  overflow:auto;
+  word-break: break-word;
+}
+label{
+  display:block;
+  margin-top:10px;
+  font-weight:bold;
+  color:#fff;
+}
 </style>
 </head>
 <body>
 
-<h2>➕ Shayari Add Karo</h2>
+<h2>➕ Shayari / Nazm / Ghazal Add Karo</h2>
 
-<input id="title" placeholder="عنوان / Title">
+<label>عنوان / Title</label>
+<input id="title" placeholder="مثال: محبت کی سزا">
+
+<label>قسم / Type</label>
 <select id="type">
   <option value="ghazal">غزل</option>
   <option value="nazm">نظم</option>
   <option value="sher">شعر</option>
 </select>
-<textarea id="text" placeholder="شاعری یہاں لکھیں"></textarea>
 
-<button onclick="generate()">JSON Bana Do</button>
+<label>شاعری / Text</label>
+<textarea id="text" placeholder="یہاں شاعری لکھیں"></textarea>
 
-<h3>📋 Copy this:</h3>
+<button onclick="generate()">JSON تیار کریں</button>
+
+<h3>📋 Copy this JSON and add to data.json array:</h3>
 <pre id="output"></pre>
 
 <script>
 function generate(){
+  const t=document.getElementById("title").value.trim();
+  const ty=document.getElementById("type").value;
+  const txt=document.getElementById("text").value.trim();
+
+  if(!t || !txt){
+    alert("Title اور Text لازمی ہیں!");
+    return;
+  }
+
   const obj={
     id: Date.now().toString(),
-    title: title.value,
-    type: type.value,
-    text: text.value
+    title: t,
+    type: ty,
+    text: txt
   };
-  output.textContent = JSON.stringify(obj, null, 2) + ",";
+
+  // JSON ready
+  document.getElementById("output").textContent = JSON.stringify(obj, null, 2) + ",";
 }
 </script>
 
 </body>
 </html>
-
