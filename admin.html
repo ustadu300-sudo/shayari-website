@@ -24,18 +24,24 @@ button{
   color:#fff;
   font-weight:bold;
   font-size:1rem;
+  cursor:pointer;
+  margin-top:5px;
 }
 pre{
   background:#161a22;
   padding:10px;
   overflow:auto;
   word-break: break-word;
+  max-height:300px;
 }
 label{
   display:block;
   margin-top:10px;
   font-weight:bold;
   color:#fff;
+}
+#copyBtn{
+  background:#315a80;
 }
 </style>
 </head>
@@ -56,13 +62,16 @@ label{
 <label>شاعری / Text</label>
 <textarea id="text" placeholder="یہاں شاعری لکھیں"></textarea>
 
-<button onclick="generate()">JSON تیار کریں</button>
+<button onclick="generateArray()">JSON Array تیار کریں</button>
+<button id="copyBtn" onclick="copyArray()">Copy JSON Array</button>
 
-<h3>📋 Copy this JSON and add to data.json array:</h3>
+<h3>📋 Copy this and paste in data.json:</h3>
 <pre id="output"></pre>
 
 <script>
-function generate(){
+const tempArray=[]; // temporary array
+
+function generateArray(){
   const t=document.getElementById("title").value.trim();
   const ty=document.getElementById("type").value;
   const txt=document.getElementById("text").value.trim();
@@ -79,8 +88,23 @@ function generate(){
     text: txt
   };
 
-  // JSON ready
-  document.getElementById("output").textContent = JSON.stringify(obj, null, 2) + ",";
+  tempArray.push(obj);
+
+  // Generate array JSON
+  document.getElementById("output").textContent = JSON.stringify(tempArray, null, 2);
+}
+
+function copyArray(){
+  const output=document.getElementById("output");
+  if(!output.textContent){
+    alert("پہلے JSON Array تیار کریں!");
+    return;
+  }
+  navigator.clipboard.writeText(output.textContent).then(()=>{
+    alert("JSON Array clipboard میں copy ہو گیا!");
+  }).catch(()=>{
+    alert("Copy کرنے میں مسئلہ آیا!");
+  });
 }
 </script>
 
