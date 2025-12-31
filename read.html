@@ -22,34 +22,12 @@ body{
   border-radius:14px;
   text-align:center;
 }
-#title{
-  font-family:"Noto Nastaliq Urdu",serif;
-  font-size:1.9rem;
-}
+#title{font-family:"Noto Nastaliq Urdu",serif;font-size:1.9rem;}
 #type{color:#aaa;margin-bottom:10px;}
-#text{
-  font-family:"Noto Nastaliq Urdu",serif;
-  font-size:1.4rem;
-  line-height:1.9;
-  white-space:pre-wrap;
-  margin-bottom:20px;
-}
-.btn-container{
-  display:flex;
-  justify-content:center;
-  gap:10px;
-}
-button{
-  padding:8px 16px;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-}
-#favBtn{
-  background:#000;
-  color:#fff;
-  font-weight:bold;
-}
+#text{font-family:"Noto Nastaliq Urdu",serif;font-size:1.4rem;line-height:1.9;white-space:pre-wrap;margin-bottom:20px;}
+.btn-container{display:flex;justify-content:center;gap:10px;}
+button{padding:8px 16px;border:none;border-radius:8px;cursor:pointer;}
+#favBtn{background:#000;color:#fff;font-weight:bold;}
 #favBtn.active{background:red;}
 </style>
 </head>
@@ -66,41 +44,38 @@ button{
 </div>
 
 <script>
-const API="data.json";   // ✅ SheetDB removed
+const API="data.json"; // local JSON
 const id=new URLSearchParams(location.search).get("id");
 const favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
 
-async function run(){
-  const r=await fetch(API);
-  const data=await r.json();
-  const p=data.find(x=>x.id===id);
+fetch(API)
+  .then(r=>r.json())
+  .then(data=>{
+    const p=data.find(x=>x.id===id);
+    const titleEl=document.getElementById("title");
+    const typeEl=document.getElementById("type");
+    const textEl=document.getElementById("text");
+    const favBtn=document.getElementById("favBtn");
 
-  const titleEl=document.getElementById("title");
-  const typeEl=document.getElementById("type");
-  const textEl=document.getElementById("text");
-  const favBtn=document.getElementById("favBtn");
+    if(!p){
+      titleEl.innerText="شاعری دستیاب نہیں";
+      favBtn.style.display="none";
+      return;
+    }
 
-  if(!p){
-    titleEl.innerText="شاعری دستیاب نہیں";
-    favBtn.style.display="none";
-    return;
-  }
+    titleEl.innerText=p.title;
+    typeEl.innerText=p.type;
+    textEl.innerText=p.text;
 
-  titleEl.innerText=p.title;
-  typeEl.innerText=p.type;
-  textEl.innerText=p.text;
+    if(favs.has(p.id)) favBtn.classList.add("active");
 
-  if(favs.has(p.id)) favBtn.classList.add("active");
-
-  favBtn.onclick=()=>{
-    favs.has(p.id)?favs.delete(p.id):favs.add(p.id);
-    localStorage.setItem("favs",JSON.stringify([...favs]));
-    favBtn.classList.toggle("active");
-  };
-}
-run();
+    favBtn.onclick=()=>{
+      favs.has(p.id)?favs.delete(p.id):favs.add(p.id);
+      localStorage.setItem("favs",JSON.stringify([...favs]));
+      favBtn.classList.toggle("active");
+    };
+  });
 </script>
 
 </body>
 </html>
-
