@@ -5,23 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Panel</title>
 <style>
-body{background:#0f1115;color:#fff;font-family:Inter,system-ui;padding:20px}
-.box{max-width:600px;margin:auto}
-input,textarea,select,button{
-  width:100%;padding:10px;margin:6px 0;border-radius:8px;
-  border:1px solid #222;background:#161a22;color:#fff
+body{
+  background:#0f1115;
+  color:#fff;
+  font-family:Inter,system-ui;
+  padding:20px;
 }
-textarea{height:120px}
-button{background:#c9a24d;color:#000;font-weight:600;cursor:pointer}
-.item{background:#161a22;border:1px solid #222;border-radius:10px;padding:10px;margin-top:10px}
-.item button{background:#a00;color:#fff;width:auto;margin-top:5px}
-pre{white-space:pre-wrap}
+input,textarea,select,button{
+  width:100%;
+  margin:6px 0;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #2a2f3a;
+  background:#161a22;
+  color:#fff;
+}
+button{
+  background:#c9a24d;
+  color:#000;
+  font-weight:600;
+  cursor:pointer;
+}
+.item{
+  background:#161a22;
+  border-radius:10px;
+  padding:10px;
+  margin-top:10px;
+}
+pre{white-space:pre-wrap;}
 </style>
 </head>
 <body>
 
-<div class="box">
-<h2>Add Poetry</h2>
+<h2>Admin Panel</h2>
 
 <select id="type">
   <option value="sher">شعر</option>
@@ -30,26 +46,26 @@ pre{white-space:pre-wrap}
 </select>
 
 <input id="title" placeholder="Title">
-<textarea id="text" placeholder="Text"></textarea>
-<button onclick="add()">Add</button>
+<textarea id="text" placeholder="Content"></textarea>
+<button onclick="addItem()">Add</button>
 
 <h3>Existing Entries</h3>
 <div id="list"></div>
-</div>
 
 <script>
 const API="https://sheetdb.io/api/v1/dl6yhkvu4ynyy";
 
-async function getData(){
-  const r=await fetch(API);
+async function fetchData(){
+  const r = await fetch(API);
   return await r.json();
 }
 
-async function add(){
-  if(!title.value || !text.value) return;
+async function addItem(){
+  if(!title.value || !text.value) return alert("Title & Content required");
+
   await fetch(API,{
     method:"POST",
-    headers:{"Content-Type":"application/json"},
+    headers:{'Content-Type':'application/json'},
     body:JSON.stringify({
       data:{
         id:Date.now().toString(),
@@ -59,31 +75,36 @@ async function add(){
       }
     })
   });
-  title.value=""; text.value="";
-  load();
+
+  title.value="";
+  text.value="";
+  render();
 }
 
-async function del(row){
-  if(!confirm("Delete?")) return;
-  await fetch(API+"?row="+row,{method:"DELETE"});
-  load();
+async function delRow(row){
+  if(!confirm("Delete this poetry?")) return;
+  await fetch(`${API}?row=${row}`,{method:"DELETE"});
+  render();
 }
 
-async function load(){
-  const data=await getData();
+async function render(){
+  const data = await fetchData();
   list.innerHTML="";
+
   data.forEach((d,i)=>{
     const div=document.createElement("div");
     div.className="item";
     div.innerHTML=`
       <b>[${d.type}]</b> ${d.title}
+      <button onclick="delRow(${i+2})">Delete</button>
       <pre>${d.text}</pre>
-      <button onclick="del(${i+2})">Delete</button>
+      <a href="read.html?id=${d.id}" target="_blank">Read</a>
     `;
     list.appendChild(div);
   });
 }
-load();
+
+render();
 </script>
 </body>
 </html>
