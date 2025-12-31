@@ -3,233 +3,106 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shafay Ali - Shayari</title>
+<title>Shafay Poetry</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&family=Inter&display=swap" rel="stylesheet">
 
 <style>
-:root{
-  --bg:#0f1115;
-  --card:#161a22;
-  --text:#ffffff;
-  --muted:#9aa4b2;
-  --accent:#ad0000;
-  --border:#000000;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-
 body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:Inter,system-ui;
-}
-
-/* Banner */
-.banner{
-  height:240px;
-  background:url('BANNER/unsplash.png.jpg.jpg') center/cover no-repeat;
-  border-bottom:1px solid var(--border);
-}
-.banner-inner{
-  max-width:1200px;
-  margin:auto;
-  height:100%;
-  padding:20px;
-  display:flex;
-  align-items:flex-end;
-  gap:20px;
-}
-.logo{
-  width:100px;height:100px;
-  border-radius:50%;
-  overflow:hidden;
-  border:2px solid var(--border);
-}
-.logo img{width:100%;height:100%;object-fit:cover}
-.author-meta h1{
-  font-family:"Noto Nastaliq Urdu",serif;
-  font-size:2.2rem;
-}
-
-/* Nav */
-.nav{
-  position:sticky;
-  top:0;
   background:#0f1115;
-  border-bottom:1px solid var(--border);
+  color:#ffffff;
+  font-family:Inter,system-ui;
+  margin:0;
+  padding:20px;
 }
-.nav ul{
-  max-width:1200px;
-  margin:auto;
-  display:flex;
-  gap:6px;
-  padding:8px;
-  list-style:none;
-}
-.nav button{
-  background:none;
-  color:#fff;
-  border:none;
-  padding:8px 14px;
-  border-radius:8px;
-  cursor:pointer;
-}
-.nav button.active{background:#315a80}
-
-/* Layout */
 .wrap{
-  max-width:1200px;
+  max-width:900px;
   margin:auto;
-  padding:16px;
 }
 .card{
-  background:var(--card);
-  border-radius:14px;
-  padding:16px;
-  margin-bottom:16px;
-}
-.intro{
-  direction:rtl;
-  text-align:right;
-  font-family:"Noto Nastaliq Urdu",serif;
-  line-height:2.3;
-}
-.list{display:grid;gap:12px}
-.item{
-  background:var(--card);
-  border-radius:14px;
-  padding:16px;
-  display:grid;
-  grid-template-columns:1fr auto;
-  align-items:center;
-}
-.item h3{
-  font-family:"Noto Nastaliq Urdu",serif;
-  cursor:pointer;
-}
-.meta{font-size:13px;color:var(--muted)}
-.fav{
-  background:#000;
-  color:var(--accent);
-  border:none;
-  border-radius:8px;
-  padding:8px;
-  cursor:pointer;
-}
-.fav.active{background:var(--accent);color:#000}
-
-footer{
-  text-align:center;
+  background:#161a22;
+  border-radius:16px;
   padding:20px;
-  color:var(--muted);
+}
+h1{
+  font-family:"Noto Nastaliq Urdu",serif;
+  text-align:center;
+  margin:0 0 20px 0;
+}
+.item{
+  padding:14px 0;
+  border-bottom:1px solid #232836;
+}
+.item:last-child{
+  border-bottom:none;
+}
+.title{
+  font-family:"Noto Nastaliq Urdu",serif;
+  font-size:1.4rem;
+  line-height:2;
+}
+.type{
+  color:#9aa4b2;
+  font-size:0.85rem;
+  margin-bottom:6px;
+}
+.read-btn{
+  display:inline-block;
+  margin-top:6px;
+  background:#315a80;
+  color:#ffffff;
+  padding:6px 16px;
+  border-radius:8px;
+  text-decoration:none;
+  font-size:0.9rem;
+}
+.read-btn:hover{
+  opacity:0.85;
 }
 </style>
 </head>
 
 <body>
 
-<header class="banner">
-  <div class="banner-inner">
-    <div class="logo"><img src="logo/proble.png.png"></div>
-    <div class="author-meta">
-      <h1>شافع علی</h1>
-      <p>احمد فراز کی شاعری سے فیض یافتہ لفظیات</p>
-    </div>
+<div class="wrap">
+  <div class="card">
+    <h1>شفاعے کی شاعری</h1>
+    <div id="list">لوڈ ہو رہا ہے…</div>
   </div>
-</header>
-
-<nav class="nav">
-<ul>
-  <li><button class="active" data-tab="all">سب</button></li>
-  <li><button data-tab="ghazal">غزل</button></li>
-  <li><button data-tab="nazm">نظم</button></li>
-  <li><button data-tab="sher">شعر</button></li>
-  <li><button data-tab="favs">پسندیدہ</button></li>
-</ul>
-</nav>
-
-<main class="wrap">
-<section class="card">
-<h4>تعارف</h4>
-<div class="intro">
-نام: شافع علی<br>
-پیدائش: 19 دسمبر 2006<br>
-ملک: پاکستان<br>
-شہر: کراچی<br>
-پسندیدہ شاعر: احمد فراز
 </div>
-</section>
-
-<section>
-<div id="list" class="list"></div>
-</section>
-</main>
-
-<footer>© Shafay Ali 2025</footer>
 
 <script>
-const API="https://sheetdb.io/api/v1/dl6yhkvu4ynyy";
-let ALL_DATA=[];
-const list=document.getElementById("list");
-const favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
+const API = "https://sheetdb.io/api/v1/dl6yhkvu4ynyy";
 
-function saveFavs(){
-  localStorage.setItem("favs",JSON.stringify([...favs]));
+async function loadPoetry(){
+  try{
+    const res = await fetch(API);
+    const data = await res.json();
+    const list = document.getElementById("list");
+    list.innerHTML = "";
+
+    data.reverse().forEach(item=>{
+      const div = document.createElement("div");
+      div.className = "item";
+      div.innerHTML = `
+        <div class="title">${item.title}</div>
+        <div class="type">${item.type}</div>
+        <a class="read-btn" href="read.html?id=${item.id}">پڑھیں</a>
+      `;
+      list.appendChild(div);
+    });
+
+    if(data.length===0){
+      list.textContent="ابھی کوئی شاعری موجود نہیں";
+    }
+
+  }catch(e){
+    document.getElementById("list").textContent="ڈیٹا لوڈ نہیں ہو سکا";
+  }
 }
 
-function render(filter="all"){
-  list.innerHTML="";
-  let items=[...ALL_DATA];
-
-  if(filter==="favs") items=items.filter(i=>favs.has(i.id));
-  else if(filter!=="all") items=items.filter(i=>i.type===filter);
-
-  items.forEach(d=>{
-    const el=document.createElement("div");
-    el.className="item";
-    el.innerHTML=`
-      <div>
-        <h3>${d.title}</h3>
-        <div class="meta">${d.type}</div>
-      </div>
-      <button class="fav ${favs.has(d.id)?"active":""}">❤</button>
-    `;
-    el.querySelector("h3").onclick=()=>location.href=`read.html?id=${d.id}`;
-    el.querySelector(".fav").onclick=e=>{
-      e.stopPropagation();
-      favs.has(d.id)?favs.delete(d.id):favs.add(d.id);
-      saveFavs();
-      render(filter);
-    };
-    list.appendChild(el);
-  });
-}
-
-// --- Updated fetch logic to map SheetDB keys ---
-fetch(API)
-.then(r=>r.json())
-.then(data=>{
-  // Map A,B,C,D to id,type,title,text
-  ALL_DATA = data
-    .filter(d => d.A !== "id") // skip header row
-    .map(d => ({
-      id: d.A,
-      type: d.B,
-      title: d.C,
-      text: d.D
-    }));
-  render();
-});
-
-document.querySelectorAll(".nav button").forEach(btn=>{
-  btn.onclick=()=>{
-    document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");
-    render(btn.dataset.tab);
-  };
-});
+loadPoetry();
 </script>
 
 </body>
 </html>
-
