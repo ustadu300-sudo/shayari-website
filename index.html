@@ -79,13 +79,15 @@ footer{text-align:center;padding:20px;color:var(--muted);}
 <footer>© Shafay Ali 2025</footer>
 
 <script>
-const API="https://sheetdb.io/api/v1/dl6yhkvu4ynyy";
+const API="data.json";   // ✅ SheetDB removed
 
 let ALL_DATA=[];
 const list=document.getElementById("list");
 const favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
 
-function saveFavs(){ localStorage.setItem("favs",JSON.stringify([...favs])); }
+function saveFavs(){
+  localStorage.setItem("favs",JSON.stringify([...favs]));
+}
 
 function render(filter="all"){
   list.innerHTML="";
@@ -94,7 +96,10 @@ function render(filter="all"){
   if(filter==="favs") items=items.filter(i=>favs.has(i.id));
   else if(filter!=="all") items=items.filter(i=>i.type===filter);
 
-  if(items.length===0){ list.innerHTML="<p style='color:#9aa4b2'>کوئی شاعری موجود نہیں</p>"; return; }
+  if(items.length===0){
+    list.innerHTML="<p style='color:#9aa4b2'>کوئی شاعری موجود نہیں</p>";
+    return;
+  }
 
   items.forEach(d=>{
     const el=document.createElement("div");
@@ -106,13 +111,18 @@ function render(filter="all"){
       </div>
       <button class="fav ${favs.has(d.id)?"active":""}">❤</button>
     `;
-    el.querySelector("h3").onclick=()=>{ location.href=`read.html?id=${d.id}`; };
+
+    el.querySelector("h3").onclick=()=>{
+      location.href=\`read.html?id=\${d.id}\`;
+    };
+
     el.querySelector(".fav").onclick=e=>{
       e.stopPropagation();
       favs.has(d.id)?favs.delete(d.id):favs.add(d.id);
       saveFavs();
       render(filter);
     };
+
     list.appendChild(el);
   });
 }
@@ -122,7 +132,9 @@ async function fetchData(){
     const r=await fetch(API);
     ALL_DATA=await r.json();
     render();
-  }catch{ list.innerHTML="<p style='color:red'>ڈیٹا لوڈ نہیں ہو سکا</p>"; }
+  }catch{
+    list.innerHTML="<p style='color:red'>ڈیٹا لوڈ نہیں ہو سکا</p>";
+  }
 }
 fetchData();
 
