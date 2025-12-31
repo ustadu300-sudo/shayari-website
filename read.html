@@ -10,12 +10,17 @@ body{
   background:#0f1115;
   color:#fff;
   font-family:Inter,system-ui;
-  padding:20px;
   margin:0;
+  padding:20px;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  min-height:100vh;
 }
 
 /* Card container */
 .card{
+  width:90%;
   max-width:800px;
   margin:auto;
   background:#161a22;
@@ -23,12 +28,15 @@ body{
   border-radius:14px;
   text-align:center;
   word-break: break-word;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
 }
 
 /* Title */
 #title{
   font-family:"Noto Nastaliq Urdu",serif;
-  font-size:clamp(1.5rem,4vw,2rem);
+  font-size:1.9rem;
   line-height:1.4;
   margin-bottom:10px;
 }
@@ -37,66 +45,71 @@ body{
 #type{
   color:#aaa;
   margin-bottom:10px;
-  font-size:clamp(1rem,2.5vw,1.2rem);
+  font-size:1.1rem;
 }
 
 /* Text / Poetry */
 #text{
   font-family:"Noto Nastaliq Urdu",serif;
-  font-size:clamp(1.2rem,3vw,1.5rem);
-  line-height:clamp(1.8,2.2,2.2);
+  font-size:1.4rem;
+  line-height:1.9;
   white-space:pre-wrap;
-  text-align:right; /* Urdu alignment */
+  text-align:center; /* Center text */
+  margin-bottom:20px;
   word-break: break-word;
 }
 
 /* Buttons */
 button{
-  margin-top:20px;
   padding:8px 16px;
   border:none;
   border-radius:8px;
   cursor:pointer;
-  font-size:clamp(0.9rem,2.5vw,1rem);
+  font-size:1rem;
+}
+
+/* Shuffle buttons */
+.btn-container{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+/* Swap positions */
+.btn-container button:first-child{
+  order:2; /* Swap */
+}
+.btn-container button:last-child{
+  order:1;
 }
 
 #favBtn{
   background:#000;
   color:#fff;
   font-weight:bold;
-  margin-left:10px;
-  padding:8px 16px;
-  border-radius:8px;
-  border:none;
-  cursor:pointer;
 }
 #favBtn.active{
   background:red;
   color:#fff;
 }
 
-.btn-container{
-  display:flex;
-  justify-content:center;
-  margin-top:20px;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
 /* Mobile adjustments */
 @media(max-width:600px){
   .card{
+    width:95%;
     padding:16px;
   }
   #title{
-    font-size:clamp(1.3rem,5vw,1.8rem);
+    font-size:1.6rem;
   }
   #text{
-    font-size:clamp(1rem,4vw,1.3rem);
-    line-height:2;
+    font-size:1.2rem;
+    line-height:1.8;
   }
   button{
-    font-size:clamp(0.8rem,3vw,0.95rem);
+    font-size:0.95rem;
+    padding:6px 14px;
   }
 }
 </style>
@@ -108,8 +121,8 @@ button{
   <div id="type"></div>
   <div id="text"></div>
   <div class="btn-container">
-    <button onclick="history.back()">واپس</button>
     <button id="favBtn">پسندیدہ</button>
+    <button onclick="history.back()">واپس</button>
   </div>
 </div>
 
@@ -158,4 +171,5 @@ run();
 
 </body>
 </html>
+
 
