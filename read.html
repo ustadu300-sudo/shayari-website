@@ -6,41 +6,12 @@
 <title>Poetry</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">
 <style>
-body{
-  background:#0f1115;
-  color:#fff;
-  font-family:Inter,system-ui;
-  padding:20px;
-}
-.card{
-  max-width:800px;
-  margin:auto;
-  background:#161a22;
-  padding:20px;
-  border-radius:14px;
-  text-align:center;
-}
-#title{
-  font-family:"Noto Nastaliq Urdu",serif;
-  font-size:2rem;
-}
-#type{
-  color:#aaa;
-  margin-bottom:10px;
-}
-#text{
-  font-family:"Noto Nastaliq Urdu",serif;
-  font-size:1.5rem;
-  line-height:2;
-  white-space:pre-wrap;
-}
-button{
-  margin-top:20px;
-  padding:8px 16px;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-}
+body{background:#0f1115;color:#fff;font-family:Inter,system-ui;padding:20px;}
+.card{max-width:800px;margin:auto;background:#161a22;padding:20px;border-radius:14px;text-align:center;}
+#title{font-family:"Noto Nastaliq Urdu",serif;font-size:2rem;}
+#type{color:#aaa;margin-bottom:10px;}
+#text{font-family:"Noto Nastaliq Urdu",serif;font-size:1.5rem;line-height:2;white-space:pre-wrap;}
+button{margin-top:20px;padding:8px 16px;border:none;border-radius:8px;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -61,14 +32,20 @@ async function run(){
   const data=await r.json();
   const p=data.find(x=>x.id===id);
 
+  const titleEl=document.getElementById("title");
+  const typeEl=document.getElementById("type");
+  const textEl=document.getElementById("text");
+
   if(!p){
-    document.getElementById("title").innerText="شاعری دستیاب نہیں";
+    titleEl.innerText="شاعری دستیاب نہیں";
+    typeEl.innerText="";
+    textEl.innerText="";
     return;
   }
 
-  title.innerText=p.title;
-  type.innerText=p.type;
-  text.innerText=p.text;
+  titleEl.innerText=p.title;
+  typeEl.innerText=p.type;
+  textEl.innerText=p.text;
 }
 run();
 </script>
