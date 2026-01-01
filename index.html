@@ -90,20 +90,14 @@ footer{text-align:center;padding:20px;color:var(--muted);}
 <footer>© Shafay Ali 2025</footer>
 
 <script>
-const API="data.json"; // local JSON file
+// JSON Shayari data
+const API="data.json"; 
 let ALL_DATA=[];
 const list=document.getElementById("list");
 const favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
 
 function saveFavs(){ localStorage.setItem("favs",JSON.stringify([...favs])); }
 
-// Fetch local JSON (shayari)
-fetch(API)
-  .then(r=>r.json())
-  .then(data=>{ ALL_DATA=data; })
-  .catch(()=>{ list.innerHTML="<p style='color:red'>ڈیٹا لوڈ نہیں ہو سکا</p>"; });
-
-// Render function
 function render(filter="all"){
   list.innerHTML="";
   let items=[...ALL_DATA];
@@ -136,7 +130,10 @@ function render(filter="all"){
   });
 }
 
-// Name submission to Google Form
+// === Google Form setup ===
+const FORM_URL="https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse"; 
+const NAME_ENTRY_ID="entry.XXXXXXX"; // replace with your field ID from Form
+
 document.getElementById("nameBtn").onclick = async ()=>{
   const name=document.getElementById("nameInput").value.trim();
   if(!name){ alert("براہ کرم اپنا نام درج کریں"); return; }
@@ -144,20 +141,25 @@ document.getElementById("nameBtn").onclick = async ()=>{
   // Save locally
   localStorage.setItem("visitorName", name);
 
-  // Google Form submit
+  // Submit to Google Form
   const formData = new FormData();
-  formData.append("entry.123456", name); // <-- replace with your actual field ID
-  try{
-    await fetch("https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse", {
-      method:"POST", mode:"no-cors", body:formData
-    });
-    console.log("Submitted to Google Form ✅");
-  } catch(e){ console.log("Submit failed", e); }
+  formData.append(NAME_ENTRY_ID, name);
 
-  // Hide form & show shayari
+  try{
+    await fetch(FORM_URL,{method:"POST",mode:"no-cors",body:formData});
+    console.log("Submitted ✅");
+  }catch(e){ console.log("Submit failed", e); }
+
+  // Hide form, show shayari
   document.getElementById("nameFormSection").style.display="none";
   render();
 };
+
+// Fetch Shayari JSON
+fetch(API)
+  .then(r=>r.json())
+  .then(data=>{ ALL_DATA=data; })
+  .catch(()=>{ list.innerHTML="<p style='color:red'>ڈیٹا لوڈ نہیں ہو سکا</p>"; });
 
 // Nav filter
 document.querySelectorAll(".nav button").forEach(btn=>{
@@ -171,3 +173,4 @@ document.querySelectorAll(".nav button").forEach(btn=>{
 
 </body>
 </html>
+
