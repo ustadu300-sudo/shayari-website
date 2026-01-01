@@ -1,100 +1,140 @@
 <!DOCTYPE html>
 <html lang="ur">
 <head>
-  <meta charset="UTF-8">
-  <title>Shayari Website</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 40px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shafay Ali - Shayari</title>
 
-    #nameFormSection {
-      margin-top: 50px;
-    }
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 
-    input {
-      padding: 10px;
-      width: 250px;
-      font-size: 16px;
-    }
+<style>
+:root{
+  --bg:#0f1115;
+  --card:#161a22;
+  --text:#ffffff;
+  --muted:#9aa4b2;
+  --accent:#ad0000;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui;}
 
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      margin-top: 10px;
-      cursor: pointer;
-    }
+.banner{
+  height:220px;
+  background:#000;
+  display:flex;
+  align-items:flex-end;
+  padding:20px;
+}
+.banner h1{
+  font-family:"Noto Nastaliq Urdu",serif;
+  font-size:2.2rem;
+}
 
-    #thankYou {
-      display: none;
-      font-size: 20px;
-      color: green;
-      margin-top: 20px;
-    }
+.wrap{max-width:1000px;margin:auto;padding:16px;}
 
-    #contentSection {
-      display: none;
-      margin-top: 40px;
-    }
-  </style>
+.card{
+  background:var(--card);
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:16px;
+}
+
+#nameBox input{
+  width:100%;
+  padding:12px;
+  border-radius:8px;
+  border:none;
+  font-size:1rem;
+}
+#nameBox button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:8px;
+  background:var(--accent);
+  color:#fff;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+#thanks{
+  text-align:center;
+  font-family:"Noto Nastaliq Urdu",serif;
+  font-size:1.4rem;
+}
+
+footer{
+  text-align:center;
+  color:var(--muted);
+  padding:20px;
+}
+</style>
 </head>
 
 <body>
 
-  <!-- NAME INPUT -->
-  <div id="nameFormSection">
-    <h2>اپنا نام درج کریں</h2>
-    <input type="text" id="nameInput" placeholder="اپنا نام لکھیں">
-    <br><br>
-    <button id="nameBtn">Submit</button>
+<header class="banner">
+  <h1>شافع علی</h1>
+</header>
 
-    <div id="thankYou">
-      شکریہ ❤️  
-    </div>
+<main class="wrap">
+
+<!-- NAME INPUT -->
+<section class="card" id="nameSection">
+  <div id="nameBox">
+    <input type="text" id="visitorName" placeholder="اپنا نام لکھیں" required>
+    <button onclick="submitName()">جاری رکھیں</button>
   </div>
+</section>
 
-  <!-- MAIN WEBSITE CONTENT -->
-  <div id="contentSection">
-    <h1>خوش آمدید</h1>
-    <p>یہاں آپ کی شاعری / مواد شو ہوگا</p>
-    <!-- tumhara baqi website content yahan rahe -->
-  </div>
+<!-- THANK YOU -->
+<section class="card" id="thanks" style="display:none;">
+  شکریہ ❤️  
+</section>
 
-  <!-- SCRIPT -->
-  <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPInAlJtGvvO5vsiKGsxoeR684XI5GRJlOFuHwOq-WWsYD8nvjP7qCLcGB8gFZOkCp/exec";
+<!-- WEBSITE CONTENT -->
+<section class="card" id="content" style="display:none;">
+  <p>یہاں آپ کی شاعری کا مکمل مواد ظاہر ہوگا۔</p>
+</section>
 
-    document.getElementById("nameBtn").addEventListener("click", function () {
-      const name = document.getElementById("nameInput").value.trim();
+</main>
 
-      if (!name) {
-        alert("براہ کرم اپنا نام درج کریں");
-        return;
-      }
+<footer>© Shafay Ali</footer>
 
-      const data = new URLSearchParams();
-      data.append("name", name);
+<script>
+// ✅ YOUR GOOGLE APPS SCRIPT URL
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwz7I-tCUdr_8vid7vp9dZtYcSlkLZQIx0HfkiRjwj7ltJzuugX-n7WxYyYYYGtoyHR/exec";
 
-      fetch(SCRIPT_URL, {
-        method: "POST",
-        body: data
-      })
-      .then(() => {
-        document.getElementById("thankYou").style.display = "block";
+function submitName(){
+  const name = document.getElementById("visitorName").value.trim();
+  if(!name){
+    alert("براہ کرم اپنا نام درج کریں");
+    return;
+  }
 
-        setTimeout(() => {
-          document.getElementById("nameFormSection").style.display = "none";
-          document.getElementById("contentSection").style.display = "block";
-        }, 1200);
-      })
-      .catch(err => {
-        alert("Data save nahi ho saka");
-        console.log(err);
-      });
-    });
-  </script>
+  // save locally (dobara na pooche)
+  localStorage.setItem("visitorName", name);
+
+  // send to google sheet (background, no redirect)
+  fetch(SCRIPT_URL + "?name=" + encodeURIComponent(name))
+    .then(()=>console.log("Name saved successfully"));
+
+  document.getElementById("nameSection").style.display="none";
+  document.getElementById("thanks").style.display="block";
+
+  setTimeout(()=>{
+    document.getElementById("thanks").style.display="none";
+    document.getElementById("content").style.display="block";
+  }, 1500);
+}
+
+// agar pehle visit ho chuka ho
+if(localStorage.getItem("visitorName")){
+  document.getElementById("nameSection").style.display="none";
+  document.getElementById("content").style.display="block";
+}
+</script>
 
 </body>
 </html>
