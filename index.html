@@ -97,8 +97,8 @@ const favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
 
 // Google Form config
 const FORM_URL="https://docs.google.com/forms/d/e/1FAIpQLScmgf8PCFPUH8IRAmEzTRfS8-6nYC2w7X1odPXm1Iw-jjqeTQ/formResponse";
-const NAME_ENTRY_ID="entry.123456";    // replace with actual ID
-const TIME_ENTRY_ID="entry.789012";    // replace with actual ID
+const NAME_ENTRY_ID="entry.123456"; // ✅ replace with your Google Form entry ID
+const TIME_ENTRY_ID="entry.789012"; // ✅ replace with your Google Form entry ID
 
 function saveFavs(){ localStorage.setItem("favs",JSON.stringify([...favs])); }
 
