@@ -34,9 +34,10 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui;}
 .meta{font-size:13px;color:var(--muted)}
 .fav{background:#000;color:var(--accent);border:none;border-radius:8px;padding:8px;cursor:pointer;}
 .fav.active{background:var(--accent);color:#000}
-#formSection{margin-bottom:20px;}
+#nameForm{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+#nameInput{padding:10px;border-radius:8px;border:none;font-size:1rem;}
+#nameBtn{padding:10px;background:#ad0000;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer;}
 footer{text-align:center;padding:20px;color:var(--muted);}
-iframe{width:100%;height:400px;border:none;border-radius:8px;}
 </style>
 </head>
 <body>
@@ -74,11 +75,11 @@ iframe{width:100%;height:400px;border:none;border-radius:8px;}
 </section>
 
 <!-- Name Input Form -->
-<section class="card" id="formSection">
-  <h4>اپنا نام درج کریں</h4>
-  <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScmgf8PCFPUH8IRAmEzTRfS8-6nYC2w7X1odPXm1Iw-jjqeTQ/viewform?embedded=true">
-  Loading…
-  </iframe>
+<section class="card" id="nameFormSection">
+  <div id="nameForm">
+    <input type="text" id="nameInput" placeholder="اپنا نام درج کریں" required>
+    <button id="nameBtn">Submit</button>
+  </div>
 </section>
 
 <section>
@@ -93,6 +94,11 @@ const API="data.json"; // local JSON file
 let ALL_DATA=[];
 const list=document.getElementById("list");
 const favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
+
+// ✅ Google Form background POST (no UI, no new tab)
+const FORM_URL="https://docs.google.com/forms/d/e/1FAIpQLScmgf8PCFPUH8IRAmEzTRfS8-6nYC2w7X1odPXm1Iw-jjqeTQ/formResponse";
+const NAME_ENTRY_ID="entry.123456";    // ← replace with your actual field ID
+const TIME_ENTRY_ID="entry.789012";    // ← replace with your timestamp field ID
 
 function saveFavs(){ localStorage.setItem("favs",JSON.stringify([...favs])); }
 
@@ -128,10 +134,34 @@ function render(filter="all"){
   });
 }
 
+// Name submission
+document.getElementById("nameBtn").onclick = async ()=>{
+  const name=document.getElementById("nameInput").value.trim();
+  if(!name){ alert("براہ کرم اپنا نام درج کریں"); return; }
+
+  // Save locally
+  localStorage.setItem("visitorName", name);
+
+  // Google Form POST background
+  const datetime = new Date().toLocaleString("en-US", {timeZone:"Asia/Karachi"});
+  const formData = new FormData();
+  formData.append(NAME_ENTRY_ID, name);
+  formData.append(TIME_ENTRY_ID, datetime);
+
+  try{
+    await fetch(FORM_URL,{method:"POST",mode:"no-cors",body:formData});
+    console.log("Visitor submitted ✅");
+  }catch(e){ console.log("Form submit failed", e); }
+
+  // Hide input & show content
+  document.getElementById("nameFormSection").style.display="none";
+  render(); // show shayari list
+};
+
 // Fetch local JSON
 fetch(API)
   .then(r=>r.json())
-  .then(data=>{ ALL_DATA=data; render(); })
+  .then(data=>{ ALL_DATA=data; })
   .catch(()=>{ list.innerHTML="<p style='color:red'>ڈیٹا لوڈ نہیں ہو سکا</p>"; });
 
 // nav filter
