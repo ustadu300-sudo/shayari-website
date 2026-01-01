@@ -1,176 +1,100 @@
 <!DOCTYPE html>
 <html lang="ur">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shafay Ali - Shayari</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#0f1115;
-  --card:#161a22;
-  --text:#ffffff;
-  --muted:#9aa4b2;
-  --accent:#ad0000;
-  --border:#000000;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:Inter,system-ui;}
-.banner{height:240px;background:url('BANNER/unsplash.png.jpg.jpg') center/cover no-repeat;border-bottom:1px solid var(--border);}
-.banner-inner{max-width:1200px;margin:auto;height:100%;padding:20px;display:flex;align-items:flex-end;gap:20px;}
-.logo{width:100px;height:100px;border-radius:50%;overflow:hidden;border:2px solid var(--border);}
-.logo img{width:100%;height:100%;object-fit:cover}
-.author-meta h1{font-family:"Noto Nastaliq Urdu",serif;font-size:2.2rem;}
-.nav{position:sticky;top:0;background:#0f1115;border-bottom:1px solid var(--border);z-index:10;}
-.nav ul{max-width:1200px;margin:auto;display:flex;gap:6px;padding:8px;list-style:none;}
-.nav button{background:none;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;}
-.nav button.active{background:#315a80}
-.wrap{max-width:1200px;margin:auto;padding:16px;}
-.card{background:var(--card);border-radius:14px;padding:16px;margin-bottom:16px;}
-.intro{direction:rtl;text-align:right;font-family:"Noto Nastaliq Urdu",serif;line-height:2.3;}
-.list{display:grid;gap:12px}
-.item{background:var(--card);border-radius:14px;padding:16px;display:grid;grid-template-columns:1fr auto;align-items:center;}
-.item h3{font-family:"Noto Nastaliq Urdu",serif;cursor:pointer;}
-.meta{font-size:13px;color:var(--muted)}
-.fav{background:#000;color:var(--accent);border:none;border-radius:8px;padding:8px;cursor:pointer;}
-.fav.active{background:var(--accent);color:#000}
-#nameForm{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
-#nameInput{padding:10px;border-radius:8px;border:none;font-size:1rem;}
-#nameBtn{padding:10px;background:#ad0000;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer;}
-footer{text-align:center;padding:20px;color:var(--muted);}
-</style>
+  <meta charset="UTF-8">
+  <title>Shayari Website</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px;
+    }
+
+    #nameFormSection {
+      margin-top: 50px;
+    }
+
+    input {
+      padding: 10px;
+      width: 250px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    #thankYou {
+      display: none;
+      font-size: 20px;
+      color: green;
+      margin-top: 20px;
+    }
+
+    #contentSection {
+      display: none;
+      margin-top: 40px;
+    }
+  </style>
 </head>
+
 <body>
 
-<header class="banner">
-  <div class="banner-inner">
-    <div class="logo"><img src="logo/proble.png.png"></div>
-    <div class="author-meta">
-      <h1>شافع علی</h1>
-      <p>احمد فراز کی شاعری سے فیض یافتہ لفظیات</p>
+  <!-- NAME INPUT -->
+  <div id="nameFormSection">
+    <h2>اپنا نام درج کریں</h2>
+    <input type="text" id="nameInput" placeholder="اپنا نام لکھیں">
+    <br><br>
+    <button id="nameBtn">Submit</button>
+
+    <div id="thankYou">
+      شکریہ ❤️  
     </div>
   </div>
-</header>
 
-<nav class="nav">
-<ul>
-  <li><button class="active" data-tab="all">سب</button></li>
-  <li><button data-tab="ghazal">غزل</button></li>
-  <li><button data-tab="nazm">نظم</button></li>
-  <li><button data-tab="sher">شعر</button></li>
-  <li><button data-tab="favs">پسندیدہ</button></li>
-</ul>
-</nav>
-
-<main class="wrap">
-<section class="card">
-<h4>تعارف</h4>
-<div class="intro">
-نام: شافع علی<br>
-پیدائش: 19 دسمبر 2006<br>
-ملک: پاکستان<br>
-شہر: کراچی<br>
-پسندیدہ شاعر: احمد فراز
-</div>
-</section>
-
-<!-- Name Input Form -->
-<section class="card" id="nameFormSection">
-  <div id="nameForm">
-    <input type="text" id="nameInput" placeholder="اپنا نام درج کریں" required>
-    <button id="nameBtn">Submit</button>
+  <!-- MAIN WEBSITE CONTENT -->
+  <div id="contentSection">
+    <h1>خوش آمدید</h1>
+    <p>یہاں آپ کی شاعری / مواد شو ہوگا</p>
+    <!-- tumhara baqi website content yahan rahe -->
   </div>
-</section>
 
-<section>
-<div id="list" class="list">لوڈ ہو رہا ہے…</div>
-</section>
-</main>
+  <!-- SCRIPT -->
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPInAlJtGvvO5vsiKGsxoeR684XI5GRJlOFuHwOq-WWsYD8nvjP7qCLcGB8gFZOkCp/exec";
 
-<footer>© Shafay Ali 2025</footer>
+    document.getElementById("nameBtn").addEventListener("click", function () {
+      const name = document.getElementById("nameInput").value.trim();
 
-<script>
-// JSON Shayari data
-const API="data.json"; 
-let ALL_DATA=[];
-const list=document.getElementById("list");
-const favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
+      if (!name) {
+        alert("براہ کرم اپنا نام درج کریں");
+        return;
+      }
 
-function saveFavs(){ localStorage.setItem("favs",JSON.stringify([...favs])); }
+      const data = new URLSearchParams();
+      data.append("name", name);
 
-function render(filter="all"){
-  list.innerHTML="";
-  let items=[...ALL_DATA];
-  if(filter==="favs") items=items.filter(i=>favs.has(i.id));
-  else if(filter!=="all") items=items.filter(i=>i.type===filter);
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        body: data
+      })
+      .then(() => {
+        document.getElementById("thankYou").style.display = "block";
 
-  if(items.length===0){
-    list.innerHTML="<p style='color:#9aa4b2'>کوئی شاعری موجود نہیں</p>";
-    return;
-  }
-
-  items.forEach(d=>{
-    const el=document.createElement("div");
-    el.className="item";
-    el.innerHTML=`
-      <div>
-        <h3>${d.title}</h3>
-        <div class="meta">${d.type}</div>
-      </div>
-      <button class="fav ${favs.has(d.id)?"active":""}">❤</button>
-    `;
-    el.querySelector("h3").onclick=()=>{ location.href=`read.html?id=${d.id}`; };
-    el.querySelector(".fav").onclick=e=>{
-      e.stopPropagation();
-      favs.has(d.id)?favs.delete(d.id):favs.add(d.id);
-      saveFavs();
-      render(filter);
-    };
-    list.appendChild(el);
-  });
-}
-
-// === Google Form setup ===
-const FORM_URL="https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse"; 
-const NAME_ENTRY_ID="entry.XXXXXXX"; // replace with your field ID from Form
-
-document.getElementById("nameBtn").onclick = async ()=>{
-  const name=document.getElementById("nameInput").value.trim();
-  if(!name){ alert("براہ کرم اپنا نام درج کریں"); return; }
-
-  // Save locally
-  localStorage.setItem("visitorName", name);
-
-  // Submit to Google Form
-  const formData = new FormData();
-  formData.append(NAME_ENTRY_ID, name);
-
-  try{
-    await fetch(FORM_URL,{method:"POST",mode:"no-cors",body:formData});
-    console.log("Submitted ✅");
-  }catch(e){ console.log("Submit failed", e); }
-
-  // Hide form, show shayari
-  document.getElementById("nameFormSection").style.display="none";
-  render();
-};
-
-// Fetch Shayari JSON
-fetch(API)
-  .then(r=>r.json())
-  .then(data=>{ ALL_DATA=data; })
-  .catch(()=>{ list.innerHTML="<p style='color:red'>ڈیٹا لوڈ نہیں ہو سکا</p>"; });
-
-// Nav filter
-document.querySelectorAll(".nav button").forEach(btn=>{
-  btn.onclick=()=>{
-    document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");
-    render(btn.dataset.tab);
-  };
-});
-</script>
+        setTimeout(() => {
+          document.getElementById("nameFormSection").style.display = "none";
+          document.getElementById("contentSection").style.display = "block";
+        }, 1200);
+      })
+      .catch(err => {
+        alert("Data save nahi ho saka");
+        console.log(err);
+      });
+    });
+  </script>
 
 </body>
 </html>
-
