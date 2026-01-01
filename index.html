@@ -95,13 +95,15 @@ let ALL_DATA=[];
 const list=document.getElementById("list");
 const favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
 
-// ✅ Google Form background POST (no UI, no new tab)
-const FORM_URL="https://docs.google.com/forms/d/e/1FAIpQLScmgf8PCFPUH8IRAmEzTRfS8-6nYC2w7X1odPXm1Iw-jjqeTQ/formResponse";
-const NAME_ENTRY_ID="entry.123456";    // ← replace with your actual field ID
-const TIME_ENTRY_ID="entry.789012";    // ← replace with your timestamp field ID
-
 function saveFavs(){ localStorage.setItem("favs",JSON.stringify([...favs])); }
 
+// Fetch local JSON (shayari)
+fetch(API)
+  .then(r=>r.json())
+  .then(data=>{ ALL_DATA=data; })
+  .catch(()=>{ list.innerHTML="<p style='color:red'>ڈیٹا لوڈ نہیں ہو سکا</p>"; });
+
+// Render function
 function render(filter="all"){
   list.innerHTML="";
   let items=[...ALL_DATA];
@@ -134,7 +136,7 @@ function render(filter="all"){
   });
 }
 
-// Name submission
+// Name submission to Google Form
 document.getElementById("nameBtn").onclick = async ()=>{
   const name=document.getElementById("nameInput").value.trim();
   if(!name){ alert("براہ کرم اپنا نام درج کریں"); return; }
@@ -142,29 +144,22 @@ document.getElementById("nameBtn").onclick = async ()=>{
   // Save locally
   localStorage.setItem("visitorName", name);
 
-  // Google Form POST background
-  const datetime = new Date().toLocaleString("en-US", {timeZone:"Asia/Karachi"});
+  // Google Form submit
   const formData = new FormData();
-  formData.append(NAME_ENTRY_ID, name);
-  formData.append(TIME_ENTRY_ID, datetime);
-
+  formData.append("entry.123456", name); // <-- replace with your actual field ID
   try{
-    await fetch(FORM_URL,{method:"POST",mode:"no-cors",body:formData});
-    console.log("Visitor submitted ✅");
-  }catch(e){ console.log("Form submit failed", e); }
+    await fetch("https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse", {
+      method:"POST", mode:"no-cors", body:formData
+    });
+    console.log("Submitted to Google Form ✅");
+  } catch(e){ console.log("Submit failed", e); }
 
-  // Hide input & show content
+  // Hide form & show shayari
   document.getElementById("nameFormSection").style.display="none";
-  render(); // show shayari list
+  render();
 };
 
-// Fetch local JSON
-fetch(API)
-  .then(r=>r.json())
-  .then(data=>{ ALL_DATA=data; })
-  .catch(()=>{ list.innerHTML="<p style='color:red'>ڈیٹا لوڈ نہیں ہو سکا</p>"; });
-
-// nav filter
+// Nav filter
 document.querySelectorAll(".nav button").forEach(btn=>{
   btn.onclick=()=>{
     document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
