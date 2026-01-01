@@ -34,9 +34,9 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui;}
 .meta{font-size:13px;color:var(--muted)}
 .fav{background:#000;color:var(--accent);border:none;border-radius:8px;padding:8px;cursor:pointer;}
 .fav.active{background:var(--accent);color:#000}
-#nameForm{max-width:400px;margin:50px auto;background:#161a22;padding:20px;border-radius:14px;display:flex;flex-direction:column;gap:10px;}
-#nameForm input, #nameForm button{padding:10px;border-radius:6px;border:none;font-size:1rem;}
-#nameForm button{background:#ad0000;color:#fff;font-weight:bold;cursor:pointer;}
+#nameForm{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+#nameInput{padding:10px;border-radius:8px;border:none;font-size:1rem;}
+#nameBtn{padding:10px;background:#ad0000;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer;}
 footer{text-align:center;padding:20px;color:var(--muted);}
 </style>
 </head>
@@ -52,61 +52,56 @@ footer{text-align:center;padding:20px;color:var(--muted);}
   </div>
 </header>
 
+<nav class="nav">
+<ul>
+  <li><button class="active" data-tab="all">سب</button></li>
+  <li><button data-tab="ghazal">غزل</button></li>
+  <li><button data-tab="nazm">نظم</button></li>
+  <li><button data-tab="sher">شعر</button></li>
+  <li><button data-tab="favs">پسندیدہ</button></li>
+</ul>
+</nav>
+
 <main class="wrap">
-
-<!-- Name Form -->
-<div id="nameForm">
-  <h3>براہ کرم اپنا نام درج کریں</h3>
-  <input type="text" id="visitorName" placeholder="آپ کا نام" required>
-  <button onclick="submitName()">جمع کریں</button>
+<section class="card">
+<h4>تعارف</h4>
+<div class="intro">
+نام: شافع علی<br>
+پیدائش: 19 دسمبر 2006<br>
+ملک: پاکستان<br>
+شہر: کراچی<br>
+پسندیدہ شاعر: احمد فراز
 </div>
-
-<!-- Shayari Section (hidden initially) -->
-<section id="shayariSection" style="display:none;">
-  <section class="card">
-    <h4>تعارف</h4>
-    <div class="intro">
-      نام: شافع علی<br>
-      پیدائش: 19 دسمبر 2006<br>
-      ملک: پاکستان<br>
-      شہر: کراچی<br>
-      پسندیدہ شاعر: احمد فراز
-    </div>
-  </section>
-
-  <nav class="nav">
-  <ul>
-    <li><button class="active" data-tab="all">سب</button></li>
-    <li><button data-tab="ghazal">غزل</button></li>
-    <li><button data-tab="nazm">نظم</button></li>
-    <li><button data-tab="sher">شعر</button></li>
-    <li><button data-tab="favs">پسندیدہ</button></li>
-  </ul>
-  </nav>
-
-  <section>
-    <div id="list" class="list">لوڈ ہو رہا ہے…</div>
-  </section>
 </section>
 
+<!-- Name Input Form -->
+<section class="card" id="nameFormSection">
+  <div id="nameForm">
+    <input type="text" id="nameInput" placeholder="اپنا نام درج کریں" required>
+    <button id="nameBtn">Submit</button>
+  </div>
+</section>
+
+<section>
+<div id="list" class="list">لوڈ ہو رہا ہے…</div>
+</section>
 </main>
 
 <footer>© Shafay Ali 2025</footer>
 
 <script>
-// Google Form URL (replace with your form's link)
-const FORM_URL="https://docs.google.com/forms/d/e/1FAIpQLScmgf8PCFPUH8IRAmEzTRfS8-6nYC2w7X1odPQ/viewform?usp=pp_url&entry.1234567890="; // Replace entry ID with your form field
-
-const API="data.json"; // local JSON
+const API="data.json"; // local JSON file
 let ALL_DATA=[];
 const list=document.getElementById("list");
 const favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
 
-function saveFavs(){
-  localStorage.setItem("favs",JSON.stringify([...favs]));
-}
+// Google Form config
+const FORM_URL="https://docs.google.com/forms/d/e/1FAIpQLScmgf8PCFPUH8IRAmEzTRfS8-6nYC2w7X1odPXm1Iw-jjqeTQ/formResponse";
+const NAME_ENTRY_ID="entry.123456";    // replace with actual ID
+const TIME_ENTRY_ID="entry.789012";    // replace with actual ID
 
-// Render function
+function saveFavs(){ localStorage.setItem("favs",JSON.stringify([...favs])); }
+
 function render(filter="all"){
   list.innerHTML="";
   let items=[...ALL_DATA];
@@ -139,35 +134,37 @@ function render(filter="all"){
   });
 }
 
-// Fetch JSON
-async function fetchData(){
+// Name submission
+document.getElementById("nameBtn").onclick = async ()=>{
+  const name=document.getElementById("nameInput").value.trim();
+  if(!name){ alert("براہ کرم اپنا نام درج کریں"); return; }
+
+  // Save in localStorage
+  localStorage.setItem("visitorName", name);
+
+  // Google Form submission in background
+  const datetime = new Date().toLocaleString("en-US", {timeZone:"Asia/Karachi"});
+  const formData = new FormData();
+  formData.append(NAME_ENTRY_ID, name);
+  formData.append(TIME_ENTRY_ID, datetime);
+
   try{
-    const r=await fetch(API);
-    ALL_DATA=await r.json();
-    render();
-  }catch{
-    list.innerHTML="<p style='color:red'>ڈیٹا لوڈ نہیں ہو سکا</p>";
-  }
-}
+    await fetch(FORM_URL,{method:"POST",mode:"no-cors",body:formData});
+    console.log("Submitted to Google Form ✅");
+  }catch(e){ console.log("Submit failed", e); }
 
-// Submit Name Function
-function submitName(){
-  const name=document.getElementById("visitorName").value.trim();
-  if(!name) return alert("براہ کرم اپنا نام درج کریں");
-  
-  // Open Google Form submit in new tab (name + date/time)
-  const datetime=encodeURIComponent(new Date().toLocaleString());
-  const url=FORM_URL+encodeURIComponent(name)+"&entry.9876543210="+datetime; // Replace entry.9876543210 with datetime field ID
-  window.open(url,"_blank");
+  // Hide form and show list
+  document.getElementById("nameFormSection").style.display="none";
+  render(); // show shayari list
+};
 
-  // Hide form, show shayari
-  document.getElementById("nameForm").style.display="none";
-  document.getElementById("shayariSection").style.display="block";
+// Fetch local JSON
+fetch(API)
+  .then(r=>r.json())
+  .then(data=>{ ALL_DATA=data; })
+  .catch(()=>{ list.innerHTML="<p style='color:red'>ڈیٹا لوڈ نہیں ہو سکا</p>"; });
 
-  fetchData();
-}
-
-// Nav buttons
+// nav filter
 document.querySelectorAll(".nav button").forEach(btn=>{
   btn.onclick=()=>{
     document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
