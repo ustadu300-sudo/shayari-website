@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin – Shayari Add</title>
+
 <style>
 body{
   background:#0f1115;
@@ -18,36 +19,36 @@ input, select, textarea, button{
   border-radius:6px;
   border:none;
 }
-textarea{height:120px}
+textarea{height:140px}
 button{
   background:#ad0000;
   color:#fff;
   font-weight:bold;
   font-size:1rem;
   cursor:pointer;
-  margin-top:5px;
+}
+#copyBtn{
+  background:#315a80;
 }
 pre{
   background:#161a22;
-  padding:10px;
+  padding:12px;
   overflow:auto;
   word-break: break-word;
-  max-height:300px;
+  max-height:320px;
+  border-radius:8px;
 }
 label{
   display:block;
   margin-top:10px;
   font-weight:bold;
-  color:#fff;
-}
-#copyBtn{
-  background:#315a80;
 }
 </style>
 </head>
+
 <body>
 
-<h2>➕ Shayari / Nazm / Ghazal Add Karo</h2>
+<h2>➕ Shayari / Nazm / Ghazal Add Panel</h2>
 
 <label>عنوان / Title</label>
 <input id="title" placeholder="مثال: محبت کی سزا">
@@ -62,48 +63,54 @@ label{
 <label>شاعری / Text</label>
 <textarea id="text" placeholder="یہاں شاعری لکھیں"></textarea>
 
-<button onclick="generateArray()">JSON Array تیار کریں</button>
-<button id="copyBtn" onclick="copyArray()">Copy JSON Array</button>
+<button onclick="addShayari()">➕ Add to JSON</button>
+<button id="copyBtn" onclick="copyJSON()">📋 Copy JSON</button>
 
-<h3>📋 Copy this and paste in data.json:</h3>
-<pre id="output"></pre>
+<h3>⬇️ data.json میں یہ paste کریں:</h3>
+<pre id="output">[]</pre>
 
 <script>
-const tempArray=[]; // temporary array
+/* ===== SETTINGS ===== */
+const AUTHOR = "\n\n— شافع";   // watermark name
+const dataArray = [];
 
-function generateArray(){
-  const t=document.getElementById("title").value.trim();
-  const ty=document.getElementById("type").value;
-  const txt=document.getElementById("text").value.trim();
+/* ===== ADD SHAYARI ===== */
+function addShayari(){
+  const title = document.getElementById("title").value.trim();
+  const type  = document.getElementById("type").value;
+  const text  = document.getElementById("text").value.trim();
 
-  if(!t || !txt){
+  if(!title || !text){
     alert("Title اور Text لازمی ہیں!");
     return;
   }
 
-  const obj={
+  const obj = {
     id: Date.now().toString(),
-    title: t,
-    type: ty,
-    text: txt
+    type: type,
+    title: title,
+    text: text + AUTHOR   // 👈 watermark auto add
   };
 
-  tempArray.push(obj);
+  dataArray.push(obj);
 
-  // Generate array JSON
-  document.getElementById("output").textContent = JSON.stringify(tempArray, null, 2);
+  document.getElementById("output").textContent =
+    JSON.stringify(dataArray, null, 2);
+
+  // clear inputs
+  document.getElementById("title").value = "";
+  document.getElementById("text").value = "";
 }
 
-function copyArray(){
-  const output=document.getElementById("output");
-  if(!output.textContent){
-    alert("پہلے JSON Array تیار کریں!");
+/* ===== COPY JSON ===== */
+function copyJSON(){
+  const json = document.getElementById("output").textContent;
+  if(!json || json === "[]"){
+    alert("ابھی کوئی شاعری add نہیں ہوئی");
     return;
   }
-  navigator.clipboard.writeText(output.textContent).then(()=>{
-    alert("JSON Array clipboard میں copy ہو گیا!");
-  }).catch(()=>{
-    alert("Copy کرنے میں مسئلہ آیا!");
+  navigator.clipboard.writeText(json).then(()=>{
+    alert("JSON copy ہو گیا ✅\ndata.json میں paste کر دیں");
   });
 }
 </script>
