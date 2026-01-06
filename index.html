@@ -4,9 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shafay Ali – Shayari</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-
 <style>
 :root{
   --bg:#0f1115;
@@ -16,136 +14,41 @@
   --accent:#ad0000;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-
-body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:Inter,system-ui;
-}
-
-/* HEADER */
-.banner{
-  height:240px;
-  background:url("BANNER/unsplash.png.jpg.jpg") center/cover no-repeat;
-}
-.banner-inner{
-  max-width:1200px;
-  margin:auto;
-  height:100%;
-  padding:20px;
-  display:flex;
-  align-items:flex-end;
-  gap:20px;
-}
-.logo{
-  width:90px;height:90px;
-  border-radius:50%;
-  overflow:hidden;
-}
-.logo img{width:100%;height:100%;object-fit:cover}
-.author-meta h1{
-  font-family:"Noto Nastaliq Urdu",serif;
-  font-size:2.2rem;
-}
-
-/* NAV */
-.nav{
-  position:sticky;
-  top:0;
-  background:#0f1115;
-  z-index:10;
-  border-bottom:1px solid #000;
-}
-.nav ul{
-  max-width:1200px;
-  margin:auto;
-  list-style:none;
-  display:flex;
-  gap:8px;
-  padding:10px;
-}
-.nav button{
-  background:none;
-  color:#fff;
-  border:none;
-  padding:8px 14px;
-  border-radius:8px;
-  cursor:pointer;
-}
-.nav button.active{
-  background:#315a80;
-}
-
-/* CONTENT */
-.wrap{max-width:1200px;margin:auto;padding:16px}
-.card{
-  background:var(--card);
-  border-radius:14px;
-  padding:16px;
-  margin-bottom:16px;
-}
-.intro{
-  direction:rtl;
-  text-align:right;
-  font-family:"Noto Nastaliq Urdu",serif;
-  line-height:2.2;
-}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui;}
+.banner{height:240px;background:url('BANNER/unsplash.png.jpg.jpg') center/cover no-repeat;border-bottom:1px solid #000;}
+.banner-inner{max-width:1200px;margin:auto;height:100%;padding:20px;display:flex;align-items:flex-end;gap:20px;}
+.logo{width:90px;height:90px;border-radius:50%;overflow:hidden;}
+.logo img{width:100%;height:100%;object-fit:cover;}
+.author-meta h1{font-family:"Noto Nastaliq Urdu",serif;font-size:2.2rem;}
+.nav{position:sticky;top:0;background:#0f1115;z-index:10;border-bottom:1px solid #000;}
+.nav ul{max-width:1200px;margin:auto;list-style:none;display:flex;gap:8px;padding:10px;}
+.nav button{background:none;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;}
+.nav button.active{background:#315a80;}
+.wrap{max-width:1200px;margin:auto;padding:16px;}
+.card{background:var(--card);border-radius:14px;padding:16px;margin-bottom:16px;}
+.intro{direction:rtl;text-align:right;font-family:"Noto Nastaliq Urdu",serif;line-height:2.2;}
 .list{display:grid;gap:12px}
-.item{
-  background:var(--card);
-  padding:16px;
-  border-radius:14px;
-  cursor:pointer;
-  transition:.25s;
-}
-.item:hover{transform:translateY(-3px)}
-.item h3{
-  font-family:"Noto Nastaliq Urdu",serif;
-}
-.meta{color:var(--muted);font-size:13px}
+.item{background:var(--card);padding:16px;border-radius:14px;cursor:pointer;transition:.25s;}
+.item:hover{transform:translateY(-3px);}
+.item h3{font-family:"Noto Nastaliq Urdu",serif;text-align:center;}
+.meta{color:var(--muted);font-size:13px;text-align:center;}
+footer{text-align:center;padding:20px;color:var(--muted);}
 
-footer{text-align:center;padding:20px;color:var(--muted)}
-
-/* NAME MODAL */
+/* NAME + NOTIFICATION MODAL */
 #nameModal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.8);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  z-index:1000;
+  position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;justify-content:center;align-items:center;z-index:1000;
 }
 .modal-content{
-  background:var(--card);
-  padding:28px;
-  border-radius:14px;
-  text-align:center;
+  background:var(--card);padding:28px;border-radius:14px;text-align:center;
 }
-.modal-content p{
-  color:var(--muted);
-  font-size:14px;
-  margin-bottom:10px;
-}
-.modal-content input{
-  padding:12px;
-  border:none;
-  border-radius:8px;
-  width:260px;
-}
-.modal-content button{
-  margin-top:12px;
-  padding:12px 20px;
-  background:var(--accent);
-  border:none;
-  border-radius:8px;
-  font-weight:bold;
-  cursor:pointer;
-}
+.modal-content p{color:var(--muted);font-size:14px;margin-bottom:10px;}
+.modal-content input{padding:12px;border:none;border-radius:8px;width:260px;}
+.modal-content button{margin-top:12px;padding:12px 20px;background:var(--accent);border:none;border-radius:8px;font-weight:bold;cursor:pointer;}
+body.modal-active main,body.modal-active header,body.modal-active nav,body.modal-active footer{filter:blur(6px);pointer-events:none;user-select:none;}
 </style>
 </head>
 
-<body>
+<body class="modal-active">
 
 <header class="banner">
   <div class="banner-inner">
@@ -163,6 +66,7 @@ footer{text-align:center;padding:20px;color:var(--muted)}
   <li><button data-tab="ghazal">غزل</button></li>
   <li><button data-tab="nazm">نظم</button></li>
   <li><button data-tab="sher">شعر</button></li>
+  <li><button data-tab="favs">پسندیدہ</button></li>
 </ul>
 </nav>
 
@@ -183,14 +87,10 @@ footer{text-align:center;padding:20px;color:var(--muted)}
 
 <footer>© Shafay Ali</footer>
 
-<!-- NAME + NOTIFICATION MODAL -->
 <div id="nameModal">
   <div class="modal-content">
     <h3>خوش آمدید</h3>
-    <p>
-      اپنا نام درج کریں تاکہ آپ نئی شاعری سے<br>
-      بروقت باخبر رہ سکیں۔
-    </p>
+    <p>براہ کرم اپنا نام درج کریں تاکہ آپ نئی شاعری سے باخبر رہ سکیں۔</p>
     <input id="nameInput" placeholder="آپ کا نام">
     <br>
     <button id="saveName">جاری رکھیں</button>
@@ -200,56 +100,45 @@ footer{text-align:center;padding:20px;color:var(--muted)}
 <script>
 const API="data.json";
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwDmvgnt3FxEs_O4eLX1LOHs4z7hf-URJywG2WKkWcRI3hc93vSM_2xIcgHj7H9HLGI/exec";
-
 const list=document.getElementById("list");
 let ALL_DATA=[];
+const favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
 
-if(localStorage.getItem("visitorName")){
-  document.getElementById("nameModal").style.display="none";
+function render(filter="all"){
+  list.innerHTML="";
+  let items=[...ALL_DATA];
+  if(filter==="favs") items=items.filter(i=>favs.has(i.id));
+  else if(filter!=="all") items=items.filter(i=>i.type===filter);
+  if(items.length===0){ list.innerHTML="<p style='color:#9aa4b2;text-align:center'>کوئی شاعری موجود نہیں</p>"; return;}
+  items.forEach(d=>{
+    const el=document.createElement("div");
+    el.className="item";
+    el.innerHTML=`<h3>${d.title}</h3><div class="meta">${d.type}</div>`;
+    el.onclick=()=>location.href=`read.html?id=${d.id}`;
+    list.appendChild(el);
+  });
 }
+
+document.querySelectorAll(".nav button").forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    render(btn.dataset.tab);
+  };
+});
 
 document.getElementById("saveName").onclick=()=>{
   const name=document.getElementById("nameInput").value.trim();
   if(!name) return alert("براہ کرم نام درج کریں");
-
   localStorage.setItem("visitorName",name);
-
   fetch(`${SCRIPT_URL}?action=notify&name=${encodeURIComponent(name)}`);
-
   document.getElementById("nameModal").style.display="none";
+  document.body.classList.remove("modal-active");
 };
 
 fetch(API)
 .then(r=>r.json())
-.then(data=>{
-  ALL_DATA=data;
-  render("all");
-});
-
-function render(type){
-  list.innerHTML="";
-  let items=[...ALL_DATA];
-  if(type!=="all") items=items.filter(i=>i.type===type);
-
-  items.forEach(p=>{
-    const d=document.createElement("div");
-    d.className="item";
-    d.innerHTML=`
-      <h3>${p.title}</h3>
-      <div class="meta">${p.type}</div>
-    `;
-    d.onclick=()=>location.href=`read.html?id=${p.id}`;
-    list.appendChild(d);
-  });
-}
-
-document.querySelectorAll(".nav button").forEach(b=>{
-  b.onclick=()=>{
-    document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));
-    b.classList.add("active");
-    render(b.dataset.tab);
-  };
-});
+.then(data=>{ ALL_DATA=data; render("all"); });
 </script>
 </body>
 </html>
