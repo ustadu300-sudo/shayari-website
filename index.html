@@ -3,89 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shafay Ali - Shayari</title>
+<title>Shafay Ali - Shayari Read</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#0f1115;
   --card:#161a22;
   --text:#fff;
-  --muted:#9aa4b2;
   --accent:#ad0000;
+  --muted:#9aa4b2;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:Inter,system-ui;padding:20px;}
-.banner{height:240px;background:url('BANNER/unsplash.png.jpg.jpg') center/cover no-repeat;border-bottom:1px solid #000;}
-.banner-inner{max-width:1200px;margin:auto;height:100%;padding:20px;display:flex;align-items:flex-end;gap:20px;}
-.logo{width:100px;height:100px;border-radius:50%;overflow:hidden;border:2px solid #000;}
-.logo img{width:100%;height:100%;object-fit:cover}
-.author-meta h1{font-family:"Noto Nastaliq Urdu",serif;font-size:2.2rem;}
-.nav{position:sticky;top:0;background:#0f1115;border-bottom:1px solid #000;z-index:10;}
-.nav ul{max-width:1200px;margin:auto;display:flex;gap:6px;padding:8px;list-style:none;}
-.nav button{background:none;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;}
-.nav button.active{background:#315a80}
-.wrap{max-width:1200px;margin:auto;padding:16px;}
-.card{background:var(--card);border-radius:14px;padding:16px;margin-bottom:16px;display:grid;grid-template-columns:1fr auto;align-items:center;cursor:pointer;transition:transform 0.2s, box-shadow 0.2s;}
-.card:hover{transform:scale(1.02);box-shadow:0 10px 25px rgba(0,0,0,0.5);}
-.item-title{font-family:"Noto Nastaliq Urdu",serif;font-size:1.3rem;text-align:center;}
-.meta{font-size:13px;color:var(--muted);}
-.fav{background:#000;color:var(--accent);border:none;border-radius:8px;padding:8px;cursor:pointer;font-size:1rem;display:flex;align-items:center;gap:4px;transition:all 0.2s;}
-.fav.active{background:var(--accent);color:#000;transform:scale(1.2);}
-footer{text-align:center;padding:20px;color:var(--muted);}
-
-/* Name modal */
-#nameModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;z-index:1000;}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui;padding:20px;display:flex;justify-content:center;}
+.card{max-width:800px;width:100%;background:var(--card);padding:20px;border-radius:14px;text-align:center;position:relative;transition:transform 0.3s, box-shadow 0.3s;}
+.card:hover{transform:scale(1.02);box-shadow:0 15px 35px rgba(0,0,0,0.5);}
+#title{font-family:"Noto Nastaliq Urdu",serif;font-size:2rem;margin-bottom:8px;display:flex;justify-content:center;align-items:center;gap:10px;cursor:pointer;}
+#type{color:var(--muted);margin-bottom:12px;}
+#text{font-family:"Noto Nastaliq Urdu",serif;font-size:1.5rem;line-height:2;white-space:pre-wrap;text-align:center;margin-bottom:20px;}
+.btn-container{display:flex;justify-content:center;gap:15px;flex-wrap:wrap;}
+button{padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;transition:all 0.2s;}
+#backBtn{background:#315a80;color:#fff;}
+#heartBtn{font-size:1.6rem;color:red;background:none;border:none;cursor:pointer;transition:transform 0.3s;}
+#heartBtn.filled{transform:scale(1.3);}
+#nameModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:flex;justify-content:center;align-items:center;z-index:1000;}
 #nameModal .modal-content{background:var(--card);padding:30px;border-radius:12px;text-align:center;}
 #nameModal input{padding:12px;border-radius:8px;border:none;font-size:1rem;width:250px;}
 #nameModal button{padding:12px 20px;margin-top:12px;background:var(--accent);border:none;color:#000;font-weight:bold;border-radius:8px;cursor:pointer;}
-body.modal-active main, body.modal-active header, body.modal-active nav, body.modal-active footer{filter:blur(6px);pointer-events:none;user-select:none;}
+body.modal-active main,body.modal-active header,body.modal-active nav,body.modal-active footer{filter:blur(6px);pointer-events:none;user-select:none;}
 </style>
 </head>
 <body class="modal-active">
 
-<header class="banner">
-  <div class="banner-inner">
-    <div class="logo"><img src="logo/proble.png.png"></div>
-    <div class="author-meta">
-      <h1>شافع علی</h1>
-      <p>احمد فراز کی شاعری سے فیض یافتہ لفظیات</p>
-    </div>
+<div class="card">
+  <h2 id="title"><button id="heartBtn">♡</button> <span id="titleText">Loading...</span></h2>
+  <div id="type"></div>
+  <div id="text"></div>
+  <div class="btn-container">
+    <button id="backBtn" onclick="history.back()">واپس</button>
   </div>
-</header>
-
-<nav class="nav">
-<ul>
-  <li><button class="active" data-tab="all">سب</button></li>
-  <li><button data-tab="ghazal">غزل</button></li>
-  <li><button data-tab="nazm">نظم</button></li>
-  <li><button data-tab="sher">شعر</button></li>
-  <li><button data-tab="favs">پسندیدہ</button></li>
-</ul>
-</nav>
-
-<main class="wrap">
-<section class="card intro-card">
-<h4>تعارف</h4>
-<div class="intro" style="direction:rtl;text-align:right;font-family:'Noto Nastaliq Urdu',serif;line-height:2.3;">
-نام: شافع علی<br>
-پیدائش: 19 دسمبر 2006<br>
-ملک: پاکستان<br>
-شہر: کراچی<br>
-پسندیدہ شاعر: احمد فراز
 </div>
-</section>
-
-<section>
-<div id="list" class="list">لوڈ ہو رہا ہے…</div>
-</section>
-</main>
-
-<footer>© Shafay Ali 2025</footer>
 
 <!-- Name Modal -->
 <div id="nameModal">
   <div class="modal-content">
-    <h3>اپنا نام درج کریں</h3>
+    <h3>براہ کرم اپنا نام درج کریں</h3>
     <input type="text" id="nameInput" placeholder="اپنا نام درج کریں" required>
     <br>
     <button id="nameSubmit">OK</button>
@@ -93,49 +54,50 @@ body.modal-active main, body.modal-active header, body.modal-active nav, body.mo
 </div>
 
 <script>
-const API="data.json"; 
-let ALL_DATA=[];
-const favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
+const API="data.json";
+const id=new URLSearchParams(location.search).get("id");
 let visitorName=localStorage.getItem("visitorName")||"";
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwDmvgnt3FxEs_O4eLX1LOHs4z7hf-URJywG2WKkWcRI3hc93vSM_2xIcgHj7H9HLGI/exec";
 
-// Save favs
-function saveFavs(){ localStorage.setItem("favs",JSON.stringify([...favs])); }
+const titleTextEl=document.getElementById("titleText");
+const typeEl=document.getElementById("type");
+const textEl=document.getElementById("text");
+const heartBtn=document.getElementById("heartBtn");
 
-// Send like info to Sheet
-function sendLikeToSheet(title){
+// Track likes in localStorage
+const likes=new Set(JSON.parse(localStorage.getItem("likes")||"[]"));
+
+// Send data to Google Sheet
+function sendToSheet(action,title){
   const datetime=new Date().toLocaleString("en-US",{timeZone:"Asia/Karachi"});
-  fetch(`${SCRIPT_URL}?name=${encodeURIComponent(visitorName)}&datetime=${encodeURIComponent(datetime)}&title=${encodeURIComponent(title)}&action=like`, {method:"GET"});
+  fetch(`${SCRIPT_URL}?name=${encodeURIComponent(visitorName)}&datetime=${encodeURIComponent(datetime)}&title=${encodeURIComponent(title)}&action=${action}`, {method:"GET"});
 }
 
-// Render function
-function render(filter="all"){
-  const list=document.getElementById("list");
-  list.innerHTML="";
-  let items=[...ALL_DATA];
-  if(filter==="favs") items=items.filter(i=>favs.has(i.id));
-  else if(filter!=="all") items=items.filter(i=>i.type===filter);
+// Render poetry
+function renderPoetry(){
+  fetch(API)
+  .then(r=>r.json())
+  .then(data=>{
+    const p=data.find(x=>x.id===id);
+    if(!p){ titleTextEl.innerText="شاعری دستیاب نہیں"; heartBtn.style.display="none"; return;}
+    titleTextEl.innerText=p.title;
+    typeEl.innerText=p.type;
+    textEl.innerText=p.text;
 
-  if(items.length===0){ list.innerHTML="<p style='color:#9aa4b2'>کوئی شاعری موجود نہیں</p>"; return;}
+    // Heart filled if liked
+    if(likes.has(p.id)) heartBtn.classList.add("filled");
 
-  items.forEach(d=>{
-    const el=document.createElement("div");
-    el.className="card";
-    el.innerHTML=`
-      <div class="item-title">${d.title}</div>
-      <div class="meta">${d.type}</div>
-      <button class="fav ${favs.has(d.id)?'active':''}">♡ پسندیدہ</button>
-    `;
-    // Open read.html when any part of title/meta clicked
-    el.querySelector(".item-title").addEventListener("click",()=>{location.href=`read.html?id=${d.id}`;});
-    el.querySelector(".meta").addEventListener("click",()=>{location.href=`read.html?id=${d.id}`;});
-    el.querySelector(".fav").onclick=e=>{
-      e.stopPropagation();
-      if(favs.has(d.id)){ favs.delete(d.id); el.querySelector(".fav").classList.remove("active"); }
-      else { favs.add(d.id); el.querySelector(".fav").classList.add("active"); sendLikeToSheet(d.title);}
-      saveFavs();
+    heartBtn.onclick=()=>{
+      if(likes.has(p.id)){
+        likes.delete(p.id);
+        heartBtn.classList.remove("filled");
+      }else{
+        likes.add(p.id);
+        heartBtn.classList.add("filled");
+        sendToSheet("like",p.title);
+      }
+      localStorage.setItem("likes",JSON.stringify([...likes]));
     };
-    list.appendChild(el);
   });
 }
 
@@ -148,30 +110,22 @@ document.getElementById("nameSubmit").onclick=()=>{
   document.getElementById("nameModal").style.display="none";
   document.body.classList.remove("modal-active");
 
-  if(Notification.permission==="default"){
-    Notification.requestPermission().then(p=>{
-      if(p!=="granted") alert("نوٹیفیکیشن آن کریں تاکہ نئی شاعری کے بارے میں معلومات مل سکیں");
-    });
-  }
-  render();
+  // Request notification
+  Notification.requestPermission().then(p=>{
+    if(p!=="granted"){
+      alert("نوٹیفیکیشن آن کریں تاکہ نئی شاعری کے بارے میں معلومات مل سکیں");
+    }else{
+      renderPoetry();
+    }
+  });
 };
 
-// Fetch JSON data
-fetch(API)
-.then(r=>r.json())
-.then(data=>{ ALL_DATA=data; if(visitorName) render(); })
-.catch(()=>{ document.getElementById("list").innerHTML="<p style='color:red'>ڈیٹا لوڈ نہیں ہو سکا</p>"; });
-
-// nav filter
-document.querySelectorAll(".nav button").forEach(btn=>{
-  btn.onclick=()=>{
-    document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");
-    render(btn.dataset.tab);
-  };
-});
+// Auto render if name already entered and notification allowed
+if(visitorName && Notification.permission==="granted"){
+  document.getElementById("nameModal").style.display="none";
+  document.body.classList.remove("modal-active");
+  renderPoetry();
+}
 </script>
-
 </body>
 </html>
-
