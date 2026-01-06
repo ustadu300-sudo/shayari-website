@@ -32,13 +32,13 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui;padding:
 .list{display:grid;gap:12px;}
 .item{background:var(--card);border-radius:14px;padding:16px;display:flex;justify-content:space-between;align-items:center;transition:transform 0.3s;}
 .item:hover{transform:scale(1.02);}
-.item-title{cursor:pointer;font-family:"Noto Nastaliq Urdu",serif;font-size:1.4rem;text-align:center;flex:1;display:flex;align-items:center;gap:10px;}
+.item-title{cursor:pointer;font-family:"Noto Nastaliq Urdu",serif;font-size:1.4rem;text-align:center;flex:1;display:flex;align-items:center;justify-content:center;gap:10px;}
 .meta{font-size:13px;color:var(--muted);}
 .heart{color:red;font-size:1.5rem;background:none;border:none;cursor:pointer;transition:transform 0.3s;}
 .heart.filled{transform:scale(1.3);}
 footer{text-align:center;padding:20px;color:var(--muted);}
 
-/* Name Modal */
+/* Name & Notification Modal */
 #nameModal{
   position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);
   display:flex;justify-content:center;align-items:center;z-index:1000;
@@ -94,10 +94,10 @@ body.modal-active main, body.modal-active header, body.modal-active nav, body.mo
 
 <footer>© Shafay Ali 2025</footer>
 
-<!-- Name Modal -->
+<!-- Name & Notification Modal -->
 <div id="nameModal">
   <div class="modal-content">
-    <h3>براہ کرم اپنا نام درج کریں</h3>
+    <h3>براہ کرم اپنا نام درج کریں اور نوٹیفیکیشن آن کریں</h3>
     <input type="text" id="nameInput" placeholder="اپنا نام درج کریں" required>
     <br>
     <button id="nameSubmit">OK</button>
@@ -105,24 +105,22 @@ body.modal-active main, body.modal-active header, body.modal-active nav, body.mo
 </div>
 
 <script>
-const API="data.json";
+const API="data.json"; 
 let ALL_DATA=[];
 const list=document.getElementById("list");
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwDmvgnt3FxEs_O4eLX1LOHs4z7hf-URJywG2WKkWcRI3hc93vSM_2xIcgHj7H9HLGI/exec";
 
 let visitorName=localStorage.getItem("visitorName")||"";
 const favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
-const likes=new Set(JSON.parse(localStorage.getItem("likes")||"[]"));
-
-// Save favorites
-function saveFavs(){ localStorage.setItem("favs",JSON.stringify([...favs])); }
-function saveLikes(){ localStorage.setItem("likes",JSON.stringify([...likes])); }
 
 // Send action to Google Sheet
 function sendToSheet(action,title){
   const datetime=new Date().toLocaleString("en-US",{timeZone:"Asia/Karachi"});
   fetch(`${SCRIPT_URL}?name=${encodeURIComponent(visitorName)}&datetime=${encodeURIComponent(datetime)}&title=${encodeURIComponent(title)}&action=${action}`, {method:"GET"});
 }
+
+// Save favorites
+function saveFavs(){ localStorage.setItem("favs",JSON.stringify([...favs])); }
 
 // Render Shayari List
 function render(filter="all"){
@@ -136,22 +134,25 @@ function render(filter="all"){
     const el=document.createElement("div");
     el.className="item";
     el.innerHTML=`
-      <div class="item-title">
-        ${d.title}
-      </div>
+      <div class="item-title">${d.title}</div>
       <button class="heart ${favs.has(d.id)?"filled":""}">♡</button>
     `;
     const titleDiv=el.querySelector(".item-title");
     const heartBtn=el.querySelector(".heart");
 
-    // Open read page on click
     titleDiv.onclick=()=>{ location.href=`read.html?id=${d.id}`; };
 
-    // Heart click
     heartBtn.onclick=e=>{
       e.stopPropagation();
-      if(favs.has(d.id)){ favs.delete(d.id); heartBtn.classList.remove("filled"); sendToSheet("unfavorite",d.title); }
-      else{ favs.add(d.id); heartBtn.classList.add("filled"); sendToSheet("favorite",d.title); }
+      if(favs.has(d.id)){
+        favs.delete(d.id);
+        heartBtn.classList.remove("filled");
+        sendToSheet("unfavorite",d.title);
+      }else{
+        favs.add(d.id);
+        heartBtn.classList.add("filled");
+        sendToSheet("favorite",d.title);
+      }
       saveFavs();
     };
 
@@ -168,7 +169,7 @@ document.getElementById("nameSubmit").onclick=()=>{
   document.getElementById("nameModal").style.display="none";
   document.body.classList.remove("modal-active");
 
-  // Notification request
+  // Notification permission
   Notification.requestPermission().then(p=>{
     if(p!=="granted"){
       alert("نوٹیفیکیشن آن کریں تاکہ نئی شاعری کے بارے میں معلومات مل سکیں");
@@ -176,9 +177,11 @@ document.getElementById("nameSubmit").onclick=()=>{
       fetch(API).then(r=>r.json()).then(data=>{ ALL_DATA=data; render(); });
     }
   });
+
+  sendToSheet("visit","Site opened");
 };
 
-// Auto render if name & notification already allowed
+// Auto render if already name entered & notification granted
 if(visitorName && Notification.permission==="granted"){
   document.getElementById("nameModal").style.display="none";
   document.body.classList.remove("modal-active");
