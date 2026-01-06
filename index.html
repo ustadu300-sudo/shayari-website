@@ -22,14 +22,14 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui;}
 .author-meta h1{font-family:"Noto Nastaliq Urdu",serif;font-size:2.2rem;}
 .nav{position:sticky;top:0;background:#0f1115;z-index:10;border-bottom:1px solid #000;}
 .nav ul{max-width:1200px;margin:auto;list-style:none;display:flex;gap:8px;padding:10px;}
-.nav button{background:none;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;}
-.nav button.active{background:#315a80;}
+.nav button{background:none;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;transition:.25s;}
+.nav button.active{background:#315a80;transform:scale(1.05);}
 .wrap{max-width:1200px;margin:auto;padding:16px;}
 .card{background:var(--card);border-radius:14px;padding:16px;margin-bottom:16px;}
-.intro{direction:rtl;text-align:right;font-family:"Noto Nastaliq Urdu",serif;line-height:2.2;}
+.intro{direction:rtl;text-align:center;font-family:"Noto Nastaliq Urdu",serif;line-height:2.2;}
 .list{display:grid;gap:12px}
-.item{background:var(--card);padding:16px;border-radius:14px;cursor:pointer;transition:.25s;}
-.item:hover{transform:translateY(-3px);}
+.item{background:var(--card);padding:16px;border-radius:14px;cursor:pointer;transition:.25s, transform .25s;}
+.item:hover{transform:scale(1.02);}
 .item h3{font-family:"Noto Nastaliq Urdu",serif;text-align:center;}
 .meta{color:var(--muted);font-size:13px;text-align:center;}
 footer{text-align:center;padding:20px;color:var(--muted);}
@@ -43,7 +43,8 @@ footer{text-align:center;padding:20px;color:var(--muted);}
 }
 .modal-content p{color:var(--muted);font-size:14px;margin-bottom:10px;}
 .modal-content input{padding:12px;border:none;border-radius:8px;width:260px;}
-.modal-content button{margin-top:12px;padding:12px 20px;background:var(--accent);border:none;border-radius:8px;font-weight:bold;cursor:pointer;}
+.modal-content button{margin-top:12px;padding:12px 20px;background:var(--accent);border:none;border-radius:8px;font-weight:bold;cursor:pointer;transition:.25s;transform:scale(1);}
+.modal-content button:hover{transform:scale(1.05);}
 body.modal-active main,body.modal-active header,body.modal-active nav,body.modal-active footer{filter:blur(6px);pointer-events:none;user-select:none;}
 </style>
 </head>
@@ -104,6 +105,7 @@ const list=document.getElementById("list");
 let ALL_DATA=[];
 const favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
 
+// Render list function
 function render(filter="all"){
   list.innerHTML="";
   let items=[...ALL_DATA];
@@ -119,6 +121,7 @@ function render(filter="all"){
   });
 }
 
+// Nav buttons
 document.querySelectorAll(".nav button").forEach(btn=>{
   btn.onclick=()=>{
     document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
@@ -127,6 +130,7 @@ document.querySelectorAll(".nav button").forEach(btn=>{
   };
 });
 
+// Name modal
 document.getElementById("saveName").onclick=()=>{
   const name=document.getElementById("nameInput").value.trim();
   if(!name) return alert("براہ کرم نام درج کریں");
@@ -136,6 +140,7 @@ document.getElementById("saveName").onclick=()=>{
   document.body.classList.remove("modal-active");
 };
 
+// Load JSON
 fetch(API)
 .then(r=>r.json())
 .then(data=>{ ALL_DATA=data; render("all"); });
