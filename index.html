@@ -3,173 +3,217 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shafay Ali - Shayari</title>
+<title>Shafay Ali - Shayari Read</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #0f1115;
-  --card: #161a22;
-  --text: #fff;
-  --muted: #9aa4b2;
-  --accent: #ad0000;
-  --border: #000;
-  --heart: #ff4b5c;
+:root{
+  --bg:#0f1115;
+  --card:#161a22;
+  --text:#fff;
+  --accent:#ad0000;
+  --muted:#9aa4b2;
 }
-* {box-sizing:border-box;margin:0;padding:0;}
-body {background:var(--bg);color:var(--text);font-family:'Inter',system-ui;}
-.banner {height:240px;background:url('BANNER/unsplash.png.jpg.jpg') center/cover no-repeat;border-bottom:1px solid var(--border);}
-.banner-inner{max-width:1200px;margin:auto;height:100%;padding:20px;display:flex;align-items:flex-end;gap:20px;}
-.logo{width:100px;height:100px;border-radius:50%;overflow:hidden;border:2px solid var(--border);}
-.logo img{width:100%;height:100%;object-fit:cover;}
-.author-meta h1{font-family:'Noto Nastaliq Urdu',serif;font-size:2.2rem;}
-.nav{position:sticky;top:0;background:#0f1115;border-bottom:1px solid var(--border);z-index:10;}
-.nav ul{max-width:1200px;margin:auto;display:flex;gap:6px;padding:8px;list-style:none;}
-.nav button{background:none;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;transition:0.3s;}
-.nav button.active{background:#315a80;}
-.nav button:hover{transform:scale(1.05);}
-.wrap{max-width:1200px;margin:auto;padding:16px;}
-.card{background:var(--card);border-radius:14px;padding:16px;margin-bottom:16px;transition:0.3s;}
-.card:hover{transform:scale(1.01);}
-.intro{direction:rtl;text-align:right;font-family:'Noto Nastaliq Urdu',serif;line-height:2.3;}
-.list{display:grid;gap:12px;}
-.item{background:var(--card);border-radius:14px;padding:16px;display:flex;justify-content:space-between;align-items:center;transition:0.3s;}
-.item:hover{transform:scale(1.01);}
-.item h3{font-family:'Noto Nastaliq Urdu',serif;cursor:pointer;display:flex;align-items:center;gap:6px;}
-.meta{font-size:13px;color:var(--muted);}
-.fav{background:none;color:var(--accent);border:none;cursor:pointer;font-size:1.3rem;transition:0.3s;}
-.fav.active{color:var(--heart);}
-footer{text-align:center;padding:20px;color:var(--muted);}
-#nameModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:flex;justify-content:center;align-items:center;z-index:1000;}
-#nameModal .modal-content{background:var(--card);padding:30px;border-radius:12px;text-align:center;max-width:320px;}
-#nameModal input{padding:12px;border-radius:8px;border:none;font-size:1rem;width:100%;}
-#nameModal button{padding:12px 20px;margin-top:12px;background:var(--accent);border:none;color:#000;font-weight:bold;border-radius:8px;cursor:pointer;}
-body.modal-active main, body.modal-active header, body.modal-active nav, body.modal-active footer{filter:blur(6px);pointer-events:none;user-select:none;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:Inter,system-ui;
+  background:var(--bg);
+  color:var(--text);
+  display:flex;
+  justify-content:center;
+  padding:20px;
+}
+.card{
+  max-width:800px;
+  width:100%;
+  background:var(--card);
+  padding:25px;
+  border-radius:16px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card:hover{
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+#title{
+  font-family:"Noto Nastaliq Urdu",serif;
+  font-size:2rem;
+  margin-bottom:8px;
+}
+#type{
+  color:var(--muted);
+  margin-bottom:20px;
+  font-weight:bold;
+}
+#text{
+  font-family:"Noto Nastaliq Urdu",serif;
+  font-size:1.5rem;
+  line-height:2;
+  white-space:pre-wrap;
+  margin-bottom:30px;
+}
+.btn-container{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+button{
+  padding:10px 18px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:bold;
+  transition: transform 0.2s ease, background 0.3s ease, color 0.3s ease;
+}
+button:hover{
+  transform: scale(1.05);
+}
+#favBtn{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  background:var(--card);
+  color:var(--accent);
+  font-size:1.2rem;
+}
+#favBtn.active{
+  background:var(--accent);
+  color:#000;
+}
+#shareBtn{
+  background:#315a80;
+  color:#fff;
+}
+#backBtn{
+  background:#777;
+  color:#fff;
+}
+#nameModal{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.8);
+  display:flex;justify-content:center;align-items:center;
+  z-index:1000;
+}
+#nameModal .modal-content{
+  background:var(--card);padding:25px;border-radius:14px;text-align:center;
+}
+#nameModal input{
+  padding:12px;border-radius:8px;border:none;font-size:1rem;width:250px;
+}
+#nameModal button{
+  padding:12px 20px;margin-top:12px;background:var(--accent);
+  border:none;color:#000;font-weight:bold;border-radius:8px;cursor:pointer;
+}
+body.modal-active .card{
+  filter:blur(6px);
+  pointer-events:none;
+  user-select:none;
+}
 </style>
 </head>
 <body class="modal-active">
-
-<header class="banner">
-  <div class="banner-inner">
-    <div class="logo"><img src="logo/proble.png.png"></div>
-    <div class="author-meta">
-      <h1>شافع علی</h1>
-      <p>احمد فراز کی شاعری سے فیض یافتہ لفظیات</p>
-    </div>
-  </div>
-</header>
-
-<nav class="nav">
-<ul>
-  <li><button class="active" data-tab="all">سب</button></li>
-  <li><button data-tab="ghazal">غزل</button></li>
-  <li><button data-tab="nazm">نظم</button></li>
-  <li><button data-tab="sher">شعر</button></li>
-  <li><button data-tab="favs">پسندیدہ</button></li>
-</ul>
-</nav>
-
-<main class="wrap">
-<section class="card">
-<h4>تعارف</h4>
-<div class="intro">
-نام: شافع علی<br>
-پیدائش: 19 دسمبر 2006<br>
-ملک: پاکستان<br>
-شہر: کراچی<br>
-پسندیدہ شاعر: احمد فراز
-</div>
-</section>
-
-<section>
-<div id="list" class="list">لوڈ ہو رہا ہے…</div>
-</section>
-</main>
-
-<footer>© Shafay Ali 2025</footer>
 
 <!-- Name Modal -->
 <div id="nameModal">
   <div class="modal-content">
     <h3>اپنا نام درج کریں</h3>
-    <input type="text" id="nameInput" placeholder="اپنا نام درج کریں" required>
+    <input type="text" id="nameInput" placeholder="اپنا نام یہاں لکھیں" required>
     <br>
     <button id="nameSubmit">OK</button>
   </div>
 </div>
 
+<div class="card">
+  <h2 id="title">Loading...</h2>
+  <div id="type"></div>
+  <div id="text"></div>
+  <div class="btn-container">
+    <button id="favBtn">♡ پسندیدہ</button>
+    <button id="shareBtn">🔗 شیئر کریں</button>
+    <button id="backBtn" onclick="history.back()">⏪ واپس</button>
+  </div>
+</div>
+
 <script>
-const API="data.json";
-let ALL_DATA=[];
-const list=document.getElementById("list");
+const API="data.json"; 
+const id=new URLSearchParams(location.search).get("id");
+let visitorName = localStorage.getItem("visitorName")||"";
 const favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
-const visitorName=localStorage.getItem("visitorName")||null;
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwDmvgnt3FxEs_O4eLX1LOHs4z7hf-URJywG2WKkWcRI3hc93vSM_2xIcgHj7H9HLGI/exec";
 
-function saveFavs(){localStorage.setItem("favs",JSON.stringify([...favs]));}
-
-function render(filter="all"){
-  list.innerHTML="";
-  let items=[...ALL_DATA];
-  if(filter==="favs") items=items.filter(i=>favs.has(i.id));
-  else if(filter!="all") items=items.filter(i=>i.type===filter);
-  if(items.length===0){list.innerHTML="<p style='color:#9aa4b2'>کوئی شاعری موجود نہیں</p>";return;}
-
-  items.forEach(d=>{
-    const el=document.createElement("div");
-    el.className="item";
-    el.innerHTML=`
-      <h3 onclick='location.href="read.html?id=${d.id}"'>${d.title}</h3>
-      <button class='fav ${favs.has(d.id)?"active":""}'>&#10084;</button>
-    `;
-    const favBtn=el.querySelector(".fav");
-    favBtn.onclick=e=>{
-      e.stopPropagation();
-      if(!visitorName){alert('براہ کرم پہلے اپنا نام درج کریں');return;}
-      favs.has(d.id)?favs.delete(d.id):favs.add(d.id);
-      saveFavs();
-      favBtn.classList.toggle("active");
-
-      // Send to Google Sheet
-      const datetime = new Date().toLocaleString("en-US", {timeZone:"Asia/Karachi"});
-      fetch(`${SCRIPT_URL}?name=${encodeURIComponent(visitorName)}&datetime=${encodeURIComponent(datetime)}&action=like&title=${encodeURIComponent(d.title)}`,{method:"GET"})
-      .then(r=>console.log('Like info sent'))
-      .catch(err=>console.log('Error sending like',err));
-    };
-    list.appendChild(el);
-  });
+function sendLikeToSheet(title){
+  const datetime = new Date().toLocaleString("en-US",{timeZone:"Asia/Karachi"});
+  fetch(`${SCRIPT_URL}?name=${encodeURIComponent(visitorName)}&datetime=${encodeURIComponent(datetime)}&title=${encodeURIComponent(title)}&action=like`, {method:"GET"})
+    .then(()=>console.log("Like sent ✅"))
+    .catch(e=>console.log("Error",e));
 }
 
-// Name modal submit
+function requestNotificationPermission(){
+  if(Notification.permission==="default"){
+    Notification.requestPermission().then(p=>{
+      if(p==="granted") console.log("Notifications enabled ✅");
+    });
+  }
+}
+
 document.getElementById("nameSubmit").onclick=()=>{
   const name=document.getElementById("nameInput").value.trim();
-  if(!name){alert('براہ کرم اپنا نام درج کریں'); return;}
+  if(!name){ alert("براہ کرم اپنا نام درج کریں"); return; }
+  visitorName=name;
   localStorage.setItem("visitorName",name);
   document.getElementById("nameModal").style.display="none";
   document.body.classList.remove("modal-active");
-
-  // Request notification permission
-  if(Notification.permission!="granted"){
-    Notification.requestPermission().then(permission=>{
-      if(permission==='granted'){
-        new Notification(`شکریہ ${name}!
-اب آپ نئی شاعری کی اپ ڈیٹس حاصل کریں گے.`);
-      }
-    });
-  }
-
-  render();
+  requestNotificationPermission();
+  loadShayari();
 };
 
-// Fetch JSON data
-fetch(API).then(r=>r.json()).then(data=>{ALL_DATA=data;render();}).catch(()=>{list.innerHTML="<p style='color:red'>ڈیٹا لوڈ نہیں ہو سکا</p>"});
+function loadShayari(){
+  fetch(API)
+    .then(r=>r.json())
+    .then(data=>{
+      const p=data.find(x=>x.id===id);
+      if(!p){
+        document.getElementById("title").innerText="شاعری دستیاب نہیں";
+        return;
+      }
+      document.getElementById("title").innerText=p.title;
+      document.getElementById("type").innerText=p.type;
+      document.getElementById("text").innerText=p.text;
 
-// nav filter
-document.querySelectorAll(".nav button").forEach(btn=>{btn.onclick=()=>{
-  document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-  render(btn.dataset.tab);
-};});
+      const favBtn=document.getElementById("favBtn");
+      if(favs.has(p.id)) favBtn.classList.add("active");
 
+      favBtn.onclick=()=>{
+        if(favs.has(p.id)){
+          favs.delete(p.id);
+          favBtn.classList.remove("active");
+        }else{
+          favs.add(p.id);
+          favBtn.classList.add("active");
+          sendLikeToSheet(p.title);
+        }
+        localStorage.setItem("favs",JSON.stringify([...favs]));
+      };
+
+      document.getElementById("shareBtn").onclick=()=>{
+        const link = location.href;
+        navigator.clipboard.writeText(link)
+          .then(()=>alert("لنک clipboard میں copy ہو گیا ✅"))
+          .catch(()=>alert("Copy نہیں ہوا"));
+      };
+    });
+}
+
+// Load shayari if name already given
+if(visitorName) {
+  document.getElementById("nameModal").style.display="none";
+  document.body.classList.remove("modal-active");
+  requestNotificationPermission();
+  loadShayari();
+}
 </script>
+
 </body>
 </html>
