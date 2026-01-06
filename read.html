@@ -4,71 +4,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shayari</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">
-
 <style>
-body{
-  background:#0f1115;
-  color:#fff;
-  font-family:Inter,system-ui;
-  padding:20px;
-  display:flex;
-  justify-content:center;
-}
-.card{
-  max-width:820px;
-  width:100%;
-  background:#161a22;
-  border-radius:16px;
-  padding:28px;
-  text-align:center;
-  animation:fade .6s ease;
-}
-@keyframes fade{
-  from{opacity:0;transform:translateY(10px)}
-  to{opacity:1;transform:none}
-}
-#title{
-  font-family:"Noto Nastaliq Urdu",serif;
-  font-size:2rem;
-  margin-bottom:6px;
-}
-#type{color:#9aa4b2;margin-bottom:16px}
-#text{
-  font-family:"Noto Nastaliq Urdu",serif;
-  font-size:1.5rem;
-  line-height:2.2;
-  white-space:pre-wrap;
-  margin-bottom:24px;
-}
-.buttons{
-  display:flex;
-  justify-content:center;
-  gap:10px;
-  flex-wrap:wrap;
-}
-button{
-  padding:10px 18px;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-  font-weight:bold;
-}
-.like{background:#315a80;color:#fff}
-.like.active{background:#ad0000}
-.share{background:#000;color:#fff}
-.back{background:#333;color:#fff}
+body{background:#0f1115;color:#fff;font-family:Inter,system-ui;padding:20px;display:flex;justify-content:center;}
+.card{max-width:820px;width:100%;background:#161a22;border-radius:16px;padding:28px;text-align:center;animation:fade .6s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+#title{font-family:"Noto Nastaliq Urdu",serif;font-size:2rem;margin-bottom:6px;}
+#type{color:#9aa4b2;margin-bottom:16px;}
+#text{font-family:"Noto Nastaliq Urdu",serif;font-size:1.5rem;line-height:2.2;white-space:pre-wrap;margin-bottom:24px;text-align:center;}
+.buttons{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;}
+button{padding:10px 18px;border:none;border-radius:10px;cursor:pointer;font-weight:bold;}
+.like{background:#315a80;color:#fff;transition:.25s;}
+.like.active{background:#ad0000;}
+.share{background:#000;color:#fff;}
+.back{background:#333;color:#fff;}
 </style>
 </head>
-
 <body>
 
 <div class="card">
   <div id="title"></div>
   <div id="type"></div>
   <div id="text"></div>
-
   <div class="buttons">
     <button class="like" id="likeBtn">پسند</button>
     <button class="share" id="shareBtn">شیئر</button>
@@ -79,35 +36,33 @@ button{
 <script>
 const API="data.json";
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwDmvgnt3FxEs_O4eLX1LOHs4z7hf-URJywG2WKkWcRI3hc93vSM_2xIcgHj7H9HLGI/exec";
-
 const id=new URLSearchParams(location.search).get("id");
 const visitor=localStorage.getItem("visitorName")||"Anonymous";
+const favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
 
 fetch(API)
 .then(r=>r.json())
 .then(data=>{
   const p=data.find(x=>x.id===id);
   if(!p) return;
+  document.getElementById("title").innerText=p.title;
+  document.getElementById("type").innerText=p.type;
+  document.getElementById("text").innerText=p.text;
 
-  title.innerText=p.title;
-  type.innerText=p.type;
-  text.innerText=p.text;
+  const likeBtn=document.getElementById("likeBtn");
+  if(favs.has(p.id)) likeBtn.classList.add("active");
 
   likeBtn.onclick=()=>{
-    likeBtn.classList.add("active");
+    if(favs.has(p.id)) favs.delete(p.id);
+    else favs.add(p.id);
+    localStorage.setItem("favs",JSON.stringify([...favs]));
+    likeBtn.classList.toggle("active");
     fetch(`${SCRIPT_URL}?action=like&name=${encodeURIComponent(visitor)}&sid=${p.id}&title=${encodeURIComponent(p.title)}`);
   };
 
-  shareBtn.onclick=()=>{
-    navigator.share?.({
-      title:p.title,
-      text:p.text,
-      url:location.href
-    }) || alert("لنک کاپی کریں:\n"+location.href);
-  };
+  const shareBtn=document.getElementById("shareBtn");
+  shareBtn.onclick=()=>navigator.share?.({title:p.title,text:p.text,url:location.href}) || alert("لنک کاپی کریں:\n"+location.href);
 });
 </script>
-
 </body>
 </html>
-
