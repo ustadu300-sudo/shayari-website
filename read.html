@@ -3,78 +3,207 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Poetry</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">
+<title>Shafay Ali – Shayari</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
 <style>
+:root{
+  --bg:#0f1115;
+  --card:#161a22;
+  --text:#ffffff;
+  --muted:#9aa4b2;
+  --accent:#ad0000;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
 body{
-  background:#0f1115;
-  color:#fff;
+  background:var(--bg);
+  color:var(--text);
   font-family:Inter,system-ui;
-  padding:20px;
+  min-height:100vh;
   display:flex;
   justify-content:center;
+  padding:30px 16px;
 }
-.card{
-  max-width:800px;
+
+.reader{
+  max-width:900px;
   width:100%;
-  background:#161a22;
-  padding:20px;
-  border-radius:14px;
-  text-align:center;
+  background:var(--card);
+  border-radius:18px;
+  padding:28px 22px 40px;
+  animation:fadeIn .8s ease;
 }
-#title{font-family:"Noto Nastaliq Urdu",serif;font-size:1.9rem;}
-#type{color:#aaa;margin-bottom:10px;}
-#text{font-family:"Noto Nastaliq Urdu",serif;font-size:1.4rem;line-height:1.9;white-space:pre-wrap;margin-bottom:20px;}
-.btn-container{display:flex;justify-content:center;gap:10px;}
-button{padding:8px 16px;border:none;border-radius:8px;cursor:pointer;}
-#favBtn{background:#000;color:#fff;font-weight:bold;}
-#favBtn.active{background:red;}
+
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.title{
+  font-family:"Noto Nastaliq Urdu",serif;
+  font-size:2.1rem;
+  text-align:center;
+  margin-bottom:6px;
+}
+
+.type{
+  text-align:center;
+  color:var(--muted);
+  margin-bottom:26px;
+  letter-spacing:1px;
+}
+
+.poetry{
+  direction:rtl;
+  text-align:right;
+  font-family:"Noto Nastaliq Urdu",serif;
+  font-size:1.5rem;
+  line-height:2.4;
+  white-space:pre-wrap;
+}
+
+/* line reveal animation */
+.line{
+  opacity:0;
+  transform:translateY(8px);
+  animation:lineFade .6s ease forwards;
+}
+@keyframes lineFade{
+  to{opacity:1;transform:none}
+}
+
+/* watermark */
+.signature{
+  margin-top:26px;
+  text-align:left;
+  font-family:"Noto Nastaliq Urdu",serif;
+  font-size:1.2rem;
+  color:var(--muted);
+}
+
+/* buttons */
+.actions{
+  margin-top:30px;
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.actions button{
+  padding:10px 18px;
+  border:none;
+  border-radius:25px;
+  cursor:pointer;
+  font-weight:bold;
+  transition:.3s;
+}
+#favBtn{
+  background:#000;
+  color:#fff;
+}
+#favBtn.active{
+  background:var(--accent);
+  color:#000;
+}
+.share{
+  background:#315a80;
+  color:#fff;
+}
+.back{
+  background:#222;
+  color:#fff;
+}
+.actions button:hover{
+  transform:scale(1.06);
+}
+
+/* mobile */
+@media(max-width:600px){
+  .poetry{font-size:1.35rem}
+  .title{font-size:1.8rem}
+}
 </style>
 </head>
+
 <body>
 
-<div class="card">
-  <h2 id="title">Loading...</h2>
-  <div id="type"></div>
-  <div id="text"></div>
-  <div class="btn-container">
-    <button id="favBtn">پسندیدہ</button>
-    <button onclick="history.back()">واپس</button>
+<div class="reader">
+  <div id="title" class="title">Loading…</div>
+  <div id="type" class="type"></div>
+  <div id="poetry" class="poetry"></div>
+
+  <div id="signature" class="signature"></div>
+
+  <div class="actions">
+    <button id="favBtn">❤ پسندیدہ</button>
+    <button class="share" onclick="sharePoetry()">شیئر</button>
+    <button class="back" onclick="history.back()">واپس</button>
   </div>
 </div>
 
 <script>
-const API="data.json"; // local JSON
+const API="data.json";
 const id=new URLSearchParams(location.search).get("id");
 const favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
 
 fetch(API)
-  .then(r=>r.json())
-  .then(data=>{
-    const p=data.find(x=>x.id===id);
-    const titleEl=document.getElementById("title");
-    const typeEl=document.getElementById("type");
-    const textEl=document.getElementById("text");
-    const favBtn=document.getElementById("favBtn");
+.then(r=>r.json())
+.then(data=>{
+  const p=data.find(x=>x.id===id);
+  if(!p){
+    document.getElementById("title").innerText="شاعری دستیاب نہیں";
+    return;
+  }
 
-    if(!p){
-      titleEl.innerText="شاعری دستیاب نہیں";
-      favBtn.style.display="none";
+  title.innerText=p.title;
+  type.innerText=p.type.toUpperCase();
+
+  // split lines for animation
+  const lines=p.text.split("\n");
+  const poetryDiv=document.getElementById("poetry");
+  poetryDiv.innerHTML="";
+
+  lines.forEach((l,i)=>{
+    if(l.trim().startsWith("—")){
+      signature.innerText=l;
       return;
     }
-
-    titleEl.innerText=p.title;
-    typeEl.innerText=p.type;
-    textEl.innerText=p.text;
-
-    if(favs.has(p.id)) favBtn.classList.add("active");
-
-    favBtn.onclick=()=>{
-      favs.has(p.id)?favs.delete(p.id):favs.add(p.id);
-      localStorage.setItem("favs",JSON.stringify([...favs]));
-      favBtn.classList.toggle("active");
-    };
+    const span=document.createElement("div");
+    span.className="line";
+    span.style.animationDelay=`${i*0.15}s`;
+    span.innerText=l;
+    poetryDiv.appendChild(span);
   });
+
+  // fav
+  if(favs.has(p.id)) favBtn.classList.add("active");
+  favBtn.onclick=()=>{
+    favs.has(p.id)?favs.delete(p.id):favs.add(p.id);
+    localStorage.setItem("favs",JSON.stringify([...favs]));
+    favBtn.classList.toggle("active");
+  };
+
+  // auto notification hint (future use)
+  if("Notification" in window && Notification.permission==="granted"){
+    console.log("Notification ready");
+  }
+});
+
+// share
+function sharePoetry(){
+  if(navigator.share){
+    navigator.share({
+      title:"Shafay Ali – Shayari",
+      text:title.innerText,
+      url:location.href
+    });
+  }else{
+    alert("Share supported nahi");
+  }
+}
 </script>
 
 </body>
