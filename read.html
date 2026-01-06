@@ -3,69 +3,217 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shayari</title>
+<title>Shafay Ali - Shayari Read</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">
 <style>
-body{background:#0f1115;color:#fff;font-family:Inter,system-ui;padding:20px;display:flex;justify-content:center;}
-.card{max-width:820px;width:100%;background:#161a22;border-radius:16px;padding:28px;text-align:center;animation:fade .5s ease;}
-@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-#title{font-family:"Noto Nastaliq Urdu",serif;font-size:2rem;margin-bottom:6px;}
-#type{color:#9aa4b2;margin-bottom:16px;}
-#text{font-family:"Noto Nastaliq Urdu",serif;font-size:1.5rem;line-height:2.2;white-space:pre-wrap;margin-bottom:24px;text-align:center;}
-.buttons{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;}
-button{padding:10px 18px;border:none;border-radius:10px;cursor:pointer;font-weight:bold;transition:.25s;transform:scale(1);}
-button:hover{transform:scale(1.05);}
-.like{background:#315a80;color:#fff;}
-.like.active{background:#ad0000;}
-.share{background:#000;color:#fff;}
-.back{background:#333;color:#fff;}
+:root{
+  --bg:#0f1115;
+  --card:#161a22;
+  --text:#fff;
+  --accent:#ad0000;
+  --muted:#9aa4b2;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:Inter,system-ui;
+  background:var(--bg);
+  color:var(--text);
+  display:flex;
+  justify-content:center;
+  padding:20px;
+}
+.card{
+  max-width:800px;
+  width:100%;
+  background:var(--card);
+  padding:25px;
+  border-radius:16px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card:hover{
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+#title{
+  font-family:"Noto Nastaliq Urdu",serif;
+  font-size:2rem;
+  margin-bottom:8px;
+}
+#type{
+  color:var(--muted);
+  margin-bottom:20px;
+  font-weight:bold;
+}
+#text{
+  font-family:"Noto Nastaliq Urdu",serif;
+  font-size:1.5rem;
+  line-height:2;
+  white-space:pre-wrap;
+  margin-bottom:30px;
+}
+.btn-container{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+button{
+  padding:10px 18px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:bold;
+  transition: transform 0.2s ease, background 0.3s ease, color 0.3s ease;
+}
+button:hover{
+  transform: scale(1.05);
+}
+#favBtn{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  background:var(--card);
+  color:var(--accent);
+  font-size:1.2rem;
+}
+#favBtn.active{
+  background:var(--accent);
+  color:#000;
+}
+#shareBtn{
+  background:#315a80;
+  color:#fff;
+}
+#backBtn{
+  background:#777;
+  color:#fff;
+}
+#nameModal{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.8);
+  display:flex;justify-content:center;align-items:center;
+  z-index:1000;
+}
+#nameModal .modal-content{
+  background:var(--card);padding:25px;border-radius:14px;text-align:center;
+}
+#nameModal input{
+  padding:12px;border-radius:8px;border:none;font-size:1rem;width:250px;
+}
+#nameModal button{
+  padding:12px 20px;margin-top:12px;background:var(--accent);
+  border:none;color:#000;font-weight:bold;border-radius:8px;cursor:pointer;
+}
+body.modal-active .card{
+  filter:blur(6px);
+  pointer-events:none;
+  user-select:none;
+}
 </style>
 </head>
-<body>
+<body class="modal-active">
+
+<!-- Name Modal -->
+<div id="nameModal">
+  <div class="modal-content">
+    <h3>اپنا نام درج کریں</h3>
+    <input type="text" id="nameInput" placeholder="اپنا نام یہاں لکھیں" required>
+    <br>
+    <button id="nameSubmit">OK</button>
+  </div>
+</div>
 
 <div class="card">
-  <div id="title"></div>
+  <h2 id="title">Loading...</h2>
   <div id="type"></div>
   <div id="text"></div>
-  <div class="buttons">
-    <button class="like" id="likeBtn">پسند</button>
-    <button class="share" id="shareBtn">شیئر</button>
-    <button class="back" onclick="history.back()">واپس</button>
+  <div class="btn-container">
+    <button id="favBtn">♡ پسندیدہ</button>
+    <button id="shareBtn">🔗 شیئر کریں</button>
+    <button id="backBtn" onclick="history.back()">⏪ واپس</button>
   </div>
 </div>
 
 <script>
-const API="data.json";
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwDmvgnt3FxEs_O4eLX1LOHs4z7hf-URJywG2WKkWcRI3hc93vSM_2xIcgHj7H9HLGI/exec";
+const API="data.json"; 
 const id=new URLSearchParams(location.search).get("id");
-const visitor=localStorage.getItem("visitorName")||"Anonymous";
+let visitorName = localStorage.getItem("visitorName")||"";
 const favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwDmvgnt3FxEs_O4eLX1LOHs4z7hf-URJywG2WKkWcRI3hc93vSM_2xIcgHj7H9HLGI/exec";
 
-fetch(API)
-.then(r=>r.json())
-.then(data=>{
-  const p=data.find(x=>x.id===id);
-  if(!p) return;
-  document.getElementById("title").innerText=p.title;
-  document.getElementById("type").innerText=p.type;
-  document.getElementById("text").innerText=p.text;
+function sendLikeToSheet(title){
+  const datetime = new Date().toLocaleString("en-US",{timeZone:"Asia/Karachi"});
+  fetch(`${SCRIPT_URL}?name=${encodeURIComponent(visitorName)}&datetime=${encodeURIComponent(datetime)}&title=${encodeURIComponent(title)}&action=like`, {method:"GET"})
+    .then(()=>console.log("Like sent ✅"))
+    .catch(e=>console.log("Error",e));
+}
 
-  const likeBtn=document.getElementById("likeBtn");
-  // Initial state
-  if(favs.has(p.id)) likeBtn.classList.add("active");
+function requestNotificationPermission(){
+  if(Notification.permission==="default"){
+    Notification.requestPermission().then(p=>{
+      if(p==="granted") console.log("Notifications enabled ✅");
+    });
+  }
+}
 
-  likeBtn.onclick=()=>{
-    if(favs.has(p.id)) favs.delete(p.id);
-    else favs.add(p.id);
-    localStorage.setItem("favs",JSON.stringify([...favs]));
-    likeBtn.classList.toggle("active");
-    // Send to Google Sheet
-    fetch(`${SCRIPT_URL}?action=like&name=${encodeURIComponent(visitor)}&sid=${p.id}&title=${encodeURIComponent(p.title)}`);
-  };
+document.getElementById("nameSubmit").onclick=()=>{
+  const name=document.getElementById("nameInput").value.trim();
+  if(!name){ alert("براہ کرم اپنا نام درج کریں"); return; }
+  visitorName=name;
+  localStorage.setItem("visitorName",name);
+  document.getElementById("nameModal").style.display="none";
+  document.body.classList.remove("modal-active");
+  requestNotificationPermission();
+  loadShayari();
+};
 
-  const shareBtn=document.getElementById("shareBtn");
-  shareBtn.onclick=()=>navigator.share?.({title:p.title,text:p.text,url:location.href}) || alert("لنک کاپی کریں:\n"+location.href);
-});
+function loadShayari(){
+  fetch(API)
+    .then(r=>r.json())
+    .then(data=>{
+      const p=data.find(x=>x.id===id);
+      if(!p){
+        document.getElementById("title").innerText="شاعری دستیاب نہیں";
+        return;
+      }
+      document.getElementById("title").innerText=p.title;
+      document.getElementById("type").innerText=p.type;
+      document.getElementById("text").innerText=p.text;
+
+      const favBtn=document.getElementById("favBtn");
+      if(favs.has(p.id)) favBtn.classList.add("active");
+
+      favBtn.onclick=()=>{
+        if(favs.has(p.id)){
+          favs.delete(p.id);
+          favBtn.classList.remove("active");
+        }else{
+          favs.add(p.id);
+          favBtn.classList.add("active");
+          sendLikeToSheet(p.title);
+        }
+        localStorage.setItem("favs",JSON.stringify([...favs]));
+      };
+
+      document.getElementById("shareBtn").onclick=()=>{
+        const link = location.href;
+        navigator.clipboard.writeText(link)
+          .then(()=>alert("لنک clipboard میں copy ہو گیا ✅"))
+          .catch(()=>alert("Copy نہیں ہوا"));
+      };
+    });
+}
+
+// Load shayari if name already given
+if(visitorName) {
+  document.getElementById("nameModal").style.display="none";
+  document.body.classList.remove("modal-active");
+  requestNotificationPermission();
+  loadShayari();
+}
 </script>
+
 </body>
 </html>
