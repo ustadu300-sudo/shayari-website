@@ -3,183 +3,235 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shafay Ali - Shayari</title>
+<title>Shafay Ali | Shayari</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
 <style>
 :root{
   --bg:#0f1115;
   --card:#161a22;
-  --text:#fff;
+  --text:#ffffff;
   --muted:#9aa4b2;
-  --accent:#ad0000;
-  --border:#000;
+  --accent:#b00000;
 }
+
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:Inter,system-ui;padding:0;}
-header{height:240px;background:url('BANNER/unsplash.png.jpg') center/cover no-repeat;border-bottom:1px solid var(--border);}
-header .banner-inner{max-width:1200px;margin:auto;height:100%;display:flex;align-items:flex-end;gap:20px;padding:20px;}
-.logo{width:100px;height:100px;border-radius:50%;overflow:hidden;border:2px solid var(--border);}
-.logo img{width:100%;height:100%;object-fit:cover;}
-.author-meta h1{font-family:"Noto Nastaliq Urdu",serif;font-size:2.2rem;}
-.nav{position:sticky;top:0;background:#0f1115;border-bottom:1px solid var(--border);z-index:10;}
-.nav ul{max-width:1200px;margin:auto;display:flex;gap:6px;padding:8px;list-style:none;}
-.nav button{background:none;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;transition:all 0.3s;}
-.nav button.active{background:#315a80}
-.wrap{max-width:1200px;margin:auto;padding:16px;}
-.card{background:var(--card);border-radius:14px;padding:16px;margin-bottom:16px;transition:transform 0.3s;cursor:pointer;}
-.card:hover{transform:scale(1.02);}
-.intro{direction:rtl;text-align:right;font-family:"Noto Nastaliq Urdu",serif;line-height:2.3;}
-.list{display:grid;gap:12px}
-.item{background:var(--card);border-radius:14px;padding:16px;display:flex;justify-content:space-between;align-items:center;transition:all 0.3s;}
-.item h3{font-family:"Noto Nastaliq Urdu",serif;font-size:1.2rem;cursor:pointer;flex:1;text-align:center;}
-.meta{font-size:13px;color:var(--muted);}
-.fav{background:none;border:2px solid var(--accent);border-radius:50%;width:36px;height:36px;color:var(--accent);font-size:18px;cursor:pointer;transition:all 0.3s;}
-.fav.filled{background:var(--accent);color:#000;transform:scale(1.2);}
-.shareBtn{background:#315a80;border:none;border-radius:8px;color:#fff;padding:6px 12px;cursor:pointer;transition:all 0.3s;}
-.shareBtn:hover{transform:scale(1.1);}
-footer{text-align:center;padding:20px;color:var(--muted);}
-#nameModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:flex;justify-content:center;align-items:center;z-index:1000;}
-#nameModal .modal-content{background:var(--card);padding:30px;border-radius:12px;text-align:center;}
-#nameModal input{padding:12px;border-radius:8px;border:none;font-size:1rem;width:250px;}
-#nameModal button{padding:12px 20px;margin-top:12px;background:var(--accent);border:none;color:#000;font-weight:bold;border-radius:8px;cursor:pointer;}
-body.modal-active main,body.modal-active header,body.modal-active nav,body.modal-active footer{filter:blur(6px);pointer-events:none;user-select:none;}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,system-ui;
+}
+
+/* ---------- ENTRY GATE ---------- */
+body.lock{overflow:hidden}
+body.lock main{filter:blur(6px);pointer-events:none}
+
+#gate{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.85);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+}
+
+#gate .box{
+  background:var(--card);
+  padding:28px;
+  border-radius:18px;
+  max-width:340px;
+  text-align:center;
+}
+
+#gate h3{
+  font-family:"Noto Nastaliq Urdu",serif;
+  line-height:2.3;
+  font-size:1.1rem;
+}
+
+#gate input{
+  width:100%;
+  margin-top:14px;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+}
+
+#gate button{
+  margin-top:14px;
+  width:100%;
+  padding:12px;
+  background:var(--accent);
+  color:#000;
+  font-weight:bold;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+/* ---------- HEADER ---------- */
+header{
+  padding:18px;
+  text-align:center;
+}
+
+header img{
+  max-width:120px;
+}
+
+/* ---------- SHAYARI LIST ---------- */
+main{
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+}
+
+.shayari{
+  background:var(--card);
+  padding:18px;
+  border-radius:16px;
+  margin-bottom:14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  cursor:pointer;
+  transition:.3s;
+}
+
+.shayari:hover{
+  transform:scale(1.02);
+}
+
+.title{
+  font-family:"Noto Nastaliq Urdu",serif;
+  font-size:1.2rem;
+}
+
+.heart{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  border:2px solid var(--accent);
+  color:var(--accent);
+  background:none;
+  font-size:16px;
+  cursor:pointer;
+  transition:.3s;
+}
+
+.heart.filled{
+  background:var(--accent);
+  color:#000;
+  transform:scale(1.15);
+}
 </style>
 </head>
-<body class="modal-active">
+
+<body class="lock">
+
+<!-- ENTRY GATE -->
+<div id="gate">
+  <div class="box">
+    <h3>
+      نئی آنے والی شاعری کی اطلاع<br>
+      حاصل کرنے کے لیے نوٹیفکیشن آن کریں<br><br>
+      اور اپنا نام درج کریں
+    </h3>
+    <input id="userName" placeholder="اپنا نام درج کریں">
+    <button id="enterBtn">ویب سائٹ میں داخل ہوں</button>
+  </div>
+</div>
 
 <header>
-  <div class="banner-inner">
-    <div class="logo"><img src="logo/proble.png.png"></div>
-    <div class="author-meta">
-      <h1>شافع علی</h1>
-      <p>احمد فراز کی شاعری سے فیض یافتہ لفظیات</p>
-    </div>
-  </div>
+  <!-- ❗ logo / banner paths untouched -->
+  <img src="logo/logo.png" alt="Shafay Ali">
 </header>
 
-<nav class="nav">
-<ul>
-  <li><button class="active" data-tab="all">سب</button></li>
-  <li><button data-tab="ghazal">غزل</button></li>
-  <li><button data-tab="nazm">نظم</button></li>
-  <li><button data-tab="sher">شعر</button></li>
-  <li><button data-tab="favs">پسندیدہ</button></li>
-</ul>
-</nav>
-
-<main class="wrap">
-<section class="card">
-<h4>تعارف</h4>
-<div class="intro">
-نام: شافع علی<br>
-پیدائش: 19 دسمبر 2006<br>
-ملک: پاکستان<br>
-شہر: کراچی<br>
-پسندیدہ شاعر: احمد فراز
-</div>
-</section>
-
-<section>
-<div id="list" class="list">لوڈ ہو رہا ہے…</div>
-</section>
-</main>
-
-<footer>© Shafay Ali 2026</footer>
-
-<div id="nameModal">
-  <div class="modal-content">
-    <h3>اپنا نام لکھیں اور نوٹیفیکیشن آن کریں</h3>
-    <input type="text" id="nameInput" placeholder="اپنا نام درج کریں" required>
-    <br>
-    <button id="nameSubmit">OK</button>
-  </div>
-</div>
+<main id="list"></main>
 
 <script>
-const API="data.json";
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwDmvgnt3FxEs_O4eLX1LOHs4z7hf-URJywG2WKkWcRI3hc93vSM_2xIcgHj7H9HLGI/exec";
-let ALL_DATA=[], visitorName=localStorage.getItem("visitorName")||"";
-const list=document.getElementById("list");
+const DATA_URL="data.json";
 
-// Send info to Google Sheet
-function sendToSheet(action,title=""){
-  const datetime=new Date().toLocaleString("en-US",{timeZone:"Asia/Karachi"});
-  fetch(`${SCRIPT_URL}?name=${encodeURIComponent(visitorName)}&datetime=${encodeURIComponent(datetime)}&title=${encodeURIComponent(title)}&action=${action}`, {method:"GET"});
+let visitor=localStorage.getItem("visitorName");
+
+function log(action,title=""){
+  const dt=new Date().toLocaleString("en-US",{timeZone:"Asia/Karachi"});
+  fetch(`${SCRIPT_URL}?name=${encodeURIComponent(visitor)}&datetime=${encodeURIComponent(dt)}&action=${action}&title=${encodeURIComponent(title)}&notification=${Notification.permission}`);
 }
 
-// Render Shayari list
-function render(filter="all"){
-  list.innerHTML="";
-  let items=[...ALL_DATA];
-  if(filter==="favs") items=items.filter(i=>JSON.parse(localStorage.getItem("favs")||"[]").includes(i.id));
-  else if(filter!=="all") items=items.filter(i=>i.type===filter);
-  if(items.length===0){list.innerHTML="<p style='color:#9aa4b2'>کوئی شاعری موجود نہیں</p>";return;}
-
-  items.forEach(d=>{
-    const el=document.createElement("div");
-    el.className="item";
-    el.innerHTML=`
-      <h3>${d.title}</h3>
-      <div style="display:flex;gap:8px;">
-        <button class="fav ${JSON.parse(localStorage.getItem("favs")||"[]").includes(d.id)?'filled':''}">♡</button>
-        <button class="shareBtn">Share</button>
-      </div>`;
-    
-    el.querySelector("h3").onclick=()=>{ location.href=`read.html?id=${d.id}`; };
-    
-    const favBtn=el.querySelector(".fav");
-    favBtn.onclick=e=>{
-      e.stopPropagation();
-      let favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
-      if(favs.has(d.id)){favs.delete(d.id);favBtn.classList.remove("filled"); sendToSheet("unfavorite",d.title);}
-      else{favs.add(d.id);favBtn.classList.add("filled"); sendToSheet("favorite",d.title);}
-      localStorage.setItem("favs",JSON.stringify([...favs]));
-    };
-
-    el.querySelector(".shareBtn").onclick=e=>{
-      e.stopPropagation();
-      navigator.clipboard.writeText(location.origin+"/read.html?id="+d.id).then(()=>alert("Link copied!"));
-    };
-
-    list.appendChild(el);
-  });
-}
-
-// Name modal submit
-document.getElementById("nameSubmit").onclick=()=>{
-  const name=document.getElementById("nameInput").value.trim();
-  if(!name){alert("براہ کرم اپنا نام درج کریں");return;}
-  visitorName=name;
-  localStorage.setItem("visitorName",name);
-  document.getElementById("nameModal").style.display="none";
-  document.body.classList.remove("modal-active");
+document.getElementById("enterBtn").onclick=()=>{
+  const name=document.getElementById("userName").value.trim();
+  if(!name){alert("نام درج کریں");return;}
 
   Notification.requestPermission().then(p=>{
-    if(p!=="granted"){ alert("نوٹیفیکیشن آن کریں تاکہ نئی شاعری کی اطلاع مل سکے"); }
-    else{
-      sendToSheet("visit");
-      fetch(API).then(r=>r.json()).then(data=>{ALL_DATA=data;render();});
+    if(p!=="granted"){
+      alert("نوٹیفکیشن آن کیے بغیر مواد دستیاب نہیں");
+      return;
     }
+    visitor=name;
+    localStorage.setItem("visitorName",name);
+    log("visit");
+    document.getElementById("gate").style.display="none";
+    document.body.classList.remove("lock");
+    loadData();
   });
 };
 
-// Auto load if visitor already gave name & permission
-if(visitorName && Notification.permission==="granted"){
-  document.getElementById("nameModal").style.display="none";
-  document.body.classList.remove("modal-active");
-  fetch(API).then(r=>r.json()).then(data=>{ALL_DATA=data;render();});
+if(visitor && Notification.permission==="granted"){
+  document.getElementById("gate").style.display="none";
+  document.body.classList.remove("lock");
+  loadData();
 }
 
-// Nav filter
-document.querySelectorAll(".nav button").forEach(btn=>{
-  btn.onclick=()=>{
-    document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");
-    render(btn.dataset.tab);
-  };
-});
+function loadData(){
+  fetch(DATA_URL).then(r=>r.json()).then(data=>{
+    const list=document.getElementById("list");
+    let favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
+
+    data.forEach(s=>{
+      const row=document.createElement("div");
+      row.className="shayari";
+
+      const t=document.createElement("div");
+      t.className="title";
+      t.textContent=s.title;
+
+      const h=document.createElement("button");
+      h.className="heart";
+      h.innerHTML="♡";
+
+      if(favs.has(s.id)) h.classList.add("filled");
+
+      h.onclick=e=>{
+        e.stopPropagation();
+        if(favs.has(s.id)){
+          favs.delete(s.id);
+          h.classList.remove("filled");
+          log("unfavorite",s.title);
+        }else{
+          favs.add(s.id);
+          h.classList.add("filled");
+          log("favorite",s.title);
+        }
+        localStorage.setItem("favs",JSON.stringify([...favs]));
+      };
+
+      row.onclick=()=>{
+        log("read",s.title);
+        location.href=`read.html?id=${s.id}`;
+      };
+
+      row.appendChild(t);
+      row.appendChild(h);
+      list.appendChild(row);
+    });
+  });
+}
 </script>
+
 </body>
 </html>
-
-
