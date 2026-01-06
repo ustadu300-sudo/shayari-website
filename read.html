@@ -17,14 +17,14 @@
 body{background:var(--bg);color:var(--text);font-family:Inter,system-ui;padding:20px;display:flex;justify-content:center;}
 .card{max-width:800px;width:100%;background:var(--card);padding:20px;border-radius:14px;text-align:center;position:relative;transition:transform 0.3s, box-shadow 0.3s;}
 .card:hover{transform:scale(1.02);box-shadow:0 15px 35px rgba(0,0,0,0.5);}
-#title{font-family:"Noto Nastaliq Urdu",serif;font-size:2rem;margin-bottom:8px;cursor:pointer;}
+#title{font-family:"Noto Nastaliq Urdu",serif;font-size:2rem;margin-bottom:8px;display:flex;justify-content:center;align-items:center;gap:10px;cursor:pointer;}
 #type{color:var(--muted);margin-bottom:12px;}
 #text{font-family:"Noto Nastaliq Urdu",serif;font-size:1.5rem;line-height:2;white-space:pre-wrap;text-align:center;margin-bottom:20px;}
 .btn-container{display:flex;justify-content:center;gap:15px;flex-wrap:wrap;}
 button{padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;transition:all 0.2s;}
-#favBtn{background:#000;color:var(--accent);display:flex;align-items:center;gap:6px;}
-#favBtn.active{background:var(--accent);color:#000;transform:scale(1.2);}
 #backBtn{background:#315a80;color:#fff;}
+#heartBtn{font-size:1.6rem;color:red;background:none;border:none;cursor:pointer;transition:transform 0.3s;}
+#heartBtn.filled{transform:scale(1.3);}
 #nameModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:flex;justify-content:center;align-items:center;z-index:1000;}
 #nameModal .modal-content{background:var(--card);padding:30px;border-radius:12px;text-align:center;}
 #nameModal input{padding:12px;border-radius:8px;border:none;font-size:1rem;width:250px;}
@@ -35,11 +35,10 @@ body.modal-active main,body.modal-active header,body.modal-active nav,body.modal
 <body class="modal-active">
 
 <div class="card">
-  <h2 id="title">Loading...</h2>
+  <h2 id="title"><button id="heartBtn">♡</button> <span id="titleText">Loading...</span></h2>
   <div id="type"></div>
   <div id="text"></div>
   <div class="btn-container">
-    <button id="favBtn">♡ پسندیدہ</button>
     <button id="backBtn" onclick="history.back()">واپس</button>
   </div>
 </div>
@@ -47,7 +46,7 @@ body.modal-active main,body.modal-active header,body.modal-active nav,body.modal
 <!-- Name Modal -->
 <div id="nameModal">
   <div class="modal-content">
-    <h3>اپنا نام درج کریں</h3>
+    <h3>براہ کرم اپنا نام درج کریں</h3>
     <input type="text" id="nameInput" placeholder="اپنا نام درج کریں" required>
     <br>
     <button id="nameSubmit">OK</button>
@@ -57,39 +56,47 @@ body.modal-active main,body.modal-active header,body.modal-active nav,body.modal
 <script>
 const API="data.json";
 const id=new URLSearchParams(location.search).get("id");
-const favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
 let visitorName=localStorage.getItem("visitorName")||"";
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwDmvgnt3FxEs_O4eLX1LOHs4z7hf-URJywG2WKkWcRI3hc93vSM_2xIcgHj7H9HLGI/exec";
 
-const titleEl=document.getElementById("title");
+const titleTextEl=document.getElementById("titleText");
 const typeEl=document.getElementById("type");
 const textEl=document.getElementById("text");
-const favBtn=document.getElementById("favBtn");
+const heartBtn=document.getElementById("heartBtn");
 
-// Save like/fav info
-function saveFavs(){ localStorage.setItem("favs",JSON.stringify([...favs])); }
+// Track likes in localStorage
+const likes=new Set(JSON.parse(localStorage.getItem("likes")||"[]"));
 
-// Send like info to Google Sheet
-function sendLikeToSheet(title){
+// Send data to Google Sheet
+function sendToSheet(action,title){
   const datetime=new Date().toLocaleString("en-US",{timeZone:"Asia/Karachi"});
-  fetch(`${SCRIPT_URL}?name=${encodeURIComponent(visitorName)}&datetime=${encodeURIComponent(datetime)}&title=${encodeURIComponent(title)}&action=like`, {method:"GET"});
+  fetch(`${SCRIPT_URL}?name=${encodeURIComponent(visitorName)}&datetime=${encodeURIComponent(datetime)}&title=${encodeURIComponent(title)}&action=${action}`, {method:"GET"});
 }
 
-// Fetch and render
+// Render poetry
 function renderPoetry(){
   fetch(API)
   .then(r=>r.json())
   .then(data=>{
     const p=data.find(x=>x.id===id);
-    if(!p){ titleEl.innerText="شاعری دستیاب نہیں"; favBtn.style.display="none"; return;}
-    titleEl.innerText=p.title;
+    if(!p){ titleTextEl.innerText="شاعری دستیاب نہیں"; heartBtn.style.display="none"; return;}
+    titleTextEl.innerText=p.title;
     typeEl.innerText=p.type;
     textEl.innerText=p.text;
-    if(favs.has(p.id)) favBtn.classList.add("active");
-    favBtn.onclick=()=>{
-      if(favs.has(p.id)){ favs.delete(p.id); favBtn.classList.remove("active"); }
-      else { favs.add(p.id); favBtn.classList.add("active"); sendLikeToSheet(p.title); }
-      saveFavs();
+
+    // Heart filled if liked
+    if(likes.has(p.id)) heartBtn.classList.add("filled");
+
+    heartBtn.onclick=()=>{
+      if(likes.has(p.id)){
+        likes.delete(p.id);
+        heartBtn.classList.remove("filled");
+      }else{
+        likes.add(p.id);
+        heartBtn.classList.add("filled");
+        sendToSheet("like",p.title);
+      }
+      localStorage.setItem("likes",JSON.stringify([...likes]));
     };
   });
 }
@@ -103,19 +110,22 @@ document.getElementById("nameSubmit").onclick=()=>{
   document.getElementById("nameModal").style.display="none";
   document.body.classList.remove("modal-active");
 
-  if(Notification.permission==="default"){
-    Notification.requestPermission().then(p=>{
-      if(p!=="granted") alert("نوٹیفیکیشن آن کریں تاکہ نئی شاعری کے بارے میں معلومات مل سکیں");
+  // Request notification
+  Notification.requestPermission().then(p=>{
+    if(p!=="granted"){
+      alert("نوٹیفیکیشن آن کریں تاکہ نئی شاعری کے بارے میں معلومات مل سکیں");
+    }else{
       renderPoetry();
-    });
-  } else {
-    renderPoetry();
-  }
+    }
+  });
 };
 
-// Auto-render if visitor already entered name
-if(visitorName && Notification.permission==="granted"){ renderPoetry(); }
+// Auto render if name already entered and notification allowed
+if(visitorName && Notification.permission==="granted"){
+  document.getElementById("nameModal").style.display="none";
+  document.body.classList.remove("modal-active");
+  renderPoetry();
+}
 </script>
-
 </body>
 </html>
