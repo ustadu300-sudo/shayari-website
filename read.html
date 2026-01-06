@@ -15,7 +15,6 @@
   --muted:#9aa4b2;
   --accent:#ad0000;
 }
-
 *{box-sizing:border-box;margin:0;padding:0}
 
 body{
@@ -33,60 +32,50 @@ body{
   width:100%;
   background:var(--card);
   border-radius:18px;
-  padding:28px 22px 40px;
-  animation:fadeIn .8s ease;
+  padding:30px 22px 40px;
+  text-align:center;
+  animation:fade .8s ease;
 }
 
-@keyframes fadeIn{
+@keyframes fade{
   from{opacity:0;transform:translateY(20px)}
-  to{opacity:1;transform:translateY(0)}
+  to{opacity:1;transform:none}
 }
 
 .title{
   font-family:"Noto Nastaliq Urdu",serif;
   font-size:2.1rem;
-  text-align:center;
-  margin-bottom:6px;
+  margin-bottom:8px;
 }
-
 .type{
-  text-align:center;
   color:var(--muted);
-  margin-bottom:26px;
-  letter-spacing:1px;
+  margin-bottom:28px;
 }
 
 .poetry{
-  direction:rtl;
-  text-align:right;
   font-family:"Noto Nastaliq Urdu",serif;
   font-size:1.5rem;
-  line-height:2.4;
+  line-height:2.5;
   white-space:pre-wrap;
 }
 
-/* line reveal animation */
 .line{
   opacity:0;
-  transform:translateY(8px);
-  animation:lineFade .6s ease forwards;
+  animation:lineIn .6s ease forwards;
 }
-@keyframes lineFade{
-  to{opacity:1;transform:none}
+@keyframes lineIn{
+  to{opacity:1}
 }
 
-/* watermark */
 .signature{
-  margin-top:26px;
+  margin-top:28px;
   text-align:left;
   font-family:"Noto Nastaliq Urdu",serif;
-  font-size:1.2rem;
   color:var(--muted);
 }
 
-/* buttons */
 .actions{
-  margin-top:30px;
+  margin-top:34px;
   display:flex;
   justify-content:center;
   gap:12px;
@@ -95,32 +84,17 @@ body{
 .actions button{
   padding:10px 18px;
   border:none;
-  border-radius:25px;
+  border-radius:30px;
   cursor:pointer;
   font-weight:bold;
-  transition:.3s;
+  transition:.25s;
 }
-#favBtn{
-  background:#000;
-  color:#fff;
-}
-#favBtn.active{
-  background:var(--accent);
-  color:#000;
-}
-.share{
-  background:#315a80;
-  color:#fff;
-}
-.back{
-  background:#222;
-  color:#fff;
-}
-.actions button:hover{
-  transform:scale(1.06);
-}
+.like{background:#000;color:#fff}
+.like.active{background:var(--accent);color:#000}
+.share{background:#315a80;color:#fff}
+.back{background:#222;color:#fff}
+.actions button:hover{transform:scale(1.07)}
 
-/* mobile */
 @media(max-width:600px){
   .poetry{font-size:1.35rem}
   .title{font-size:1.8rem}
@@ -134,11 +108,10 @@ body{
   <div id="title" class="title">Loading…</div>
   <div id="type" class="type"></div>
   <div id="poetry" class="poetry"></div>
-
   <div id="signature" class="signature"></div>
 
   <div class="actions">
-    <button id="favBtn">❤ پسندیدہ</button>
+    <button id="likeBtn" class="like">❤ پسند</button>
     <button class="share" onclick="sharePoetry()">شیئر</button>
     <button class="back" onclick="history.back()">واپس</button>
   </div>
@@ -147,64 +120,56 @@ body{
 <script>
 const API="data.json";
 const id=new URLSearchParams(location.search).get("id");
-const favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
+
+const likes=JSON.parse(localStorage.getItem("likes")||"{}");
 
 fetch(API)
 .then(r=>r.json())
 .then(data=>{
   const p=data.find(x=>x.id===id);
-  if(!p){
-    document.getElementById("title").innerText="شاعری دستیاب نہیں";
-    return;
-  }
+  if(!p){title.innerText="شاعری دستیاب نہیں";return;}
 
   title.innerText=p.title;
   type.innerText=p.type.toUpperCase();
 
-  // split lines for animation
   const lines=p.text.split("\n");
-  const poetryDiv=document.getElementById("poetry");
-  poetryDiv.innerHTML="";
-
+  poetry.innerHTML="";
   lines.forEach((l,i)=>{
     if(l.trim().startsWith("—")){
       signature.innerText=l;
       return;
     }
-    const span=document.createElement("div");
-    span.className="line";
-    span.style.animationDelay=`${i*0.15}s`;
-    span.innerText=l;
-    poetryDiv.appendChild(span);
+    const d=document.createElement("div");
+    d.className="line";
+    d.style.animationDelay=`${i*0.15}s`;
+    d.innerText=l;
+    poetry.appendChild(d);
   });
 
-  // fav
-  if(favs.has(p.id)) favBtn.classList.add("active");
-  favBtn.onclick=()=>{
-    favs.has(p.id)?favs.delete(p.id):favs.add(p.id);
-    localStorage.setItem("favs",JSON.stringify([...favs]));
-    favBtn.classList.toggle("active");
+  // LIKE SYSTEM (admin-visible only)
+  if(likes[p.id]) likeBtn.classList.add("active");
+  likeBtn.onclick=()=>{
+    likes[p.id]=!likes[p.id];
+    localStorage.setItem("likes",JSON.stringify(likes));
+    likeBtn.classList.toggle("active");
+    console.log("ADMIN LIKE DATA:",likes); // 👈 admin can view
   };
-
-  // auto notification hint (future use)
-  if("Notification" in window && Notification.permission==="granted"){
-    console.log("Notification ready");
-  }
 });
 
-// share
+// SHARE FLOW
 function sharePoetry(){
   if(navigator.share){
     navigator.share({
       title:"Shafay Ali – Shayari",
-      text:title.innerText,
+      text:"نئی اور معیاری اردو شاعری",
       url:location.href
     });
   }else{
-    alert("Share supported nahi");
+    alert("Copy link from address bar");
   }
 }
 </script>
 
 </body>
 </html>
+
