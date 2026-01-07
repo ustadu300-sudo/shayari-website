@@ -14,15 +14,13 @@
   --text:#ffffff;
   --muted:#9aa4b2;
   --accent:#ad0000;
-  --border:#000;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--text);font-family:Inter,system-ui;}
+body{background:var(--bg);color:var(--text);font-family:Inter}
 
 .banner{
   height:240px;
   background:url('BANNER/unsplash.png.jpg.jpg') center/cover no-repeat;
-  border-bottom:1px solid var(--border);
 }
 .banner-inner{
   max-width:1200px;margin:auto;height:100%;
@@ -30,9 +28,10 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui;}
 }
 .logo{
   width:100px;height:100px;border-radius:50%;
-  overflow:hidden;border:2px solid var(--border);
+  overflow:hidden;border:2px solid #000;
 }
 .logo img{width:100%;height:100%;object-fit:cover}
+
 .author-meta h1{
   font-family:"Noto Nastaliq Urdu",serif;
   font-size:2.2rem;
@@ -40,7 +39,7 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui;}
 
 .nav{
   position:sticky;top:0;background:#0f1115;
-  border-bottom:1px solid var(--border);z-index:10;
+  z-index:10;border-bottom:1px solid #000;
 }
 .nav ul{
   max-width:1200px;margin:auto;
@@ -48,41 +47,48 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui;}
 }
 .nav button{
   background:none;color:#fff;border:none;
-  padding:8px 14px;border-radius:8px;cursor:pointer;
+  padding:8px 14px;border-radius:8px;
+  cursor:pointer;
 }
 .nav button.active{background:#315a80}
 
-.wrap{max-width:1200px;margin:auto;padding:16px;}
-.card{
-  background:var(--card);
-  border-radius:14px;
-  padding:16px;
-  margin-bottom:16px;
-}
-.intro{
-  direction:rtl;text-align:right;
-  font-family:"Noto Nastaliq Urdu",serif;
-  line-height:2.3;
-}
+.wrap{max-width:1200px;margin:auto;padding:16px}
 
-.list{display:grid;gap:12px}
 .item{
   background:var(--card);
   border-radius:14px;
   padding:16px;
+  margin-bottom:14px;
   cursor:pointer;
+  transition:.25s;
 }
+.item:hover{transform:scale(1.01)}
+
 .item h3{
   font-family:"Noto Nastaliq Urdu",serif;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
+
+.heart{
+  font-size:20px;
+  color:transparent;
+  -webkit-text-stroke:1.5px red;
+  cursor:pointer;
+}
+.heart.active{
+  color:red;
+}
+
 .meta{font-size:13px;color:var(--muted)}
 
-footer{text-align:center;padding:20px;color:var(--muted);}
+footer{text-align:center;padding:20px;color:var(--muted)}
 
-/* ===== GATE ===== */
+/* GATE */
 #gate{
   position:fixed;inset:0;
-  background:rgba(0,0,0,.88);
+  background:rgba(0,0,0,.9);
   display:flex;align-items:center;justify-content:center;
   z-index:999;
 }
@@ -103,27 +109,18 @@ footer{text-align:center;padding:20px;color:var(--muted);}
   margin-top:12px;width:100%;
   padding:12px;border:none;
   background:var(--accent);
-  font-weight:bold;cursor:pointer;
+  color:#fff;font-weight:bold;
 }
-
-body.lock header,
-body.lock nav,
-body.lock main,
-body.lock footer{
-  filter:blur(6px);
-  pointer-events:none;
-}
+body.lock *:not(#gate){filter:blur(6px);pointer-events:none}
 </style>
 </head>
 
 <body class="lock">
 
-<!-- GATE -->
 <div id="gate">
   <div class="box">
     <h3>
-      نئی شاعری کی اطلاع کے لیے<br>
-      نوٹیفکیشن آن کریں<br><br>
+      نئی شاعری کی اطلاع کے لیے نوٹیفکیشن آن کریں<br><br>
       اپنا نام درج کریں
     </h3>
     <input id="username" placeholder="اپنا نام لکھیں">
@@ -152,74 +149,67 @@ body.lock footer{
 </nav>
 
 <main class="wrap">
-<section class="card">
-<h4>تعارف</h4>
-<div class="intro">
-نام: شافع علی<br>
-پیدائش: 19 دسمبر 2006<br>
-ملک: پاکستان<br>
-شہر: کراچی<br>
-پسندیدہ شاعر: احمد فراز
-</div>
-</section>
-
-<section>
-<div id="list" class="list">لوڈ ہو رہا ہے…</div>
-</section>
+<div id="list">لوڈ ہو رہا ہے…</div>
 </main>
 
 <footer>© Shafay Ali 2025</footer>
 
 <script>
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwDmvgnt3FxEs_O4eLX1LOHs4z7hf-URJywG2WKkWcRI3hc93vSM_2xIcgHj7H9HLGI/exec";
-const list=document.getElementById("list");
+const SCRIPT="https://script.google.com/macros/s/AKfycbwDmvgnt3FxEs_O4eLX1LOHs4z7hf-URJywG2WKkWcRI3hc93vSM_2xIcgHj7H9HLGI/exec";
 
-/* ===== GATE LOGIC ===== */
-document.getElementById("continueBtn").onclick=()=>{
-  const name=document.getElementById("username").value.trim();
-  if(!name){ alert("نام درج کریں"); return; }
+const gate=document.getElementById("gate");
+const continueBtn=document.getElementById("continueBtn");
 
-  Notification.requestPermission().then(p=>{
-    if(p!=="granted"){
-      alert("نوٹیفکیشن آن کیے بغیر ویب سائٹ استعمال نہیں کی جا سکتی");
-      return;
-    }
+continueBtn.onclick=async()=>{
+  const name=username.value.trim();
+  if(!name){alert("نام درج کریں");return;}
 
-    localStorage.setItem("visitorName",name);
+  const perm=await Notification.requestPermission();
+  if(perm!=="granted"){
+    alert("نوٹیفکیشن آن کیے بغیر ویب سائٹ استعمال نہیں کی جا سکتی");
+    return;
+  }
 
-    fetch(`${SCRIPT_URL}?name=${encodeURIComponent(name)}&notify=${p}`);
+  localStorage.setItem("visitorName",name);
+  fetch(`${SCRIPT}?name=${encodeURIComponent(name)}&notify=granted`);
 
-    document.body.classList.remove("lock");
-    document.getElementById("gate").style.display="none";
-  });
+  document.body.classList.remove("lock");
+  gate.style.display="none";
 };
 
 if(localStorage.getItem("visitorName") && Notification.permission==="granted"){
   document.body.classList.remove("lock");
-  document.getElementById("gate").style.display="none";
+  gate.style.display="none";
 }
 
-/* ===== LOAD SHAYARI ===== */
-fetch("data.json")
-.then(r=>r.json())
-.then(data=>{
+fetch("data.json").then(r=>r.json()).then(data=>{
   list.innerHTML="";
-  data.forEach(d=>{
+  data.forEach(s=>{
     const div=document.createElement("div");
     div.className="item";
     div.innerHTML=`
-      <h3>${d.title}</h3>
-      <div class="meta">${d.type}</div>
+      <h3>
+        ${s.title}
+        <span class="heart" data-id="${s.id}">❤</span>
+      </h3>
+      <div class="meta">${s.type}</div>
     `;
-    div.onclick=()=>location.href=`read.html?id=${d.id}`;
+    div.onclick=e=>{
+      if(e.target.classList.contains("heart")) return;
+      location.href=`read.html?id=${s.id}`;
+    };
+    div.querySelector(".heart").onclick=e=>{
+      e.stopPropagation();
+      e.target.classList.toggle("active");
+      fetch(`${SCRIPT}?name=${localStorage.visitorName}&action=favourite&title=${encodeURIComponent(s.title)}`);
+    };
     list.appendChild(div);
   });
-})
-.catch(()=>{
-  list.innerHTML="<p style='color:red'>ڈیٹا لوڈ نہیں ہو سکا</p>";
 });
 </script>
 
 </body>
 </html>
+
+
 
