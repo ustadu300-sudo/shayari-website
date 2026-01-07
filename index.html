@@ -14,9 +14,9 @@
   --text:#ffffff;
   --muted:#9aa4b2;
   --accent:#ad0000;
-  --border:#000000;
+  --border:#000;
 }
-*{box-sizing:border-box;margin:0;padding:0}
+*{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--text);font-family:Inter,system-ui;}
 
 .banner{
@@ -39,10 +39,8 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui;}
 }
 
 .nav{
-  position:sticky;top:0;
-  background:#0f1115;
-  border-bottom:1px solid var(--border);
-  z-index:10;
+  position:sticky;top:0;background:#0f1115;
+  border-bottom:1px solid var(--border);z-index:10;
 }
 .nav ul{
   max-width:1200px;margin:auto;
@@ -72,62 +70,42 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui;}
   background:var(--card);
   border-radius:14px;
   padding:16px;
-  display:grid;
-  grid-template-columns:1fr auto;
-  align-items:center;
+  cursor:pointer;
 }
 .item h3{
   font-family:"Noto Nastaliq Urdu",serif;
-  cursor:pointer;
 }
 .meta{font-size:13px;color:var(--muted)}
-.fav{
-  background:#000;color:var(--accent);
-  border:none;border-radius:8px;
-  padding:8px;cursor:pointer;
-}
-.fav.active{background:var(--accent);color:#000}
 
 footer{text-align:center;padding:20px;color:var(--muted);}
 
-/* ===== ENTRY GATE ===== */
+/* ===== GATE ===== */
 #gate{
   position:fixed;inset:0;
-  background:rgba(0,0,0,.85);
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  background:rgba(0,0,0,.88);
+  display:flex;align-items:center;justify-content:center;
   z-index:999;
 }
 #gate .box{
   background:var(--card);
-  padding:28px;
-  border-radius:14px;
-  text-align:center;
-  max-width:340px;
+  padding:26px;border-radius:14px;
+  text-align:center;max-width:360px;
 }
 #gate h3{
   font-family:"Noto Nastaliq Urdu",serif;
   line-height:2.4;
 }
 #gate input{
-  width:100%;
-  margin-top:12px;
-  padding:12px;
-  border-radius:8px;
-  border:none;
+  width:100%;margin-top:12px;
+  padding:12px;border-radius:8px;border:none;
 }
 #gate button{
-  margin-top:12px;
-  padding:12px;
-  width:100%;
+  margin-top:12px;width:100%;
+  padding:12px;border:none;
   background:var(--accent);
-  border:none;
-  font-weight:bold;
-  cursor:pointer;
+  font-weight:bold;cursor:pointer;
 }
 
-/* blur when locked */
 body.lock header,
 body.lock nav,
 body.lock main,
@@ -140,24 +118,22 @@ body.lock footer{
 
 <body class="lock">
 
-<!-- ENTRY GATE -->
+<!-- GATE -->
 <div id="gate">
   <div class="box">
     <h3>
       نئی شاعری کی اطلاع کے لیے<br>
       نوٹیفکیشن آن کریں<br><br>
-      اور اپنا نام درج کریں
+      اپنا نام درج کریں
     </h3>
     <input id="username" placeholder="اپنا نام لکھیں">
-    <button id="enter">داخل ہوں</button>
+    <button id="continueBtn">جاری رکھیں</button>
   </div>
 </div>
 
 <header class="banner">
   <div class="banner-inner">
-    <div class="logo">
-      <img src="logo/proble.png.png">
-    </div>
+    <div class="logo"><img src="logo/proble.png.png"></div>
     <div class="author-meta">
       <h1>شافع علی</h1>
       <p>احمد فراز کی شاعری سے فیض یافتہ لفظیات</p>
@@ -196,10 +172,12 @@ body.lock footer{
 
 <script>
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwDmvgnt3FxEs_O4eLX1LOHs4z7hf-URJywG2WKkWcRI3hc93vSM_2xIcgHj7H9HLGI/exec";
+const list=document.getElementById("list");
 
-document.getElementById("enter").onclick=()=>{
+/* ===== GATE LOGIC ===== */
+document.getElementById("continueBtn").onclick=()=>{
   const name=document.getElementById("username").value.trim();
-  if(!name){ alert("براہِ کرم نام درج کریں"); return; }
+  if(!name){ alert("نام درج کریں"); return; }
 
   Notification.requestPermission().then(p=>{
     if(p!=="granted"){
@@ -220,10 +198,28 @@ if(localStorage.getItem("visitorName") && Notification.permission==="granted"){
   document.body.classList.remove("lock");
   document.getElementById("gate").style.display="none";
 }
+
+/* ===== LOAD SHAYARI ===== */
+fetch("data.json")
+.then(r=>r.json())
+.then(data=>{
+  list.innerHTML="";
+  data.forEach(d=>{
+    const div=document.createElement("div");
+    div.className="item";
+    div.innerHTML=`
+      <h3>${d.title}</h3>
+      <div class="meta">${d.type}</div>
+    `;
+    div.onclick=()=>location.href=`read.html?id=${d.id}`;
+    list.appendChild(div);
+  });
+})
+.catch(()=>{
+  list.innerHTML="<p style='color:red'>ڈیٹا لوڈ نہیں ہو سکا</p>";
+});
 </script>
 
 </body>
 </html>
-
-
 
