@@ -18,30 +18,36 @@ body{
   max-width:700px;
   margin:auto;
   background:#161a22;
-  padding:24px;
+  padding:26px;
   border-radius:18px;
   text-align:center;
 }
 h1{
   font-family:"Noto Nastaliq Urdu",serif;
-  margin-bottom:16px;
+  margin-bottom:18px;
 }
 p{
   font-family:"Noto Nastaliq Urdu",serif;
-  line-height:2.4;
+  line-height:2.6;
 }
 
-.like{
-  margin-top:20px;
-  padding:10px 18px;
-  border-radius:30px;
+.actions{
+  margin-top:24px;
+  display:flex;
+  justify-content:center;
+  gap:12px;
+}
+
+.btn{
   border:2px solid #fff;
   background:none;
   color:#fff;
+  padding:10px 18px;
+  border-radius:30px;
   cursor:pointer;
   transition:.3s;
 }
-.like.active{
+.btn.active{
   background:#fff;
   color:#000;
 }
@@ -53,33 +59,35 @@ p{
 <div class="box">
   <h1 id="title"></h1>
   <p id="text"></p>
-  <button class="like" id="likeBtn">👍 پسند آیا</button>
+
+  <div class="actions">
+    <button class="btn" id="like">👍 پسند آیا</button>
+    <button class="btn" id="fav">⭐ پسندیدہ</button>
+    <button class="btn" onclick="navigator.share({url:location.href})">🔗 شیئر</button>
+  </div>
 </div>
 
 <script>
 const SCRIPT="https://script.google.com/macros/s/AKfycbwDmvgnt3FxEs_O4eLX1LOHs4z7hf-URJywG2WKkWcRI3hc93vSM_2xIcgHj7H9HLGI/exec";
-const DATA="data.json";
 const id=new URLSearchParams(location.search).get("id");
-const user=localStorage.getItem("userName");
+const user=localStorage.getItem("visitorName");
 
-function log(action,title){
-  fetch(`${SCRIPT}?name=${encodeURIComponent(user)}&action=${action}&title=${encodeURIComponent(title)}&notify=${Notification.permission}`);
-}
-
-fetch(DATA).then(r=>r.json()).then(d=>{
+fetch("data.json").then(r=>r.json()).then(d=>{
   const s=d.find(x=>x.id===id);
-  document.getElementById("title").textContent=s.title;
-  document.getElementById("text").textContent=s.text;
+  title.textContent=s.title;
+  text.textContent=s.text;
 
-  const btn=document.getElementById("likeBtn");
-  btn.onclick=()=>{
-    btn.classList.toggle("active");
-    log(btn.classList.contains("active")?"like":"unlike",s.title);
+  like.onclick=()=>{
+    like.classList.toggle("active");
+    fetch(`${SCRIPT}?name=${user}&action=like&title=${encodeURIComponent(s.title)}`);
+  };
+
+  fav.onclick=()=>{
+    fav.classList.toggle("active");
+    fetch(`${SCRIPT}?name=${user}&action=favourite&title=${encodeURIComponent(s.title)}`);
   };
 });
 </script>
 
 </body>
 </html>
-
-
