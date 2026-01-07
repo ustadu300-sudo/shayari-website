@@ -8,11 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&family=Inter&display=swap" rel="stylesheet">
 
 <style>
-:root{
-  --bg:#0f1115;
-  --card:#161a22;
-  --accent:#ad0000;
-}
+:root{--bg:#0f1115;--card:#161a22;--accent:#ad0000}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:#fff;font-family:Inter}
 
@@ -78,8 +74,15 @@ body.lock footer{
 }
 .nav button.active{background:#315a80}
 
-/* LIST */
+/* CONTENT */
 .wrap{max-width:1200px;margin:auto;padding:16px}
+.intro{
+  background:var(--card);
+  padding:16px;border-radius:14px;
+  margin-bottom:16px;
+  font-family:"Noto Nastaliq Urdu",serif;
+  line-height:2.3;
+}
 .item{
   background:var(--card);
   padding:16px;border-radius:14px;
@@ -89,11 +92,11 @@ body.lock footer{
   font-family:"Noto Nastaliq Urdu",serif;
   display:flex;justify-content:space-between;align-items:center;
 }
+.meta{color:#aaa;font-size:13px;margin-top:6px}
 .heart{
   color:transparent;
   -webkit-text-stroke:1.5px red;
   font-size:20px;
-  transition:.2s;
 }
 .heart.active{color:red}
 </style>
@@ -125,15 +128,22 @@ body.lock footer{
 
 <nav class="nav">
 <ul>
-  <li><button class="active">سب</button></li>
-  <li><button>غزل</button></li>
-  <li><button>نظم</button></li>
-  <li><button>شعر</button></li>
-  <li><button>پسندیدہ</button></li>
+  <li><button class="active" data-filter="all">سب</button></li>
+  <li><button data-filter="ghazal">غزل</button></li>
+  <li><button data-filter="nazm">نظم</button></li>
+  <li><button data-filter="sher">شعر</button></li>
+  <li><button data-filter="fav">پسندیدہ</button></li>
 </ul>
 </nav>
 
 <main class="wrap">
+  <div class="intro">
+    نام: شافع علی<br>
+    پیدائش: 19 دسمبر 2006<br>
+    شہر: کراچی<br>
+    پسندیدہ شاعر: احمد فراز
+  </div>
+
   <div id="list">لوڈ ہو رہا ہے…</div>
 </main>
 
@@ -143,23 +153,19 @@ body.lock footer{
 const SCRIPT="https://script.google.com/macros/s/AKfycbwDmvgnt3FxEs_O4eLX1LOHs4z7hf-URJywG2WKkWcRI3hc93vSM_2xIcgHj7H9HLGI/exec";
 
 const gate=document.getElementById("gate");
-const continueBtn=document.getElementById("continueBtn");
 const username=document.getElementById("username");
+const continueBtn=document.getElementById("continueBtn");
 const list=document.getElementById("list");
-const navButtons=[...document.querySelectorAll(".nav button")];
 
 let allData=[];
-let filter="سب";
+let currentFilter="all";
 let favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
 
 continueBtn.onclick=async()=>{
   const name=username.value.trim();
   if(!name){alert("نام درج کریں");return;}
 
-  let perm=Notification.permission;
-  if(perm!=="granted"){
-    perm=await Notification.requestPermission();
-  }
+  let perm=await Notification.requestPermission();
   if(perm!=="granted"){
     alert("نوٹیفکیشن آن کیے بغیر ویب سائٹ استعمال نہیں کی جا سکتی");
     return;
@@ -172,11 +178,6 @@ continueBtn.onclick=async()=>{
   gate.style.display="none";
 };
 
-if(localStorage.getItem("visitorName") && Notification.permission==="granted"){
-  document.body.classList.remove("lock");
-  gate.style.display="none";
-}
-
 fetch("data.json").then(r=>r.json()).then(d=>{
   allData=d; render();
 });
@@ -184,13 +185,16 @@ fetch("data.json").then(r=>r.json()).then(d=>{
 function render(){
   list.innerHTML="";
   allData.filter(s=>{
-    if(filter==="سب") return true;
-    if(filter==="پسندیدہ") return favs.has(s.id);
-    return s.type===filter;
+    if(currentFilter==="all") return true;
+    if(currentFilter==="fav") return favs.has(s.id);
+    return s.type===currentFilter;
   }).forEach(s=>{
     const div=document.createElement("div");
     div.className="item";
-    div.innerHTML=`<h3>${s.title}<span class="heart ${favs.has(s.id)?"active":""}">❤</span></h3>`;
+    div.innerHTML=`
+      <h3>${s.title}<span class="heart ${favs.has(s.id)?"active":""}">❤</span></h3>
+      <div class="meta">${s.type}</div>
+    `;
     div.onclick=e=>{
       if(e.target.classList.contains("heart")){
         e.stopPropagation();
@@ -216,11 +220,11 @@ function toggleFav(s){
   localStorage.setItem("favs",JSON.stringify([...favs]));
 }
 
-navButtons.forEach(btn=>{
+document.querySelectorAll(".nav button").forEach(btn=>{
   btn.onclick=()=>{
-    navButtons.forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
     btn.classList.add("active");
-    filter=btn.innerText;
+    currentFilter=btn.dataset.filter;
     render();
   };
 });
