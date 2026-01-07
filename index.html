@@ -1,26 +1,165 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shafay Ali - Shayari</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&family=Inter&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#0f1115;
+  --card:#161a22;
+  --accent:#ad0000;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:#fff;font-family:Inter}
+
+body.lock header,
+body.lock nav,
+body.lock main,
+body.lock footer{
+  filter:blur(6px);
+  pointer-events:none;
+}
+
+/* ===== GATE ===== */
+#gate{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.85);
+  display:flex;align-items:center;justify-content:center;
+  z-index:9999;
+}
+#gate .box{
+  background:var(--card);
+  padding:26px;border-radius:14px;
+  max-width:360px;text-align:center;
+}
+#gate h3{
+  font-family:"Noto Nastaliq Urdu",serif;
+  line-height:2.3;
+}
+#gate input{
+  width:100%;padding:12px;margin-top:12px;
+  border-radius:8px;border:none;
+}
+#gate button{
+  width:100%;padding:12px;margin-top:12px;
+  border:none;background:var(--accent);
+  color:#fff;font-weight:bold;cursor:pointer;
+}
+
+/* HEADER */
+.banner{
+  height:240px;
+  background:url('BANNER/unsplash.png.jpg.jpg') center/cover no-repeat;
+}
+.banner-inner{
+  max-width:1200px;margin:auto;height:100%;
+  display:flex;align-items:flex-end;gap:20px;padding:20px;
+}
+.logo{width:100px;height:100px;border-radius:50%;overflow:hidden}
+.logo img{width:100%;height:100%;object-fit:cover}
+.author-meta h1{
+  font-family:"Noto Nastaliq Urdu",serif;
+  font-size:2.2rem;
+}
+
+/* NAV */
+.nav{position:sticky;top:0;background:#0f1115;border-bottom:1px solid #000}
+.nav ul{
+  max-width:1200px;margin:auto;
+  display:flex;gap:8px;padding:10px;list-style:none;
+}
+.nav button{
+  background:none;border:none;color:#fff;
+  padding:8px 14px;border-radius:8px;cursor:pointer;
+}
+.nav button.active{background:#315a80}
+
+/* LIST */
+.wrap{max-width:1200px;margin:auto;padding:16px}
+.item{
+  background:var(--card);
+  padding:16px;border-radius:14px;
+  margin-bottom:14px;cursor:pointer;
+}
+.item h3{
+  font-family:"Noto Nastaliq Urdu",serif;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.heart{
+  color:transparent;
+  -webkit-text-stroke:1.5px red;
+  font-size:20px;
+  transition:.2s;
+}
+.heart.active{color:red}
+</style>
+</head>
+
+<body class="lock">
+
+<!-- GATE -->
+<div id="gate">
+  <div class="box">
+    <h3>
+      نئی شاعری کی اطلاع کے لیے نوٹیفکیشن آن کریں<br><br>
+      اپنا نام درج کریں
+    </h3>
+    <input id="username" placeholder="اپنا نام لکھیں">
+    <button id="continueBtn">جاری رکھیں</button>
+  </div>
+</div>
+
+<header class="banner">
+  <div class="banner-inner">
+    <div class="logo"><img src="logo/proble.png.png"></div>
+    <div class="author-meta">
+      <h1>شافع علی</h1>
+      <p>لفظوں کا سفر</p>
+    </div>
+  </div>
+</header>
+
+<nav class="nav">
+<ul>
+  <li><button class="active">سب</button></li>
+  <li><button>غزل</button></li>
+  <li><button>نظم</button></li>
+  <li><button>شعر</button></li>
+  <li><button>پسندیدہ</button></li>
+</ul>
+</nav>
+
+<main class="wrap">
+  <div id="list">لوڈ ہو رہا ہے…</div>
+</main>
+
+<footer style="text-align:center;padding:20px;color:#999">© Shafay Ali</footer>
+
 <script>
 const SCRIPT="https://script.google.com/macros/s/AKfycbwDmvgnt3FxEs_O4eLX1LOHs4z7hf-URJywG2WKkWcRI3hc93vSM_2xIcgHj7H9HLGI/exec";
 
-const list=document.getElementById("list");
 const gate=document.getElementById("gate");
 const continueBtn=document.getElementById("continueBtn");
 const username=document.getElementById("username");
+const list=document.getElementById("list");
 const navButtons=[...document.querySelectorAll(".nav button")];
 
 let allData=[];
-let currentFilter="سب";
-let favourites=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
+let filter="سب";
+let favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
 
-/* ===== GATE ===== */
 continueBtn.onclick=async()=>{
   const name=username.value.trim();
-  if(!name){ alert("نام درج کریں"); return; }
+  if(!name){alert("نام درج کریں");return;}
 
   let perm=Notification.permission;
   if(perm!=="granted"){
     perm=await Notification.requestPermission();
   }
-
   if(perm!=="granted"){
     alert("نوٹیفکیشن آن کیے بغیر ویب سائٹ استعمال نہیں کی جا سکتی");
     return;
@@ -38,65 +177,54 @@ if(localStorage.getItem("visitorName") && Notification.permission==="granted"){
   gate.style.display="none";
 }
 
-/* ===== LOAD DATA ===== */
-fetch("data.json")
-.then(r=>r.json())
-.then(d=>{
-  allData=d;
-  render();
+fetch("data.json").then(r=>r.json()).then(d=>{
+  allData=d; render();
 });
 
 function render(){
   list.innerHTML="";
-  allData
-    .filter(s=>{
-      if(currentFilter==="سب") return true;
-      if(currentFilter==="پسندیدہ") return favourites.has(s.id);
-      return s.type===currentFilter;
-    })
-    .forEach(s=>{
-      const div=document.createElement("div");
-      div.className="item";
-      div.innerHTML=`
-        <h3>
-          ${s.title}
-          <span class="heart ${favourites.has(s.id)?"active":""}">❤</span>
-        </h3>
-      `;
-
-      div.onclick=e=>{
-        if(e.target.classList.contains("heart")){
-          e.stopPropagation();
-          toggleFav(s);
-          e.target.classList.toggle("active");
-        }else{
-          location.href=`read.html?id=${s.id}`;
-        }
-      };
-
-      list.appendChild(div);
-    });
+  allData.filter(s=>{
+    if(filter==="سب") return true;
+    if(filter==="پسندیدہ") return favs.has(s.id);
+    return s.type===filter;
+  }).forEach(s=>{
+    const div=document.createElement("div");
+    div.className="item";
+    div.innerHTML=`<h3>${s.title}<span class="heart ${favs.has(s.id)?"active":""}">❤</span></h3>`;
+    div.onclick=e=>{
+      if(e.target.classList.contains("heart")){
+        e.stopPropagation();
+        toggleFav(s);
+        e.target.classList.toggle("active");
+      }else{
+        location.href=`read.html?id=${s.id}`;
+      }
+    };
+    list.appendChild(div);
+  });
 }
 
 function toggleFav(s){
   const name=localStorage.getItem("visitorName");
-  if(favourites.has(s.id)){
-    favourites.delete(s.id);
+  if(favs.has(s.id)){
+    favs.delete(s.id);
     fetch(`${SCRIPT}?name=${encodeURIComponent(name)}&action=favourite_remove&title=${encodeURIComponent(s.title)}`);
   }else{
-    favourites.add(s.id);
+    favs.add(s.id);
     fetch(`${SCRIPT}?name=${encodeURIComponent(name)}&action=favourite_add&title=${encodeURIComponent(s.title)}`);
   }
-  localStorage.setItem("favs",JSON.stringify([...favourites]));
+  localStorage.setItem("favs",JSON.stringify([...favs]));
 }
 
-/* ===== NAV FILTER ===== */
 navButtons.forEach(btn=>{
   btn.onclick=()=>{
     navButtons.forEach(b=>b.classList.remove("active"));
     btn.classList.add("active");
-    currentFilter=btn.innerText;
+    filter=btn.innerText;
     render();
   };
 });
 </script>
+
+</body>
+</html>
