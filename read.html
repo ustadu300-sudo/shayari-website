@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Read Shayari</title>
+<title>Shayari</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&family=Inter&display=swap" rel="stylesheet">
 
@@ -15,7 +15,7 @@ body{
   padding:20px;
 }
 .box{
-  max-width:700px;
+  max-width:720px;
   margin:auto;
   background:#161a22;
   padding:26px;
@@ -32,12 +32,11 @@ p{
 }
 
 .actions{
-  margin-top:24px;
   display:flex;
   justify-content:center;
   gap:12px;
+  margin-top:24px;
 }
-
 .btn{
   border:2px solid #fff;
   background:none;
@@ -45,7 +44,6 @@ p{
   padding:10px 18px;
   border-radius:30px;
   cursor:pointer;
-  transition:.3s;
 }
 .btn.active{
   background:#fff;
@@ -62,8 +60,7 @@ p{
 
   <div class="actions">
     <button class="btn" id="like">👍 پسند آیا</button>
-    <button class="btn" id="fav">⭐ پسندیدہ</button>
-    <button class="btn" onclick="navigator.share({url:location.href})">🔗 شیئر</button>
+    <button class="btn" onclick="history.back()">🔙 واپس جائیں</button>
   </div>
 </div>
 
@@ -80,11 +77,6 @@ fetch("data.json").then(r=>r.json()).then(d=>{
   like.onclick=()=>{
     like.classList.toggle("active");
     fetch(`${SCRIPT}?name=${user}&action=like&title=${encodeURIComponent(s.title)}`);
-  };
-
-  fav.onclick=()=>{
-    fav.classList.toggle("active");
-    fetch(`${SCRIPT}?name=${user}&action=favourite&title=${encodeURIComponent(s.title)}`);
   };
 });
 </script>
