@@ -11,11 +11,9 @@
 :root{
   --bg:#0f1115;
   --card:#161a22;
-  --text:#ffffff;
-  --muted:#9aa4b2;
+  --text:#fff;
   --accent:#b00000;
 }
-
 *{box-sizing:border-box;margin:0;padding:0}
 
 body{
@@ -24,72 +22,57 @@ body{
   font-family:Inter,system-ui;
 }
 
-/* ---------- ENTRY GATE ---------- */
-body.lock{overflow:hidden}
+/* LOCK */
 body.lock main{filter:blur(6px);pointer-events:none}
+body.lock{overflow:hidden}
 
+/* ENTRY MODAL */
 #gate{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.85);
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.9);
+  display:flex;align-items:center;justify-content:center;
   z-index:999;
 }
-
 #gate .box{
   background:var(--card);
-  padding:28px;
+  padding:26px;
   border-radius:18px;
-  max-width:340px;
   text-align:center;
+  max-width:360px;
 }
-
 #gate h3{
   font-family:"Noto Nastaliq Urdu",serif;
-  line-height:2.3;
-  font-size:1.1rem;
+  line-height:2.4;
 }
-
 #gate input{
-  width:100%;
-  margin-top:14px;
-  padding:12px;
-  border-radius:10px;
-  border:none;
+  width:100%;margin-top:14px;padding:12px;
+  border-radius:10px;border:none;
 }
-
 #gate button{
-  margin-top:14px;
-  width:100%;
-  padding:12px;
+  margin-top:14px;width:100%;
+  padding:12px;border:none;
   background:var(--accent);
-  color:#000;
-  font-weight:bold;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
+  font-weight:bold;cursor:pointer;
 }
 
-/* ---------- HEADER ---------- */
-header{
-  padding:18px;
-  text-align:center;
+/* HEADER */
+header{text-align:center}
+.banner{
+  width:100%;
+  max-height:220px;
+  object-fit:cover;
 }
-
-header img{
+.logo{
   max-width:120px;
+  margin-top:-60px;
+  background:#000;
+  border-radius:50%;
+  padding:6px;
 }
 
-/* ---------- SHAYARI LIST ---------- */
-main{
-  max-width:900px;
-  margin:auto;
-  padding:20px;
-}
-
-.shayari{
+/* LIST */
+main{max-width:900px;margin:auto;padding:20px}
+.card{
   background:var(--card);
   padding:18px;
   border-radius:16px;
@@ -100,29 +83,23 @@ main{
   cursor:pointer;
   transition:.3s;
 }
-
-.shayari:hover{
-  transform:scale(1.02);
-}
+.card:hover{transform:scale(1.02)}
 
 .title{
   font-family:"Noto Nastaliq Urdu",serif;
-  font-size:1.2rem;
+  font-size:1.15rem;
 }
 
 .heart{
-  width:34px;
-  height:34px;
+  width:34px;height:34px;
   border-radius:50%;
   border:2px solid var(--accent);
-  color:var(--accent);
   background:none;
-  font-size:16px;
+  color:var(--accent);
   cursor:pointer;
   transition:.3s;
 }
-
-.heart.filled{
+.heart.active{
   background:var(--accent);
   color:#000;
   transform:scale(1.15);
@@ -132,69 +109,69 @@ main{
 
 <body class="lock">
 
-<!-- ENTRY GATE -->
+<!-- ENTRY -->
 <div id="gate">
   <div class="box">
     <h3>
-      نئی آنے والی شاعری کی اطلاع<br>
-      حاصل کرنے کے لیے نوٹیفکیشن آن کریں<br><br>
+      نئی شاعری کی اطلاع کے لیے<br>
+      نوٹیفکیشن آن کریں<br><br>
       اور اپنا نام درج کریں
     </h3>
-    <input id="userName" placeholder="اپنا نام درج کریں">
-    <button id="enterBtn">ویب سائٹ میں داخل ہوں</button>
+    <input id="name" placeholder="اپنا نام درج کریں">
+    <button id="enter">داخل ہوں</button>
   </div>
 </div>
 
 <header>
-  <!-- ❗ logo / banner paths untouched -->
-  <img src="logo/logo.png" alt="Shafay Ali">
+  <!-- ⚠️ PATHS SAME RAKHNA -->
+  <img src="banner/banner.jpg" class="banner">
+  <img src="logo/logo.png" class="logo">
 </header>
 
 <main id="list"></main>
 
 <script>
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwDmvgnt3FxEs_O4eLX1LOHs4z7hf-URJywG2WKkWcRI3hc93vSM_2xIcgHj7H9HLGI/exec";
-const DATA_URL="data.json";
+const SCRIPT="https://script.google.com/macros/s/AKfycbwDmvgnt3FxEs_O4eLX1LOHs4z7hf-URJywG2WKkWcRI3hc93vSM_2xIcgHj7H9HLGI/exec";
+const DATA="data.json";
 
-let visitor=localStorage.getItem("visitorName");
+let user=localStorage.getItem("userName");
 
 function log(action,title=""){
-  const dt=new Date().toLocaleString("en-US",{timeZone:"Asia/Karachi"});
-  fetch(`${SCRIPT_URL}?name=${encodeURIComponent(visitor)}&datetime=${encodeURIComponent(dt)}&action=${action}&title=${encodeURIComponent(title)}&notification=${Notification.permission}`);
+  fetch(`${SCRIPT}?name=${encodeURIComponent(user)}&action=${action}&title=${encodeURIComponent(title)}&notify=${Notification.permission}`);
 }
 
-document.getElementById("enterBtn").onclick=()=>{
-  const name=document.getElementById("userName").value.trim();
-  if(!name){alert("نام درج کریں");return;}
+document.getElementById("enter").onclick=()=>{
+  const n=document.getElementById("name").value.trim();
+  if(!n) return alert("نام درج کریں");
 
   Notification.requestPermission().then(p=>{
     if(p!=="granted"){
-      alert("نوٹیفکیشن آن کیے بغیر مواد دستیاب نہیں");
+      alert("نوٹیفکیشن آن کیے بغیر ویب سائٹ استعمال نہیں کی جا سکتی");
       return;
     }
-    visitor=name;
-    localStorage.setItem("visitorName",name);
+    user=n;
+    localStorage.setItem("userName",n);
     log("visit");
-    document.getElementById("gate").style.display="none";
-    document.body.classList.remove("lock");
-    loadData();
+    unlock();
   });
 };
 
-if(visitor && Notification.permission==="granted"){
-  document.getElementById("gate").style.display="none";
+function unlock(){
   document.body.classList.remove("lock");
-  loadData();
+  document.getElementById("gate").style.display="none";
+  load();
 }
 
-function loadData(){
-  fetch(DATA_URL).then(r=>r.json()).then(data=>{
+if(user && Notification.permission==="granted") unlock();
+
+function load(){
+  fetch(DATA).then(r=>r.json()).then(data=>{
     const list=document.getElementById("list");
-    let favs=new Set(JSON.parse(localStorage.getItem("favs")||"[]"));
+    let fav=new Set(JSON.parse(localStorage.getItem("fav")||"[]"));
 
     data.forEach(s=>{
-      const row=document.createElement("div");
-      row.className="shayari";
+      const c=document.createElement("div");
+      c.className="card";
 
       const t=document.createElement("div");
       t.className="title";
@@ -203,31 +180,29 @@ function loadData(){
       const h=document.createElement("button");
       h.className="heart";
       h.innerHTML="♡";
-
-      if(favs.has(s.id)) h.classList.add("filled");
+      if(fav.has(s.id)) h.classList.add("active");
 
       h.onclick=e=>{
         e.stopPropagation();
-        if(favs.has(s.id)){
-          favs.delete(s.id);
-          h.classList.remove("filled");
+        if(fav.has(s.id)){
+          fav.delete(s.id);
+          h.classList.remove("active");
           log("unfavorite",s.title);
         }else{
-          favs.add(s.id);
-          h.classList.add("filled");
+          fav.add(s.id);
+          h.classList.add("active");
           log("favorite",s.title);
         }
-        localStorage.setItem("favs",JSON.stringify([...favs]));
+        localStorage.setItem("fav",JSON.stringify([...fav]));
       };
 
-      row.onclick=()=>{
+      c.onclick=()=>{
         log("read",s.title);
         location.href=`read.html?id=${s.id}`;
       };
 
-      row.appendChild(t);
-      row.appendChild(h);
-      list.appendChild(row);
+      c.append(t,h);
+      list.appendChild(c);
     });
   });
 }
