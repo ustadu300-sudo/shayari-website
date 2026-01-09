@@ -56,11 +56,11 @@ body{
   font-size:0.95rem;
 }
 
-/* ===== SHAYARI TEXT (FIXED) ===== */
+/* ===== SHAYARI TEXT ===== */
 #text{
   font-family:"Noto Nastaliq Urdu",serif;
-  font-size:1.55rem;      /* 🔥 INCREASED */
-  line-height:2.9;        /* 🔥 PROPER SHAYARI GAP */
+  font-size:1.55rem;
+  line-height:2.9;
   text-align:center;
   white-space:pre-wrap;
 }
@@ -105,7 +105,7 @@ body{
 @media(max-width:600px){
   #title{font-size:1.8rem}
   #text{
-    font-size:1.35rem;   /* mobile fix */
+    font-size:1.35rem;
     line-height:2.6;
   }
 }
@@ -129,48 +129,58 @@ body{
 
 <script>
 const DATA_URL="data.json";
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwDmvgnt3FxEs_O4eLX1LOHs4z7hf-URJywG2WKkWcRI3hc93vSM_2xIcgHj7H9HLGI/exec";
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwNTWcjGMM1TCe35MTpAelr2cTEB5T1rHLIOXqWP3R4xRrSc1EoV7e9GTvBjpc4IOoJOw/exec";
 
-const userName=localStorage.getItem("visitorName");
+const userName = localStorage.getItem("visitorName");
 if(!userName || Notification.permission!=="granted"){
   location.href="index.html";
 }
 
-const id=new URLSearchParams(location.search).get("id");
+const id = new URLSearchParams(location.search).get("id");
 
-function log(action,title){
-  fetch(`${SCRIPT_URL}?name=${encodeURIComponent(userName)}&action=${action}&title=${encodeURIComponent(title)}&time=${Date.now()}&notify=${Notification.permission}`);
+/* ===== LOG FUNCTION ===== */
+function logUser(action){
+  const sTitle = document.getElementById("title").innerText;
+  fetch(`${SCRIPT_URL}?name=${encodeURIComponent(userName)}&action=${action}&title=${encodeURIComponent(sTitle)}&notify=${Notification.permission}&time=${Date.now()}`);
 }
 
 fetch(DATA_URL).then(r=>r.json()).then(data=>{
-  const s=data.find(x=>x.id===id);
+  const s = data.find(x=>x.id===id);
   if(!s){
     document.getElementById("title").innerText="شاعری دستیاب نہیں";
     return;
   }
 
-  title.innerText=s.title;
-  type.innerText=s.type;
-  text.innerText=s.text;
+  const titleEl = document.getElementById("title");
+  const typeEl = document.getElementById("type");
+  const textEl = document.getElementById("text");
 
-  let liked=false,fav=false;
+  titleEl.innerText = s.title;
+  typeEl.innerText = s.type;
+  textEl.innerText = s.text;
 
-  likeBtn.onclick=()=>{
-    liked=!liked;
-    likeBtn.classList.toggle("active",liked);
-    log(liked?"like":"unlike",s.title);
+  let liked = false, fav = false;
+
+  likeBtn.onclick = ()=>{
+    liked = !liked;
+    likeBtn.classList.toggle("active", liked);
+    logUser(liked ? "like" : "unlike");
   };
 
-  favBtn.onclick=()=>{
-    fav=!fav;
-    favBtn.classList.toggle("active",fav);
-    log(fav?"favourite_add":"favourite_remove",s.title);
+  favBtn.onclick = ()=>{
+    fav = !fav;
+    favBtn.classList.toggle("active", fav);
+    logUser(fav ? "favourite_add" : "favourite_remove");
   };
 
-  shareBtn.onclick=()=>{
+  shareBtn.onclick = ()=>{
     navigator.clipboard.writeText(location.href)
-    .then(()=>alert("شاعری کا لنک کاپی ہو گیا"));
+      .then(()=>alert("شاعری کا لنک کاپی ہو گیا"));
+    logUser("share");
   };
+
+  // Log read action
+  logUser("read");
 });
 </script>
 
