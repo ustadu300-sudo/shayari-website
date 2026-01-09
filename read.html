@@ -3,45 +3,111 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shayari</title>
+<title>Shayari – Shafay Ali</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 
 <style>
+:root{
+  --bg:#0f1115;
+  --card:#161a22;
+  --text:#ffffff;
+  --muted:#9aa4b2;
+  --red:#ad0000;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
 body{
-  background:#0f1115;
-  color:#fff;
-  font-family:"Noto Nastaliq Urdu",serif;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,system-ui;
   padding:20px;
 }
+
+/* ===== CARD ===== */
 .card{
-  max-width:820px;margin:auto;
-  background:#161a22;
-  border-radius:20px;padding:30px;
+  max-width:820px;
+  margin:auto;
+  background:var(--card);
+  border-radius:20px;
+  padding:32px;
+  animation:fadeUp .6s ease;
 }
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:none}
+}
+
+/* ===== TITLE ===== */
 #title{
-  font-size:2rem;
-  text-align:center;margin-bottom:8px;
+  font-family:"Noto Nastaliq Urdu",serif;
+  font-size:2.1rem;
+  margin-bottom:10px;
+  text-align:center;
 }
+
+/* ===== TYPE ===== */
 #type{
-  text-align:center;color:#aaa;margin-bottom:22px;
+  text-align:center;
+  color:var(--muted);
+  margin-bottom:22px;
+  font-size:0.95rem;
 }
+
+/* ===== SHAYARI TEXT (FIXED) ===== */
 #text{
-  font-size:1.4rem;     /* 🔥 NORMAL SIZE */
-  line-height:2.6;      /* 🔥 WORD BREAK FIX */
+  font-family:"Noto Nastaliq Urdu",serif;
+  font-size:1.55rem;      /* 🔥 INCREASED */
+  line-height:2.9;        /* 🔥 PROPER SHAYARI GAP */
   text-align:center;
   white-space:pre-wrap;
-  word-break:keep-all;
 }
+
+/* ===== BUTTON BAR ===== */
 .actions{
-  margin-top:28px;
-  display:flex;gap:12px;justify-content:center;flex-wrap:wrap;
+  margin-top:30px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  justify-content:center;
 }
-.actions button{
-  padding:10px 20px;
+
+/* ===== BUTTON ===== */
+.btn{
+  padding:10px 22px;
   border-radius:999px;
   border:2px solid #fff;
-  background:none;color:#fff;
+  background:none;
+  color:#fff;
+  cursor:pointer;
+  font-size:.95rem;
+  transition:.25s ease;
+}
+
+.btn:hover{transform:scale(1.06)}
+
+.btn-like.active{
+  background:#fff;
+  color:#000;
+}
+
+.btn-fav.active{
+  background:var(--red);
+  border-color:var(--red);
+}
+
+.btn-share{border-color:#315a80;color:#315a80}
+.btn-back{border-color:#777;color:#ddd}
+
+/* ===== MOBILE ===== */
+@media(max-width:600px){
+  #title{font-size:1.8rem}
+  #text{
+    font-size:1.35rem;   /* mobile fix */
+    line-height:2.6;
+  }
 }
 </style>
 </head>
@@ -49,29 +115,64 @@ body{
 <body>
 
 <div class="card">
-  <h1 id="title"></h1>
+  <h1 id="title">لوڈ ہو رہا ہے…</h1>
   <div id="type"></div>
   <div id="text"></div>
 
   <div class="actions">
-    <button id="likeBtn">پسند آیا</button>
-    <button id="favBtn">پسندیدہ</button>
-    <button onclick="location.href='index.html'">واپس جائیں</button>
+    <button class="btn btn-like" id="likeBtn">پسند آیا</button>
+    <button class="btn btn-fav" id="favBtn">پسندیدہ</button>
+    <button class="btn btn-share" id="shareBtn">شیئر کریں</button>
+    <button class="btn btn-back" onclick="location.href='index.html'">واپس جائیں</button>
   </div>
 </div>
 
 <script>
+const DATA_URL="data.json";
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwDmvgnt3FxEs_O4eLX1LOHs4z7hf-URJywG2WKkWcRI3hc93vSM_2xIcgHj7H9HLGI/exec";
+
+const userName=localStorage.getItem("visitorName");
+if(!userName || Notification.permission!=="granted"){
+  location.href="index.html";
+}
+
 const id=new URLSearchParams(location.search).get("id");
-fetch("data.json").then(r=>r.json()).then(data=>{
+
+function log(action,title){
+  fetch(`${SCRIPT_URL}?name=${encodeURIComponent(userName)}&action=${action}&title=${encodeURIComponent(title)}&time=${Date.now()}&notify=${Notification.permission}`);
+}
+
+fetch(DATA_URL).then(r=>r.json()).then(data=>{
   const s=data.find(x=>x.id===id);
-  if(!s)return;
+  if(!s){
+    document.getElementById("title").innerText="شاعری دستیاب نہیں";
+    return;
+  }
+
   title.innerText=s.title;
   type.innerText=s.type;
   text.innerText=s.text;
+
+  let liked=false,fav=false;
+
+  likeBtn.onclick=()=>{
+    liked=!liked;
+    likeBtn.classList.toggle("active",liked);
+    log(liked?"like":"unlike",s.title);
+  };
+
+  favBtn.onclick=()=>{
+    fav=!fav;
+    favBtn.classList.toggle("active",fav);
+    log(fav?"favourite_add":"favourite_remove",s.title);
+  };
+
+  shareBtn.onclick=()=>{
+    navigator.clipboard.writeText(location.href)
+    .then(()=>alert("شاعری کا لنک کاپی ہو گیا"));
+  };
 });
 </script>
 
 </body>
 </html>
-
-
