@@ -21,90 +21,60 @@ OneSignalDeferred.push(async function(OneSignal) {
 :root{
   --bg:#0f1115;
   --card:#161a22;
-  --white:#fff;
-  --muted:#9aa4b2;
+  --accent:#ad0000;
 }
 *{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:#fff;font-family:Inter}
 
-body{
-  background:var(--bg);
-  color:var(--white);
-  font-family:Inter;
+/* ===== GATE ===== */
+body.lock main,body.lock header,body.lock nav{filter:blur(6px);pointer-events:none}
+#gate{
+  position:fixed;inset:0;z-index:9999;
+  background:rgba(0,0,0,.85);
+  display:flex;align-items:center;justify-content:center;
 }
+#gate .box{
+  background:var(--card);
+  padding:26px;border-radius:14px;
+  max-width:360px;text-align:center;
+}
+#gate h3{font-family:"Noto Nastaliq Urdu",serif;line-height:2.2}
+#gate input,#gate button{
+  width:100%;padding:12px;margin-top:12px;border-radius:8px;border:none;
+}
+#gate button{background:var(--accent);color:#fff;font-weight:bold}
 
-/* ===== BANNER ===== */
+/* ===== HEADER ===== */
 .banner{
-  height:260px;
+  height:240px;
   background:url("BANNER/unsplash.png.jpg.jpg") center/cover no-repeat;
 }
 .banner-inner{
-  max-width:1200px;
-  margin:auto;
-  height:100%;
-  display:flex;
-  align-items:flex-end;
-  gap:18px;
-  padding:20px;
+  max-width:1200px;margin:auto;height:100%;
+  display:flex;align-items:flex-end;gap:18px;padding:20px;
 }
-.logo{
-  width:100px;
-  height:100px;
-  border-radius:50%;
-  overflow:hidden;
-}
-.logo img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
+.logo{width:90px;height:90px;border-radius:50%;overflow:hidden}
+.logo img{width:100%;height:100%;object-fit:cover}
 .author-meta h1{
   font-family:"Noto Nastaliq Urdu",serif;
-  font-size:2.4rem;
+  font-size:2.3rem;
 }
 .author-meta p{
   font-family:"Noto Nastaliq Urdu",serif;
   font-weight:bold;
-  margin-top:6px;
 }
 
 /* ===== NAV ===== */
-.nav{
-  position:sticky;
-  top:0;
-  background:#0f1115;
-  border-bottom:1px solid #000;
-}
-.nav ul{
-  max-width:1200px;
-  margin:auto;
-  display:flex;
-  gap:8px;
-  padding:10px;
-  list-style:none;
-}
-.nav button{
-  background:none;
-  border:none;
-  color:#fff;
-  padding:8px 14px;
-  border-radius:8px;
-  cursor:pointer;
-}
-.nav button.active{
-  background:#315a80;
-}
+.nav{position:sticky;top:0;background:#0f1115}
+.nav ul{display:flex;gap:8px;list-style:none;padding:10px}
+.nav button{background:none;border:none;color:#fff;padding:8px 14px;cursor:pointer}
+.nav button.active{background:#315a80;border-radius:8px}
 
 /* ===== LIST ===== */
-.wrap{
-  max-width:1200px;
-  margin:auto;
-  padding:16px;
-}
+.wrap{max-width:1200px;margin:auto;padding:16px}
 .item{
   background:var(--card);
-  padding:18px;
-  border-radius:14px;
-  margin-bottom:14px;
+  padding:16px;border-radius:14px;margin-bottom:14px;
   cursor:pointer;
 }
 .item h3{
@@ -112,30 +82,32 @@ body{
   font-size:1.5rem;
   text-align:right;
 }
-.item small{
-  color:var(--muted);
-  font-size:12px;
-}
 </style>
 </head>
 
-<body>
+<body class="lock">
+
+<div id="gate">
+  <div class="box">
+    <h3>نوٹیفکیشن آن کریں<br>اور اپنا نام درج کریں</h3>
+    <input id="username" placeholder="اپنا نام لکھیں">
+    <button id="continueBtn">جاری رکھیں</button>
+  </div>
+</div>
 
 <header class="banner">
   <div class="banner-inner">
-    <div class="logo">
-      <img src="logo/proble.png.png">
-    </div>
+    <div class="logo"><img src="logo/proble.png.png"></div>
     <div class="author-meta">
       <h1>شافع علی</h1>
-      <p>میں جو ہوں، 'شافع' ہوں، یعنی کہ رایگاں ہوں</p>
+      <p>میں جو ہوں، شافع ہوں</p>
     </div>
   </div>
 </header>
 
 <nav class="nav">
 <ul>
-  <li><button data-type="all" class="active">سب</button></li>
+  <li><button class="active" data-type="all">سب</button></li>
   <li><button data-type="ghazal">غزل</button></li>
   <li><button data-type="nazm">نظم</button></li>
   <li><button data-type="sher">شعر</button></li>
@@ -147,22 +119,28 @@ body{
 </main>
 
 <script>
+const gate=document.getElementById("gate");
+const btn=document.getElementById("continueBtn");
+
+btn.onclick=async()=>{
+  const name=username.value.trim();
+  if(!name){alert("نام درج کریں");return;}
+  const p=await Notification.requestPermission();
+  if(p!=="granted"){alert("نوٹیفکیشن لازمی ہے");return;}
+  localStorage.setItem("visitorName",name);
+  document.body.classList.remove("lock");
+  gate.style.display="none";
+};
+
 async function load(type="all"){
-  const data = await fetch("data.json").then(r=>r.json());
-  const list=document.getElementById("list");
+  const data=await fetch("data.json").then(r=>r.json());
   list.innerHTML="";
-  data.filter(s=>{
-    if(type==="all") return true;
-    return s.type===type;
-  }).forEach(s=>{
-    const div=document.createElement("div");
-    div.className="item";
-    div.innerHTML=`
-      <h3>${s.title}</h3>
-      <small>${s.type}</small>
-    `;
-    div.onclick=()=>location.href=`read.html?id=${s.id}`;
-    list.appendChild(div);
+  data.filter(s=>type==="all"||s.type===type).forEach(s=>{
+    const d=document.createElement("div");
+    d.className="item";
+    d.innerHTML=`<h3>${s.title}</h3>`;
+    d.onclick=()=>location.href=`read.html?id=${s.id}`;
+    list.appendChild(d);
   });
 }
 
