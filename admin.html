@@ -3,9 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Panel – Shayari</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">
+<title>Admin – Shayari & Dictionary</title>
 
 <style>
 body{
@@ -14,100 +12,79 @@ body{
   font-family:system-ui;
   padding:20px;
 }
-h2{
-  font-family:"Noto Nastaliq Urdu",serif;
-  text-align:center;
-}
-input, select, textarea, button{
+input,textarea,select,button{
   width:100%;
-  margin:8px 0;
-  padding:12px;
-  border-radius:8px;
+  margin:6px 0;
+  padding:10px;
+  border-radius:6px;
   border:none;
 }
-textarea{
-  height:160px;
-  font-family:"Noto Nastaliq Urdu",serif;
-  font-size:1.1rem;
-}
+textarea{height:120px}
 button{
   background:#ad0000;
   color:#fff;
   font-weight:bold;
-  font-size:1rem;
-  cursor:pointer;
 }
-.status{
-  margin-top:12px;
-  text-align:center;
-  color:#7CFC98;
+pre{
+  background:#161a22;
+  padding:10px;
+  border-radius:8px;
+  max-height:300px;
+  overflow:auto;
 }
+h3{margin-top:30px}
 </style>
 </head>
 
 <body>
 
-<h2>➕ شاعری / غزل / نظم شامل کریں</h2>
+<h2>➕ شاعری شامل کریں</h2>
 
-<label>عنوان</label>
-<input id="title" placeholder="مثال: محبت کی سزا">
-
-<label>قسم</label>
+<input id="title" placeholder="عنوان">
 <select id="type">
   <option value="ghazal">غزل</option>
   <option value="nazm">نظم</option>
   <option value="sher">شعر</option>
 </select>
+<textarea id="text" placeholder="شاعری"></textarea>
+<button onclick="addShayari()">Add Shayari</button>
 
-<label>شاعری</label>
-<textarea id="text" placeholder="یہاں شاعری لکھیں"></textarea>
+<h3>📚 لغت / Dictionary</h3>
+<input id="word" placeholder="لفظ">
+<input id="meaning" placeholder="معنی">
+<button onclick="addWord()">Add Meaning</button>
 
-<button onclick="publish()">📤 Publish Shayari</button>
-
-<div class="status" id="status"></div>
+<h3>📦 data.json</h3>
+<pre id="out"></pre>
 
 <script>
-const SCRIPT_URL =
-"https://script.google.com/macros/s/AKfycbwDmvgnt3FxEs_O4eLX1LOHs4z7hf-URJywG2WKkWcRI3hc93vSM_2xIcgHj7H9HLGI/exec";
+const data=[];
+const dict={};
 
-function publish(){
-  const title = titleInput.value.trim();
-  const type  = typeSelect.value;
-  const text  = textInput.value.trim();
-
-  if(!title || !text){
-    alert("عنوان اور شاعری لازمی ہیں");
-    return;
-  }
-
-  const payload = {
-    action: "add_shayari",
-    id: Date.now().toString(),
-    title,
-    type,
-    text
-  };
-
-  fetch(SCRIPT_URL, {
-    method: "POST",
-    body: JSON.stringify(payload)
-  })
-  .then(r => r.text())
-  .then(res => {
-    status.innerText = "✅ شاعری کامیابی سے شامل ہو گئی";
-    titleInput.value = "";
-    textInput.value = "";
-  })
-  .catch(() => {
-    status.innerText = "❌ کچھ غلط ہو گیا";
+function addShayari(){
+  data.push({
+    id:Date.now().toString(),
+    title:title.value,
+    type:type.value,
+    text:text.value+"\n\n— شافع"
   });
+  render();
 }
 
-const titleInput = document.getElementById("title");
-const typeSelect = document.getElementById("type");
-const textInput  = document.getElementById("text");
-const status     = document.getElementById("status");
+function addWord(){
+  dict[word.value]=meaning.value;
+  word.value=meaning.value="";
+  render();
+}
+
+function render(){
+  out.textContent=JSON.stringify({
+    shayari:data,
+    dictionary:dict
+  },null,2);
+}
 </script>
 
 </body>
 </html>
+
