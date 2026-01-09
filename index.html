@@ -1,133 +1,178 @@
 <!DOCTYPE html>
-<html lang="ur" dir="rtl">
+<html lang="ur">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>شافع علی – شاعری</title>
+<title>Shafay Ali – Shayari</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&family=Inter&display=swap" rel="stylesheet">
+
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+window.OneSignalDeferred = window.OneSignalDeferred || [];
+OneSignalDeferred.push(async function(OneSignal) {
+  await OneSignal.init({
+    appId: "2c2a67d7-e712-44c2-8233-9413718f8d75",
+  });
+});
+</script>
 
 <style>
 :root{
   --bg:#0f1115;
   --card:#161a22;
-  --red:#ad0000;
+  --white:#fff;
   --muted:#9aa4b2;
 }
+*{margin:0;padding:0;box-sizing:border-box}
 
 body{
   background:var(--bg);
-  color:#fff;
+  color:var(--white);
   font-family:Inter;
-  margin:0;
 }
 
-/* HEADER */
-header{
-  padding:20px;
-  text-align:center;
+/* ===== BANNER ===== */
+.banner{
+  height:260px;
+  background:url("BANNER/unsplash.png.jpg.jpg") center/cover no-repeat;
 }
-header h1{
+.banner-inner{
+  max-width:1200px;
+  margin:auto;
+  height:100%;
+  display:flex;
+  align-items:flex-end;
+  gap:18px;
+  padding:20px;
+}
+.logo{
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  overflow:hidden;
+}
+.logo img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.author-meta h1{
   font-family:"Noto Nastaliq Urdu",serif;
   font-size:2.4rem;
 }
-header p{
+.author-meta p{
   font-family:"Noto Nastaliq Urdu",serif;
   font-weight:bold;
-  font-size:1.1rem;
-  margin-top:8px;
+  margin-top:6px;
 }
 
-/* NAV */
-nav{
+/* ===== NAV ===== */
+.nav{
+  position:sticky;
+  top:0;
+  background:#0f1115;
+  border-bottom:1px solid #000;
+}
+.nav ul{
+  max-width:1200px;
+  margin:auto;
   display:flex;
   gap:8px;
   padding:10px;
-  overflow:auto;
+  list-style:none;
 }
-nav button{
+.nav button{
   background:none;
-  border:1px solid #444;
+  border:none;
   color:#fff;
-  padding:6px 14px;
-  border-radius:20px;
+  padding:8px 14px;
+  border-radius:8px;
   cursor:pointer;
 }
-nav button.active{
-  background:var(--red);
-  border-color:var(--red);
+.nav button.active{
+  background:#315a80;
 }
 
-/* LIST */
-#list{
+/* ===== LIST ===== */
+.wrap{
+  max-width:1200px;
+  margin:auto;
   padding:16px;
 }
 .item{
   background:var(--card);
-  padding:14px;
+  padding:18px;
   border-radius:14px;
-  margin-bottom:12px;
+  margin-bottom:14px;
   cursor:pointer;
 }
 .item h3{
   font-family:"Noto Nastaliq Urdu",serif;
-  font-size:1.3rem;
-  margin:0;
+  font-size:1.5rem;
+  text-align:right;
 }
 .item small{
   color:var(--muted);
-  font-size:.75rem;
+  font-size:12px;
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  <h1>شافع علی</h1>
-  <p>میں جو ہوں، شافع ہوں — یعنی کہ رایگاں ہوں</p>
+<header class="banner">
+  <div class="banner-inner">
+    <div class="logo">
+      <img src="logo/proble.png.png">
+    </div>
+    <div class="author-meta">
+      <h1>شافع علی</h1>
+      <p>میں جو ہوں، 'شافع' ہوں، یعنی کہ رایگاں ہوں</p>
+    </div>
+  </div>
 </header>
 
-<nav>
-  <button data-type="all" class="active">سب</button>
-  <button data-type="ghazal">غزل</button>
-  <button data-type="nazm">نظم</button>
-  <button data-type="sher">شعر</button>
+<nav class="nav">
+<ul>
+  <li><button data-type="all" class="active">سب</button></li>
+  <li><button data-type="ghazal">غزل</button></li>
+  <li><button data-type="nazm">نظم</button></li>
+  <li><button data-type="sher">شعر</button></li>
+</ul>
 </nav>
 
-<div id="list">لوڈ ہو رہا ہے…</div>
+<main class="wrap">
+  <div id="list">لوڈ ہو رہا ہے…</div>
+</main>
 
 <script>
-const DATA="data.json";
-const list=document.getElementById("list");
-
 async function load(type="all"){
-  const data=await fetch(DATA).then(r=>r.json());
+  const data = await fetch("data.json").then(r=>r.json());
+  const list=document.getElementById("list");
   list.innerHTML="";
-
   data.filter(s=>{
     if(type==="all") return true;
     return s.type===type;
   }).forEach(s=>{
-    const d=document.createElement("div");
-    d.className="item";
-    d.innerHTML=`
+    const div=document.createElement("div");
+    div.className="item";
+    div.innerHTML=`
       <h3>${s.title}</h3>
       <small>${s.type}</small>
     `;
-    d.onclick=()=>location.href=`read.html?id=${s.id}`;
-    list.appendChild(d);
+    div.onclick=()=>location.href=`read.html?id=${s.id}`;
+    list.appendChild(div);
   });
 }
 
-document.querySelectorAll("nav button").forEach(b=>{
+document.querySelectorAll(".nav button").forEach(b=>{
   b.onclick=()=>{
-    document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
+    document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));
     b.classList.add("active");
     load(b.dataset.type);
-  }
+  };
 });
-
 load();
 </script>
 
