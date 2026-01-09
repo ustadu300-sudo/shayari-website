@@ -1,62 +1,156 @@
 <!DOCTYPE html>
-<html lang="ur">
+<html lang="ur" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shayari – Shafay Ali</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&family=Inter&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">
 
 <style>
-body{background:#0f1115;color:#fff;font-family:Inter;padding:20px}
-.card{max-width:820px;margin:auto;background:#161a22;border-radius:20px;padding:32px}
-#title{font-family:"Noto Nastaliq Urdu";font-size:2.2rem;text-align:center}
-#type{text-align:center;color:#aaa;margin:10px}
-#text{font-family:"Noto Nastaliq Urdu";font-size:1.6rem;line-height:3;text-align:center;white-space:pre-line;color:#f5f3e8}
-
-.meaning{color:#f5c542;border-bottom:1px dotted}
-.meaning:hover::after{
- content:attr(data-meaning);
- position:absolute;background:#000;color:#fff;padding:6px;border-radius:6px;
+:root{
+  --bg:#0f1115;
+  --card:#161a22;
+  --text:#ffffff;
+  --muted:#9aa4b2;
 }
 
-.btn{margin:8px;padding:10px 22px;border-radius:999px;border:2px solid #fff;background:none;color:#fff}
-.btn.active{background:#fff;color:#000}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:"Noto Nastaliq Urdu",serif;
+  padding:20px;
+}
+
+.card{
+  max-width:820px;
+  margin:auto;
+  background:var(--card);
+  border-radius:18px;
+  padding:28px;
+}
+
+/* TITLE */
+#title{
+  font-size:2rem;
+  margin-bottom:6px;
+  text-align:center;
+}
+
+/* TYPE */
+#type{
+  text-align:center;
+  color:var(--muted);
+  margin-bottom:20px;
+  font-size:.9rem;
+}
+
+/* SHAYARI TEXT — ADABI FORMAT */
+#text{
+  font-size:1.45rem;
+  line-height:2.6;
+  text-align:right;
+  white-space:pre-line;
+}
+
+/* WORD WITH MEANING */
+.word{
+  cursor:help;
+  border-bottom:1px dotted #777;
+}
+
+/* TOOLTIP (PC) */
+.word:hover::after{
+  content:attr(data-meaning);
+  position:absolute;
+  background:#000;
+  color:#fff;
+  padding:6px 10px;
+  border-radius:6px;
+  font-size:.85rem;
+  white-space:normal;
+  max-width:240px;
+  transform:translateY(-120%);
+  z-index:10;
+}
+
+/* MOBILE HINT */
+.hint{
+  margin-top:16px;
+  font-size:.75rem;
+  color:#aaa;
+  text-align:center;
+}
+
+/* MOBILE POPUP */
+#popup{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#000;
+  padding:10px 14px;
+  border-radius:10px;
+  display:none;
+  font-size:.85rem;
+  max-width:90%;
+  text-align:right;
+}
 </style>
 </head>
 
 <body>
+
 <div class="card">
-<h1 id="title"></h1>
-<div id="type"></div>
-<div id="text"></div>
-<div style="text-align:center">
-<button id="like" class="btn">پسند آیا</button>
-<button id="fav" class="btn">پسندیدہ</button>
-<button class="btn" onclick="history.back()">واپس جائیں</button>
+  <h1 id="title"></h1>
+  <div id="type"></div>
+  <div id="text"></div>
+  <div class="hint">الفاظ پر کلک کر کے معنی دیکھیں</div>
 </div>
-</div>
+
+<div id="popup"></div>
 
 <script>
-if(!localStorage.visitorName||Notification.permission!=="granted")location.href="index.html";
+const DATA_URL="data.json";
 
+/* CENTRAL DICTIONARY (example – expand in admin/backend) */
 const DICT={
- "قفس":"پنجرہ","فرقت":"جدائی","تضحیک":"ذلت","قربت":"نزدیکی","جستجو":"تلاش","وفا":"نبھانا"
+  "ہجر":"جدائی کے بعد کا کربناک سفر",
+  "قفس":"پنجرہ، قید",
+  "وصل":"محبوب سے ملن",
+  "فنا":"مٹ جانا، خودی کا خاتمہ",
+  "بقا":"ہمیشہ رہنے کی حالت"
 };
 
-function applyMeanings(t){
- Object.keys(DICT).forEach(w=>{
-  t=t.replace(new RegExp(w,"g"),`<span class="meaning" data-meaning="${DICT[w]}">${w}</span>`);
- });
- return t;
+const popup=document.getElementById("popup");
+
+function applyMeanings(text){
+  Object.keys(DICT).forEach(word=>{
+    const re=new RegExp(word,"g");
+    text=text.replace(re,
+      `<span class="word" data-meaning="${DICT[word]}" onclick="showMeaning('${DICT[word]}')">${word}</span>`
+    );
+  });
+  return text;
 }
 
-fetch("data.json").then(r=>r.json()).then(d=>{
- const s=d.find(x=>x.id===new URLSearchParams(location.search).get("id"));
- title.innerText=s.title;
- type.innerText=s.type;
- text.innerHTML=applyMeanings(s.text);
+function showMeaning(m){
+  popup.innerText=m;
+  popup.style.display="block";
+  setTimeout(()=>popup.style.display="none",3000);
+}
+
+const id=new URLSearchParams(location.search).get("id");
+
+fetch(DATA_URL).then(r=>r.json()).then(data=>{
+  const s=data.find(x=>x.id===id);
+  if(!s) return;
+
+  title.innerText=s.title;
+  type.innerText=s.type;
+  text.innerHTML=applyMeanings(s.text);
 });
 </script>
+
 </body>
 </html>
