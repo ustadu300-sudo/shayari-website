@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin – Shayari Add</title>
+<title>Admin Panel – Shayari</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">
 
 <style>
 body{
@@ -12,14 +14,22 @@ body{
   font-family:system-ui;
   padding:20px;
 }
+h2{
+  font-family:"Noto Nastaliq Urdu",serif;
+  text-align:center;
+}
 input, select, textarea, button{
   width:100%;
   margin:8px 0;
-  padding:10px;
-  border-radius:6px;
+  padding:12px;
+  border-radius:8px;
   border:none;
 }
-textarea{height:140px}
+textarea{
+  height:160px;
+  font-family:"Noto Nastaliq Urdu",serif;
+  font-size:1.1rem;
+}
 button{
   background:#ad0000;
   color:#fff;
@@ -27,92 +37,76 @@ button{
   font-size:1rem;
   cursor:pointer;
 }
-#copyBtn{
-  background:#315a80;
-}
-pre{
-  background:#161a22;
-  padding:12px;
-  overflow:auto;
-  word-break: break-word;
-  max-height:320px;
-  border-radius:8px;
-}
-label{
-  display:block;
-  margin-top:10px;
-  font-weight:bold;
+.status{
+  margin-top:12px;
+  text-align:center;
+  color:#7CFC98;
 }
 </style>
 </head>
 
 <body>
 
-<h2>➕ Shayari / Nazm / Ghazal Add Panel</h2>
+<h2>➕ شاعری / غزل / نظم شامل کریں</h2>
 
-<label>عنوان / Title</label>
+<label>عنوان</label>
 <input id="title" placeholder="مثال: محبت کی سزا">
 
-<label>قسم / Type</label>
+<label>قسم</label>
 <select id="type">
   <option value="ghazal">غزل</option>
   <option value="nazm">نظم</option>
   <option value="sher">شعر</option>
 </select>
 
-<label>شاعری / Text</label>
+<label>شاعری</label>
 <textarea id="text" placeholder="یہاں شاعری لکھیں"></textarea>
 
-<button onclick="addShayari()">➕ Add to JSON</button>
-<button id="copyBtn" onclick="copyJSON()">📋 Copy JSON</button>
+<button onclick="publish()">📤 Publish Shayari</button>
 
-<h3>⬇️ data.json میں یہ paste کریں:</h3>
-<pre id="output">[]</pre>
+<div class="status" id="status"></div>
 
 <script>
-/* ===== SETTINGS ===== */
-const AUTHOR = "\n\n— شافع";   // watermark name
-const dataArray = [];
+const SCRIPT_URL =
+"https://script.google.com/macros/s/AKfycbwDmvgnt3FxEs_O4eLX1LOHs4z7hf-URJywG2WKkWcRI3hc93vSM_2xIcgHj7H9HLGI/exec";
 
-/* ===== ADD SHAYARI ===== */
-function addShayari(){
-  const title = document.getElementById("title").value.trim();
-  const type  = document.getElementById("type").value;
-  const text  = document.getElementById("text").value.trim();
+function publish(){
+  const title = titleInput.value.trim();
+  const type  = typeSelect.value;
+  const text  = textInput.value.trim();
 
   if(!title || !text){
-    alert("Title اور Text لازمی ہیں!");
+    alert("عنوان اور شاعری لازمی ہیں");
     return;
   }
 
-  const obj = {
+  const payload = {
+    action: "add_shayari",
     id: Date.now().toString(),
-    type: type,
-    title: title,
-    text: text + AUTHOR   // 👈 watermark auto add
+    title,
+    type,
+    text
   };
 
-  dataArray.push(obj);
-
-  document.getElementById("output").textContent =
-    JSON.stringify(dataArray, null, 2);
-
-  // clear inputs
-  document.getElementById("title").value = "";
-  document.getElementById("text").value = "";
-}
-
-/* ===== COPY JSON ===== */
-function copyJSON(){
-  const json = document.getElementById("output").textContent;
-  if(!json || json === "[]"){
-    alert("ابھی کوئی شاعری add نہیں ہوئی");
-    return;
-  }
-  navigator.clipboard.writeText(json).then(()=>{
-    alert("JSON copy ہو گیا ✅\ndata.json میں paste کر دیں");
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  })
+  .then(r => r.text())
+  .then(res => {
+    status.innerText = "✅ شاعری کامیابی سے شامل ہو گئی";
+    titleInput.value = "";
+    textInput.value = "";
+  })
+  .catch(() => {
+    status.innerText = "❌ کچھ غلط ہو گیا";
   });
 }
+
+const titleInput = document.getElementById("title");
+const typeSelect = document.getElementById("type");
+const textInput  = document.getElementById("text");
+const status     = document.getElementById("status");
 </script>
 
 </body>
