@@ -2,86 +2,42 @@
 <html lang="ur">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin – Shayari & Dictionary</title>
-
+<title>Admin</title>
 <style>
-body{
-  background:#0f1115;
-  color:#fff;
-  font-family:system-ui;
-  padding:20px;
-}
-input,textarea,select,button{
-  width:100%;
-  margin:6px 0;
-  padding:10px;
-  border-radius:6px;
-  border:none;
-}
-textarea{height:120px}
-button{
-  background:#ad0000;
-  color:#fff;
-  font-weight:bold;
-}
-pre{
-  background:#161a22;
-  padding:10px;
-  border-radius:8px;
-  max-height:300px;
-  overflow:auto;
-}
-h3{margin-top:30px}
+body{background:#0f1115;color:#fff;font-family:system-ui;padding:20px}
+input,textarea,button{width:100%;margin:6px 0;padding:8px}
+pre{background:#161a22;padding:10px}
 </style>
 </head>
 
 <body>
 
-<h2>➕ شاعری شامل کریں</h2>
-
+<h2>شاعری</h2>
 <input id="title" placeholder="عنوان">
-<select id="type">
-  <option value="ghazal">غزل</option>
-  <option value="nazm">نظم</option>
-  <option value="sher">شعر</option>
-</select>
-<textarea id="text" placeholder="شاعری"></textarea>
-<button onclick="addShayari()">Add Shayari</button>
+<textarea id="text"></textarea>
 
-<h3>📚 لغت / Dictionary</h3>
+<h3>Dictionary</h3>
 <input id="word" placeholder="لفظ">
 <input id="meaning" placeholder="معنی">
-<button onclick="addWord()">Add Meaning</button>
+<button onclick="addWord()">لفظ شامل کریں</button>
 
-<h3>📦 data.json</h3>
+<button onclick="add()">Add Shayari</button>
+
 <pre id="out"></pre>
 
 <script>
-const data=[];
-const dict={};
-
-function addShayari(){
-  data.push({
-    id:Date.now().toString(),
-    title:title.value,
-    type:type.value,
-    text:text.value+"\n\n— شافع"
-  });
-  render();
-}
-
-function addWord(){
-  dict[word.value]=meaning.value;
-  word.value=meaning.value="";
-  render();
-}
-
-function render(){
-  out.textContent=JSON.stringify({
-    shayari:data,
-    dictionary:dict
-  },null,2);
+let dict={},arr=[];
+function addWord(){dict[word.value]=meaning.value;word.value=meaning.value=""}
+function add(){
+ arr.push({
+  id:Date.now().toString(),
+  title:title.value,
+  type:"sher",
+  text:text.value+"\n\n— شافع",
+  dictionary:dict
+ });
+ out.textContent=JSON.stringify(arr,null,2);
+ dict={};
 }
 </script>
 
