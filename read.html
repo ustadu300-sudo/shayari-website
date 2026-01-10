@@ -1,118 +1,30 @@
-
 <!DOCTYPE html>
 <html lang="ur">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shayari – Shafay Ali</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-
 <style>
-:root{
-  --bg:#0f1115;
-  --card:#161a22;
-  --text:#ffffff;
-  --muted:#9aa4b2;
-  --red:#ad0000;
-}
-
-*{box-sizing:border-box;margin:0;padding:0}
-
-body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:Inter,system-ui;
-  padding:20px;
-}
-
-/* ===== CARD ===== */
-.card{
-  max-width:820px;
-  margin:auto;
-  background:var(--card);
-  border-radius:20px;
-  padding:32px;
-  animation:fadeUp .6s ease;
-}
-
-@keyframes fadeUp{
-  from{opacity:0;transform:translateY(20px)}
-  to{opacity:1;transform:none}
-}
-
-/* ===== TITLE ===== */
-#title{
-  font-family:"Noto Nastaliq Urdu",serif;
-  font-size:2.1rem;
-  margin-bottom:10px;
-  text-align:center;
-}
-
-/* ===== TYPE ===== */
-#type{
-  text-align:center;
-  color:var(--muted);
-  margin-bottom:22px;
-  font-size:0.95rem;
-}
-
-/* ===== SHAYARI TEXT ===== */
-#text{
-  font-family:"Noto Nastaliq Urdu",serif;
-  font-size:1.55rem;
-  line-height:2.9;
-  text-align:center;
-  white-space:pre-wrap;
-}
-
-/* ===== BUTTON BAR ===== */
-.actions{
-  margin-top:30px;
-  display:flex;
-  flex-wrap:wrap;
-  gap:12px;
-  justify-content:center;
-}
-
-/* ===== BUTTON ===== */
-.btn{
-  padding:10px 22px;
-  border-radius:999px;
-  border:2px solid #fff;
-  background:none;
-  color:#fff;
-  cursor:pointer;
-  font-size:.95rem;
-  transition:.25s ease;
-}
-
+:root{--bg:#0f1115;--card:#161a22;--text:#fff;--muted:#9aa4b2;--red:#ad0000}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui;padding:20px;}
+.card{max-width:820px;margin:auto;background:var(--card);border-radius:20px;padding:32px;animation:fadeUp .6s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+#title{font-family:"Noto Nastaliq Urdu",serif;font-size:2.1rem;margin-bottom:10px;text-align:center;}
+#type{text-align:center;color:var(--muted);margin-bottom:22px;font-size:0.95rem;}
+#text{font-family:"Noto Nastaliq Urdu",serif;font-size:1.55rem;line-height:2.9;text-align:center;white-space:pre-wrap;}
+.actions{margin-top:30px;display:flex;flex-wrap:wrap;gap:12px;justify-content:center;}
+.btn{padding:10px 22px;border-radius:999px;border:2px solid #fff;background:none;color:#fff;cursor:pointer;font-size:.95rem;transition:.25s ease;}
 .btn:hover{transform:scale(1.06)}
-
-.btn-like.active{
-  background:#fff;
-  color:#000;
-}
-
-.btn-fav.active{
-  background:var(--red);
-  border-color:var(--red);
-}
-
+.btn-like.active{background:#fff;color:#000;}
+.btn-fav.active{background:var(--red);border-color:var(--red);}
 .btn-share{border-color:#315a80;color:#315a80}
 .btn-back{border-color:#777;color:#ddd}
-
-/* ===== MOBILE ===== */
-@media(max-width:600px){
-  #title{font-size:1.8rem}
-  #text{
-    font-size:1.35rem;
-    line-height:2.6;
-  }
-}
+#dict{margin-top:25px;background:#0f1115;padding:15px;border-radius:10px;}
+#dict h4{margin-bottom:8px;}
+#dict ul{list-style:none;padding-left:0;}
 </style>
 </head>
-
 <body>
 
 <div class="card">
@@ -126,63 +38,69 @@ body{
     <button class="btn btn-share" id="shareBtn">شیئر کریں</button>
     <button class="btn btn-back" onclick="location.href='index.html'">واپس جائیں</button>
   </div>
+
+  <div id="dict"></div>
 </div>
 
 <script>
 const DATA_URL="data.json";
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwNTWcjGMM1TCe35MTpAelr2cTEB5T1rHLIOXqWP3R4xRrSc1EoV7e9GTvBjpc4IOoJOw/exec";
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbzXT7167jMMrwRkEbSSy0CyBiWNQexc4yK3vIqmHSvE6kC3ZUiXS4iyAhNjFiENn1vxEg/exec";
 
 const userName = localStorage.getItem("visitorName");
-if(!userName || Notification.permission!=="granted"){
-  location.href="index.html";
-}
+if(!userName) location.href="index.html";
 
 const id = new URLSearchParams(location.search).get("id");
 
-/* ===== LOG FUNCTION ===== */
-function logUser(action){
-  const sTitle = document.getElementById("title").innerText;
-  fetch(`${SCRIPT_URL}?name=${encodeURIComponent(userName)}&action=${action}&title=${encodeURIComponent(sTitle)}&notify=${Notification.permission}&time=${Date.now()}`);
+// Log to sheet
+function logToSheet(name, action, title="", notify=""){
+  fetch(`${SCRIPT_URL}?name=${encodeURIComponent(name)}&action=${encodeURIComponent(action)}&title=${encodeURIComponent(title)}&notify=${encodeURIComponent(notify)}`)
+  .then(res=>res.text()).then(console.log).catch(console.error);
 }
 
-fetch(DATA_URL).then(r=>r.json()).then(data=>{
-  const s = data.find(x=>x.id===id);
-  if(!s){
-    document.getElementById("title").innerText="شاعری دستیاب نہیں";
-    return;
-  }
+fetch(DATA_URL)
+  .then(r=>r.json())
+  .then(data=>{
+    const s = data.find(x=>x.id===id);
+    if(!s){ document.getElementById("title").innerText="شاعری دستیاب نہیں"; return; }
 
-  const titleEl = document.getElementById("title");
-  const typeEl = document.getElementById("type");
-  const textEl = document.getElementById("text");
+    document.getElementById("title").innerText = s.title;
+    document.getElementById("type").innerText = s.type;
+    document.getElementById("text").innerText = s.text;
 
-  titleEl.innerText = s.title;
-  typeEl.innerText = s.type;
-  textEl.innerText = s.text;
+    // Render dictionary
+    const dictDiv = document.getElementById("dict");
+    dictDiv.innerHTML = "<h4>لغت / Dictionary</h4>";
+    const ul = document.createElement("ul");
+    Object.keys(s.dictionary).forEach(word=>{
+      const li = document.createElement("li");
+      li.innerText = word + " : " + s.dictionary[word];
+      ul.appendChild(li);
+    });
+    dictDiv.appendChild(ul);
 
-  let liked = false, fav = false;
+    let liked=false, fav=false;
 
-  likeBtn.onclick = ()=>{
-    liked = !liked;
-    likeBtn.classList.toggle("active", liked);
-    logUser(liked ? "like" : "unlike");
-  };
+    likeBtn.onclick = ()=>{
+      liked = !liked;
+      likeBtn.classList.toggle("active", liked);
+      logToSheet(userName, liked ? "like" : "unlike", s.title, Notification.permission);
+    }
 
-  favBtn.onclick = ()=>{
-    fav = !fav;
-    favBtn.classList.toggle("active", fav);
-    logUser(fav ? "favourite_add" : "favourite_remove");
-  };
+    favBtn.onclick = ()=>{
+      fav = !fav;
+      favBtn.classList.toggle("active", fav);
+      logToSheet(userName, fav ? "favourite_add" : "favourite_remove", s.title, Notification.permission);
+    }
 
-  shareBtn.onclick = ()=>{
-    navigator.clipboard.writeText(location.href)
-      .then(()=>alert("شاعری کا لنک کاپی ہو گیا"));
-    logUser("share");
-  };
+    shareBtn.onclick = ()=>{
+      navigator.clipboard.writeText(location.href).then(()=>alert("شیئر کا لنک کاپی ہوگیا"));
+      logToSheet(userName, "share", s.title, Notification.permission);
+    }
 
-  // Log read action
-  logUser("read");
-});
+    // Log read
+    logToSheet(userName, "read", s.title, Notification.permission);
+  })
+  .catch(console.error);
 </script>
 
 </body>
