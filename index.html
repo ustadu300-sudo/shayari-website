@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin – Shayari & Dictionary</title>
-
+<title>Shayari – Home</title>
 <style>
 body{
   background:#0f1115;
@@ -12,77 +11,79 @@ body{
   font-family:system-ui;
   padding:20px;
 }
-input,textarea,select,button{
+a{
+  display:block;
+  margin:8px 0;
+  color:#ad0000;
+  text-decoration:none;
+}
+input,button{
   width:100%;
-  margin:6px 0;
   padding:10px;
+  margin:6px 0;
   border-radius:6px;
   border:none;
 }
-textarea{height:120px}
 button{
   background:#ad0000;
   color:#fff;
   font-weight:bold;
+  cursor:pointer;
 }
-pre{
-  background:#161a22;
-  padding:10px;
-  border-radius:8px;
-  max-height:300px;
-  overflow:auto;
-}
-h3{margin-top:30px}
 </style>
 </head>
-
 <body>
 
-<h2>➕ شاعری شامل کریں</h2>
+<h2>شاعری کی فہرست</h2>
 
-<input id="title" placeholder="عنوان">
-<select id="type">
-  <option value="ghazal">غزل</option>
-  <option value="nazm">نظم</option>
-  <option value="sher">شعر</option>
-</select>
-<textarea id="text" placeholder="شاعری"></textarea>
-<button onclick="addShayari()">Add Shayari</button>
+<input id="visitorName" placeholder="اپنا نام درج کریں">
+<button onclick="saveName()">شروع کریں</button>
 
-<h3>📚 لغت / Dictionary</h3>
-<input id="word" placeholder="لفظ">
-<input id="meaning" placeholder="معنی">
-<button onclick="addWord()">Add Meaning</button>
-
-<h3>📦 data.json</h3>
-<pre id="out"></pre>
+<hr>
+<div id="shayariList"></div>
 
 <script>
-const data=[];
-const dict={};
+const DATA_URL="data.json"; // Your local JSON file
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbzXT7167jMMrwRkEbSSy0CyBiWNQexc4yK3vIqmHSvE6kC3ZUiXS4iyAhNjFiENn1vxEg/exec";
 
-function addShayari(){
-  data.push({
-    id:Date.now().toString(),
-    title:title.value,
-    type:type.value,
-    text:text.value+"\n\n— شافع"
-  });
-  render();
+function saveName(){
+  const name = document.getElementById("visitorName").value.trim();
+  if(!name) return alert("نام درج کریں");
+  localStorage.setItem("visitorName", name);
+  loadShayari();
 }
 
-function addWord(){
-  dict[word.value]=meaning.value;
-  word.value=meaning.value="";
-  render();
+// Function to log actions to Google Sheet
+function logToSheet(name, action, title="", notify=""){
+  fetch(`${SCRIPT_URL}?name=${encodeURIComponent(name)}&action=${encodeURIComponent(action)}&title=${encodeURIComponent(title)}&notify=${encodeURIComponent(notify)}`)
+  .then(res=>res.text())
+  .then(console.log)
+  .catch(console.error);
 }
 
-function render(){
-  out.textContent=JSON.stringify({
-    shayari:data,
-    dictionary:dict
-  },null,2);
+// Load shayari list
+function loadShayari(){
+  const name = localStorage.getItem("visitorName");
+  if(!name) return;
+
+  fetch(DATA_URL)
+    .then(r=>r.json())
+    .then(data=>{
+      const listDiv = document.getElementById("shayariList");
+      listDiv.innerHTML = "";
+      data.forEach(s=>{
+        const link = document.createElement("a");
+        link.href = `read.html?id=${s.id}`;
+        link.innerText = s.title + " ("+s.type+")";
+        listDiv.appendChild(link);
+      });
+      logToSheet(name, "visit"); // Log page visit
+    })
+    .catch(console.error);
 }
+
+// Auto load if name is already stored
+if(localStorage.getItem("visitorName")) loadShayari();
 </script>
 
 </body>
