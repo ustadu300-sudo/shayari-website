@@ -3,79 +3,86 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shafay Ali – Shayari</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">
+<title>Admin – Shayari & Dictionary</title>
 
 <style>
 body{
   background:#0f1115;
   color:#fff;
-  font-family:"Noto Nastaliq Urdu",serif;
+  font-family:system-ui;
   padding:20px;
 }
-h1{text-align:center;margin-bottom:20px}
-.nav{
-  display:flex;
-  justify-content:center;
-  gap:12px;
-  margin-bottom:20px;
-}
-button{
-  padding:8px 18px;
-  border-radius:20px;
+input,textarea,select,button{
+  width:100%;
+  margin:6px 0;
+  padding:10px;
+  border-radius:6px;
   border:none;
-  cursor:pointer;
+}
+textarea{height:120px}
+button{
   background:#ad0000;
   color:#fff;
+  font-weight:bold;
 }
-.card{
+pre{
   background:#161a22;
-  padding:18px;
-  border-radius:14px;
-  margin-bottom:14px;
-  cursor:pointer;
+  padding:10px;
+  border-radius:8px;
+  max-height:300px;
+  overflow:auto;
 }
-small{color:#aaa}
+h3{margin-top:30px}
 </style>
 </head>
 
 <body>
 
-<h1>شافع علی</h1>
+<h2>➕ شاعری شامل کریں</h2>
 
-<div class="nav">
-  <button onclick="showAll()">تمام</button>
-  <button onclick="showFav()">پسندیدہ</button>
-</div>
+<input id="title" placeholder="عنوان">
+<select id="type">
+  <option value="ghazal">غزل</option>
+  <option value="nazm">نظم</option>
+  <option value="sher">شعر</option>
+</select>
+<textarea id="text" placeholder="شاعری"></textarea>
+<button onclick="addShayari()">Add Shayari</button>
 
-<div id="list"></div>
+<h3>📚 لغت / Dictionary</h3>
+<input id="word" placeholder="لفظ">
+<input id="meaning" placeholder="معنی">
+<button onclick="addWord()">Add Meaning</button>
+
+<h3>📦 data.json</h3>
+<pre id="out"></pre>
 
 <script>
-const DATA_URL="data.json";
-const favs = JSON.parse(localStorage.getItem("favs")||"[]");
-let all=[];
+const data=[];
+const dict={};
 
-fetch(DATA_URL).then(r=>r.json()).then(d=>{
-  all=d;
-  render(all);
-});
-
-function render(arr){
-  list.innerHTML="";
-  arr.forEach(s=>{
-    const div=document.createElement("div");
-    div.className="card";
-    div.innerHTML=`<h3>${s.title}</h3><small>${s.type}</small>`;
-    div.onclick=()=>location.href=`read.html?id=${s.id}`;
-    list.appendChild(div);
+function addShayari(){
+  data.push({
+    id:Date.now().toString(),
+    title:title.value,
+    type:type.value,
+    text:text.value+"\n\n— شافع"
   });
+  render();
 }
 
-function showFav(){
-  render(all.filter(s=>favs.includes(s.id)));
+function addWord(){
+  dict[word.value]=meaning.value;
+  word.value=meaning.value="";
+  render();
 }
-function showAll(){render(all)}
+
+function render(){
+  out.textContent=JSON.stringify({
+    shayari:data,
+    dictionary:dict
+  },null,2);
+}
 </script>
 
 </body>
