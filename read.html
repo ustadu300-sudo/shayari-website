@@ -3,111 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shayari – Shafay Ali</title>
+<title>Shayari</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&family=Inter&display=swap" rel="stylesheet">
 
 <style>
-:root{
-  --bg:#0f1115;
-  --card:#161a22;
-  --text:#ffffff;
-  --muted:#9aa4b2;
-  --red:#ad0000;
-}
-
-*{box-sizing:border-box;margin:0;padding:0}
-
-body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:Inter,system-ui;
-  padding:20px;
-}
-
-/* ===== CARD ===== */
+body{background:#0f1115;color:#fff;font-family:Inter;padding:20px}
 .card{
-  max-width:820px;
-  margin:auto;
-  background:var(--card);
-  border-radius:20px;
-  padding:32px;
-  animation:fadeUp .6s ease;
+  max-width:800px;margin:auto;background:#161a22;
+  padding:28px;border-radius:20px;text-align:center
 }
-
-@keyframes fadeUp{
-  from{opacity:0;transform:translateY(20px)}
-  to{opacity:1;transform:none}
-}
-
-/* ===== TITLE ===== */
-#title{
-  font-family:"Noto Nastaliq Urdu",serif;
-  font-size:2.1rem;
-  margin-bottom:10px;
-  text-align:center;
-}
-
-/* ===== TYPE ===== */
-#type{
-  text-align:center;
-  color:var(--muted);
-  margin-bottom:22px;
-  font-size:0.95rem;
-}
-
-/* ===== SHAYARI TEXT ===== */
+#title{font-family:"Noto Nastaliq Urdu";font-size:2rem}
 #text{
-  font-family:"Noto Nastaliq Urdu",serif;
-  font-size:1.55rem;
-  line-height:2.9;
-  text-align:center;
+  font-family:"Noto Nastaliq Urdu";
+  font-size:1.45rem;
+  line-height:2.8;
   white-space:pre-wrap;
 }
-
-/* ===== BUTTON BAR ===== */
-.actions{
-  margin-top:30px;
-  display:flex;
-  flex-wrap:wrap;
-  gap:12px;
-  justify-content:center;
-}
-
-/* ===== BUTTON ===== */
+.actions{margin-top:20px;display:flex;gap:10px;justify-content:center}
 .btn{
-  padding:10px 22px;
-  border-radius:999px;
-  border:2px solid #fff;
-  background:none;
-  color:#fff;
-  cursor:pointer;
-  font-size:.95rem;
-  transition:.25s ease;
+  padding:8px 20px;border-radius:20px;
+  border:2px solid #fff;background:none;color:#fff;cursor:pointer
 }
-
-.btn:hover{transform:scale(1.06)}
-
-.btn-like.active{
-  background:#fff;
-  color:#000;
-}
-
-.btn-fav.active{
-  background:var(--red);
-  border-color:var(--red);
-}
-
-.btn-share{border-color:#315a80;color:#315a80}
-.btn-back{border-color:#777;color:#ddd}
-
-/* ===== MOBILE ===== */
-@media(max-width:600px){
-  #title{font-size:1.8rem}
-  #text{
-    font-size:1.35rem;
-    line-height:2.6;
-  }
+.btn.active{background:#fff;color:#000}
+.dict{
+  border-bottom:1px dotted #aaa;
+  cursor:help;
 }
 </style>
 </head>
@@ -115,15 +36,13 @@ body{
 <body>
 
 <div class="card">
-  <h1 id="title">لوڈ ہو رہا ہے…</h1>
-  <div id="type"></div>
+  <h1 id="title"></h1>
   <div id="text"></div>
 
   <div class="actions">
-    <button class="btn btn-like" id="likeBtn">پسند آیا</button>
-    <button class="btn btn-fav" id="favBtn">پسندیدہ</button>
-    <button class="btn btn-share" id="shareBtn">شیئر کریں</button>
-    <button class="btn btn-back" onclick="location.href='index.html'">واپس جائیں</button>
+    <button id="likeBtn" class="btn">پسند آیا</button>
+    <button id="favBtn" class="btn">پسندیدہ</button>
+    <button class="btn" onclick="history.back()">واپس</button>
   </div>
 </div>
 
@@ -131,56 +50,47 @@ body{
 const DATA_URL="data.json";
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwNTWcjGMM1TCe35MTpAelr2cTEB5T1rHLIOXqWP3R4xRrSc1EoV7e9GTvBjpc4IOoJOw/exec";
 
-const userName = localStorage.getItem("visitorName");
-if(!userName || Notification.permission!=="granted"){
-  location.href="index.html";
-}
+const id=new URLSearchParams(location.search).get("id");
+const likes=JSON.parse(localStorage.getItem("likes")||"{}");
+let favs=JSON.parse(localStorage.getItem("favs")||"[]");
 
-const id = new URLSearchParams(location.search).get("id");
-
-/* ===== LOG FUNCTION ===== */
-function logUser(action){
-  const sTitle = document.getElementById("title").innerText;
-  fetch(`${SCRIPT_URL}?name=${encodeURIComponent(userName)}&action=${action}&title=${encodeURIComponent(sTitle)}&notify=${Notification.permission}&time=${Date.now()}`);
+function log(action,title){
+ fetch(`${SCRIPT_URL}?action=${action}&title=${encodeURIComponent(title)}&time=${Date.now()}`);
 }
 
 fetch(DATA_URL).then(r=>r.json()).then(data=>{
-  const s = data.find(x=>x.id===id);
-  if(!s){
-    document.getElementById("title").innerText="شاعری دستیاب نہیں";
-    return;
-  }
+ const s=data.find(x=>x.id===id);
+ title.innerText=s.title;
 
-  const titleEl = document.getElementById("title");
-  const typeEl = document.getElementById("type");
-  const textEl = document.getElementById("text");
+ let html=s.text;
+ if(s.dictionary){
+   for(const w in s.dictionary){
+     html=html.replace(
+       new RegExp(w,"g"),
+       `<span class="dict" title="${s.dictionary[w]}">${w}</span>`
+     );
+   }
+ }
+ text.innerHTML=html;
 
-  titleEl.innerText = s.title;
-  typeEl.innerText = s.type;
-  textEl.innerText = s.text;
+ likeBtn.classList.toggle("active",likes[id]);
+ favBtn.classList.toggle("active",favs.includes(id));
 
-  let liked = false, fav = false;
+ likeBtn.onclick=()=>{
+   likes[id]=!likes[id];
+   localStorage.setItem("likes",JSON.stringify(likes));
+   likeBtn.classList.toggle("active",likes[id]);
+   log("like",s.title);
+ };
 
-  likeBtn.onclick = ()=>{
-    liked = !liked;
-    likeBtn.classList.toggle("active", liked);
-    logUser(liked ? "like" : "unlike");
-  };
+ favBtn.onclick=()=>{
+   favs.includes(id)?favs=favs.filter(x=>x!==id):favs.push(id);
+   localStorage.setItem("favs",JSON.stringify(favs));
+   favBtn.classList.toggle("active",favs.includes(id));
+   log("favourite",s.title);
+ };
 
-  favBtn.onclick = ()=>{
-    fav = !fav;
-    favBtn.classList.toggle("active", fav);
-    logUser(fav ? "favourite_add" : "favourite_remove");
-  };
-
-  shareBtn.onclick = ()=>{
-    navigator.clipboard.writeText(location.href)
-      .then(()=>alert("شاعری کا لنک کاپی ہو گیا"));
-    logUser("share");
-  };
-
-  // Log read action
-  logUser("read");
+ log("read",s.title);
 });
 </script>
 
