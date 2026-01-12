@@ -5,24 +5,52 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shafay Ali - Shayari</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&family=Inter&display=swap" rel="stylesheet">
-
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+window.OneSignalDeferred = window.OneSignalDeferred || [];
+OneSignalDeferred.push(async function(OneSignal) {
+  await OneSignal.init({
+    appId: "2c2a67d7-e712-44c2-8233-9413718f8d75",
+    notifyButton: { enable: true },
+  });
+});
+</script>
 <style>
 :root{
-  --bg:#0f1115; --card:#161a22; --accent:#ad0000; --white:#ffffff; --muted:#9aa4b2;
+  --bg:#0f1115;
+  --card:#161a22;
+  --accent:#ad0000;
+  --white:#ffffff;
+  --muted:#9aa4b2;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--white);font-family:Inter;}
 body.lock main, body.lock header, body.lock nav, body.lock footer{
-  filter:blur(6px); pointer-events:none;
+  filter:blur(6px);
+  pointer-events:none;
 }
 #gate{
-  position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center;
+  position:fixed; inset:0; z-index:9999;
+  display:flex; align-items:center; justify-content:center;
   background:rgba(0,0,0,.85);
 }
-#gate .box{background:var(--card); padding:26px; border-radius:14px; max-width:360px; text-align:center;}
+#gate .box{
+  background:var(--card);
+  padding:26px;
+  border-radius:14px;
+  max-width:360px;
+  text-align:center;
+}
 #gate h3{font-family:"Noto Nastaliq Urdu",serif;line-height:2.3;}
-#gate input{width:100%; padding:12px; margin-top:12px; border-radius:8px; border:none;}
-#gate button{width:100%; padding:12px; margin-top:12px; border:none; background:var(--accent); color:#fff; font-weight:bold; cursor:pointer;}
+#gate input{
+  width:100%; padding:12px; margin-top:12px;
+  border-radius:8px; border:none;
+}
+#gate button{
+  width:100%; padding:12px; margin-top:12px;
+  border:none; background:var(--accent);
+  color:#fff; font-weight:bold; cursor:pointer;
+}
 .banner{height:240px;background:url('BANNER/unsplash.png.jpg.jpg') center/cover no-repeat;}
 .banner-inner{max-width:1200px;margin:auto;height:100%;display:flex;align-items:flex-end;gap:20px;padding:20px;}
 .logo{width:100px;height:100px;border-radius:50%;overflow:hidden;}
@@ -33,9 +61,16 @@ body.lock main, body.lock header, body.lock nav, body.lock footer{
 .nav button{background:none;border:none;color:#fff;padding:8px 14px;border-radius:8px;cursor:pointer;}
 .nav button.active{background:#315a80}
 .wrap{max-width:1200px;margin:auto;padding:16px;}
-.item{background:var(--card); padding:16px; border-radius:14px; margin-bottom:14px; cursor:pointer;}
-.item h3{font-family:"Noto Nastaliq Urdu",serif; display:flex; justify-content:space-between; align-items:center;}
-.heart{color:transparent; -webkit-text-stroke:1.5px red; font-size:20px;}
+.item{
+  background:var(--card); padding:16px; border-radius:14px; margin-bottom:14px;
+  cursor:pointer;
+}
+.item h3{
+  font-family:"Noto Nastaliq Urdu",serif; display:flex; justify-content:space-between; align-items:center;
+}
+.heart{
+  color:transparent; -webkit-text-stroke:1.5px red; font-size:20px;
+}
 .heart.active{color:red;}
 </style>
 </head>
@@ -44,7 +79,10 @@ body.lock main, body.lock header, body.lock nav, body.lock footer{
 <!-- GATE -->
 <div id="gate">
   <div class="box">
-    <h3>نئی شاعری کی اطلاع کے لیے نوٹیفکیشن آن کریں<br><br>اپنا نام درج کریں</h3>
+    <h3>
+      نئی شاعری کی اطلاع کے لیے نوٹیفکیشن آن کریں<br><br>
+      اپنا نام درج کریں
+    </h3>
     <input id="username" placeholder="اپنا نام لکھیں">
     <button id="continueBtn">جاری رکھیں</button>
   </div>
@@ -77,39 +115,38 @@ body.lock main, body.lock header, body.lock nav, body.lock footer{
 <footer style="text-align:center;padding:20px;color:#999">© Shafay Ali</footer>
 
 <script>
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbyfRG0Q0L21pdwhtbVxKyaCFUeDVdFr6sAhIah9DLS0zwNGBBUA27SRlqAo83IWF81oQA/exec";
+const SCRIPT="https://script.google.com/macros/s/AKfycbyfRG0Q0L21pdwhtbVxKyaCFUeDVdFr6sAhIah9DLS0zwNGBBUA27SRlqAo83IWF81oQA/exec";
 const list=document.getElementById("list");
 const gate=document.getElementById("gate");
 const username=document.getElementById("username");
 const continueBtn=document.getElementById("continueBtn");
 
-// ===== GATE LOGIC =====
-continueBtn.onclick = async () => {
-  const name = username.value.trim();
-  if(!name){ alert("نام درج کریں"); return; }
-  const perm = await Notification.requestPermission();
-  if(perm!=="granted"){ alert("نوٹیفکیشن آن کیے بغیر ویب سائٹ استعمال نہیں کی جا سکتی"); return; }
-
-  localStorage.setItem("visitorName", name);
-  fetch(`${SCRIPT_URL}?name=${encodeURIComponent(name)}&action=visit&notify=granted`);
-
+/* ===== GATE LOGIC ===== */
+continueBtn.onclick=async()=>{
+  const name=username.value.trim();
+  if(!name){alert("نام درج کریں"); return;}
+  const perm=await Notification.requestPermission();
+  if(perm!=="granted"){alert("نوٹیفکیشن آن کیے بغیر ویب سائٹ استعمال نہیں کی جا سکتی"); return;}
+  localStorage.setItem("visitorName",name);
+  fetch(`${SCRIPT}?name=${encodeURIComponent(name)}&action=visit&notify=granted`);
   document.body.classList.remove("lock");
   gate.style.display="none";
 };
 
+/* Already granted */
 if(localStorage.getItem("visitorName") && Notification.permission==="granted"){
   document.body.classList.remove("lock");
   gate.style.display="none";
 }
 
-// ===== LOAD DATA =====
+/* ===== LOAD DATA ===== */
 async function loadShayari(filter="all"){
-  const res = await fetch("data.json");
-  const data = await res.json();
+  const res=await fetch("data.json");
+  const data=await res.json();
   list.innerHTML="";
-  const visitorName = localStorage.getItem("visitorName");
+  const visitorName=localStorage.getItem("visitorName");
 
-  const filtered = data.filter(d => {
+  const filtered=data.filter(d=>{
     if(filter==="all") return true;
     if(filter==="fav") return d.favourite && d.favourite.includes(visitorName);
     return d.type===filter;
@@ -120,12 +157,22 @@ async function loadShayari(filter="all"){
   filtered.forEach(s=>{
     const div=document.createElement("div");
     div.className="item";
-    div.innerHTML=`<h3>${s.title}<span class="heart ${s.favourite && s.favourite.includes(visitorName)?"active":""}">❤</span></h3>
-      <small style="color:#999;font-size:12px">${s.type}</small>`;
-    div.onclick = e => {
+    const isFav=s.favourite && s.favourite.includes(visitorName);
+    div.innerHTML=`
+      <h3>${s.title}<span class="heart ${isFav ? "active":""}">❤</span></h3>
+      <small style="color:#999;font-size:12px">${s.type}</small>
+    `;
+    div.onclick=e=>{
       if(e.target.classList.contains("heart")){
         e.target.classList.toggle("active");
-        fetch(`${SCRIPT_URL}?name=${visitorName}&action=favourite_toggle&title=${encodeURIComponent(s.title)}&notify=granted`);
+        const action=isFav ? "favourite_remove" : "favourite_add";
+        s.favourite = s.favourite || [];
+        if(isFav){
+          s.favourite = s.favourite.filter(u=>u!==visitorName);
+        } else {
+          s.favourite.push(visitorName);
+        }
+        fetch(`${SCRIPT}?name=${visitorName}&action=${action}&title=${encodeURIComponent(s.title)}&notify=granted`);
       } else {
         location.href=`read.html?id=${s.id}`;
       }
@@ -134,16 +181,18 @@ async function loadShayari(filter="all"){
   });
 }
 
-// ===== NAV FILTER =====
+/* ===== NAV FILTER ===== */
 document.querySelectorAll(".nav button").forEach(btn=>{
-  btn.onclick = ()=>{
+  btn.onclick=()=>{
     document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
     btn.classList.add("active");
     loadShayari(btn.dataset.type);
   };
 });
 
+/* ===== INITIAL LOAD ===== */
 loadShayari();
 </script>
 </body>
 </html>
+
