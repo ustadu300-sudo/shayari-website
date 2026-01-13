@@ -3,133 +3,95 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin – Shayari JSON</title>
-
+<title>Admin – Shayari & Dictionary</title>
 <style>
-:root{--bg:#0f1115;--card:#161a22;--red:#ad0000}
-body{background:var(--bg);color:#fff;font-family:system-ui;padding:20px}
-
-/* ===== LOGIN GATE ===== */
-#login{
-  position:fixed; inset:0;
-  background:rgba(0,0,0,.85);
-  display:flex; align-items:center; justify-content:center;
-  z-index:9999;
-}
-#login .box{
-  background:var(--card);
-  padding:24px;
-  border-radius:14px;
-  width:100%; max-width:360px;
-  text-align:center;
-}
-#login input, #login button{
-  width:100%; padding:12px; margin-top:10px;
-  border-radius:8px; border:none;
-}
-#login button{
-  background:var(--red);
-  color:#fff; font-weight:bold; cursor:pointer;
-}
-
-/* ===== ADMIN ===== */
-textarea,select,button{
-  width:100%; margin:8px 0; padding:10px;
-  border-radius:8px; border:none;
-}
-button{background:var(--red);color:#fff;font-weight:bold;cursor:pointer}
-pre{
-  background:#161a22;
-  padding:12px;
-  border-radius:10px;
-  white-space:pre-wrap;
-}
+body{background:#0f1115;color:#fff;font-family:system-ui;padding:20px;}
+input,textarea,select,button{width:100%;margin:6px 0;padding:10px;border-radius:6px;border:none;font-size:1rem;}
+textarea{height:120px;}
+button{background:#ad0000;color:#fff;font-weight:bold;cursor:pointer;}
+pre{background:#161a22;padding:10px;border-radius:8px;max-height:300px;overflow:auto;}
+h3{margin-top:30px;}
+#dictionaryList{margin-top:15px;}
+.word-item{display:flex;align-items:center;margin-bottom:6px;gap:6px;}
+.word-item input{flex:1;}
 </style>
 </head>
-
 <body>
 
-<!-- LOGIN -->
-<div id="login">
-  <div class="box">
-    <h3>Admin Login</h3>
-    <input id="user" placeholder="Username">
-    <input id="pass" type="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-  </div>
-</div>
+<h2>➕ شاعری شامل کریں</h2>
 
-<!-- ADMIN PANEL -->
-<div id="admin" style="display:none">
-
-<h3>➕ نئی شاعری</h3>
-
+<input id="title" placeholder="عنوان">
 <select id="type">
   <option value="ghazal">غزل</option>
   <option value="nazm">نظم</option>
   <option value="sher">شعر</option>
 </select>
+<textarea id="text" placeholder="شاعری یہاں پیسٹ کریں"></textarea>
+<button id="parseBtn">Shayari سے الفاظ نکالیں</button>
 
-<textarea id="text" placeholder="شاعری paste کریں"></textarea>
+<h3>📚 Dictionary</h3>
+<div id="dictionaryList"></div>
 
-<button onclick="generate()">Create JSON</button>
-<button onclick="copyJSON()">Copy JSON</button>
+<button id="createJsonBtn">Create JSON</button>
+<button id="copyJsonBtn">Copy JSON</button>
 
+<h3>📦 data.json</h3>
 <pre id="out"></pre>
 
-</div>
-
 <script>
-/* ===== LOGIN LOGIC ===== */
-function login(){
-  const u=user.value.trim();
-  const p=pass.value.trim();
+const data=[]; // shayari array
+let dict = {}; // dictionary
 
-  if(u==="admin" && p==="shafayali1234"){
-    sessionStorage.setItem("adminLogin","yes");
-    loginBox();
-  }else{
-    alert("غلط username یا password");
-  }
+function extractWords(text){
+  // split words by space and punctuation
+  const words = text.match(/[\u0600-\u06FF]+/g) || [];
+  return [...new Set(words)]; // unique words
 }
 
-function loginBox(){
-  document.getElementById("login").style.display="none";
-  document.getElementById("admin").style.display="block";
-}
+const titleInput = document.getElementById('title');
+const typeInput = document.getElementById('type');
+const textInput = document.getElementById('text');
+const dictionaryList = document.getElementById('dictionaryList');
+const outPre = document.getElementById('out');
 
-if(sessionStorage.getItem("adminLogin")==="yes"){
-  loginBox();
-}
+document.getElementById('parseBtn').onclick = () => {
+  const words = extractWords(textInput.value);
+  dict = {};
+  dictionaryList.innerHTML = '';
+  words.forEach(w => {
+    dict[w] = '';
+    const div = document.createElement('div');
+    div.className = 'word-item';
+    const span = document.createElement('span');
+    span.innerText = w;
+    const input = document.createElement('input');
+    input.placeholder = 'مختصر معنی لکھیں';
+    input.oninput = () => dict[w] = input.value;
+    div.appendChild(span);
+    div.appendChild(input);
+    dictionaryList.appendChild(div);
+  });
+};
 
-/* ===== JSON GENERATOR ===== */
-function generate(){
-  const t=text.value.trim();
-  if(!t){alert("شاعری لکھیں");return;}
-
-  const words=[...new Set(
-    t.replace(/[^\u0600-\u06FF ]/g,"")
-     .split(" ")
-     .filter(w=>w.length>3)
-  )];
-
-  const dict={};
-  words.forEach(w=>dict[w]="(meaning)");
-
-  const json={
+document.getElementById('createJsonBtn').onclick = () => {
+  if(!titleInput.value || !textInput.value) return alert('عنوان اور شاعری درج کریں');
+  data.push({
     id:Date.now().toString(),
-    title:t.split("\n")[0],
-    type:type.value,
-    text:t,
-    dictionary:dict
-  };
+    title: titleInput.value,
+    type: typeInput.value,
+    text: textInput.value,
+    dictionary: dict
+  });
+  render();
+};
 
-  out.textContent=JSON.stringify(json,null,2);
-}
+document.getElementById('copyJsonBtn').onclick = () => {
+  navigator.clipboard.writeText(JSON.stringify({shayari:data}, null, 2));
+  alert('JSON copied!');
+};
 
-function copyJSON(){
-  navigator.clipboard.writeText(out.textContent);
-  alert("JSON copied");
+function render(){
+  outPre.textContent = JSON.stringify({shayari:data}, null, 2);
 }
 </script>
 
