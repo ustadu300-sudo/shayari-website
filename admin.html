@@ -16,7 +16,7 @@ textarea{height:120px;}
 #type{text-align:center;color:var(--muted);margin-bottom:22px;font-size:0.95rem;}
 #text{font-family:"Noto Nastaliq Urdu",serif;font-size:1.55rem;line-height:2.9;text-align:center;white-space:pre-wrap;}
 button{background:var(--red);color:#fff;font-weight:bold;cursor:pointer;}
-#out{background:#161a22;padding:10px;border-radius:8px;max-height:300px;overflow:auto;margin-top:20px;}
+#out{background:#161a22;padding:10px;border-radius:8px;max-height:400px;overflow:auto;margin-top:20px;}
 #dict{margin-top:25px;background:#0f1115;padding:15px;border-radius:10px;transition:all .3s ease;}
 #dict h4{margin-bottom:8px;}
 #dict ul{list-style:none;padding-left:0;}
@@ -25,7 +25,7 @@ button{background:var(--red);color:#fff;font-weight:bold;cursor:pointer;}
 <body>
 
 <div class="card">
-  <h2>➕ شاعری شامل کریں</h2>
+  <h2>➕ نئی شاعری شامل کریں</h2>
   <input id="title" placeholder="عنوان">
   <select id="type">
     <option value="ghazal">غزل</option>
@@ -42,6 +42,30 @@ button{background:var(--red);color:#fff;font-weight:bold;cursor:pointer;}
 <script>
 const data = [];
 
+// Predefined Urdu meanings for common difficult words
+const predefinedMeanings = {
+  "شافع":"لکھنے والا یا نام",
+  "چھوڑنا":"رہنا یا جانے دینا",
+  "سیکھا":"علم حاصل کیا",
+  "نہیں":"انکار یا رد",
+  "لوگ":"افراد، لوگ",
+  "تمھیں":"آپ کو",
+  "چھوڑتے":"چھوڑ دینا",
+  "محبت":"دل سے لگاؤ",
+  "دل":"جذبات کا مرکز",
+  "غم":"اداسی، دکھ",
+  "ہجر":"جدائی، دوری",
+  "یاد":"یادداشت، یاد کرنا",
+  "وقت":"لمحہ یا دن",
+  "زندگی":"جیون، حیات"
+};
+
+function getSimpleMeaning(word){
+  if(predefinedMeanings[word]) return predefinedMeanings[word];
+  // For unknown words, just show first 2–3 chars as “simple meaning” placeholder
+  return word.slice(0,3) + "…";
+}
+
 function addShayari() {
   const titleVal = document.getElementById("title").value.trim();
   const typeVal = document.getElementById("type").value;
@@ -49,27 +73,16 @@ function addShayari() {
 
   if(!titleVal || !textVal){ alert("عنوان اور شاعری درج کریں"); return; }
 
-  // Auto dictionary for some Urdu words
+  // Split text into words (Urdu words)
   const words = textVal.match(/\b[^\s]+\b/g) || [];
   const dictionary = {};
-  let added = 0;
-  const MAX_DICT = 4; // number of words to give meaning
-  const sampleMeanings = {
-    "شاعر": "جو شعر لکھتا ہے",
-    "محبت": "دل سے لگاؤ یا عشق",
-    "غم": "اداسی، دکھ",
-    "خوشی": "فرحت، مسرت",
-    "زندگی": "جیون، حیات",
-    "دن": "وقت کا حصہ",
-    "رات": "سیاہ وقت",
-    "دل": "محبت یا جذبات کا مرکز",
-    "جانا": "رخت سفر کرنا یا حرکت کرنا"
-  };
 
+  // Add up to 7 words automatically with meaning
+  let added = 0;
   for(let w of words){
-    if(added >= MAX_DICT) break;
-    if(sampleMeanings[w]) {
-      dictionary[w] = sampleMeanings[w];
+    if(added >= 7) break;
+    if(!dictionary[w]){
+      dictionary[w] = getSimpleMeaning(w);
       added++;
     }
   }
