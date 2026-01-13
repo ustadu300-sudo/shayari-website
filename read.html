@@ -3,68 +3,144 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shayari</title>
+<title>Shayari – Shafay Ali</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&family=Inter&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 
 <style>
-/* DESIGN SAME – NOT TOUCHED */
-body{background:#0f1115;color:#fff;font-family:Inter;padding:20px}
-.card{max-width:820px;margin:auto;background:#161a22;border-radius:20px;padding:32px}
-#title{font-family:"Noto Nastaliq Urdu";font-size:2rem;text-align:center}
-#text{font-family:"Noto Nastaliq Urdu";font-size:1.5rem;line-height:2.8;text-align:center}
-.btn{padding:10px 22px;border-radius:999px;border:2px solid #fff;background:none;color:#fff}
-.btn.active{background:#ad0000;border-color:#ad0000}
+:root{--bg:#0f1115;--card:#161a22;--text:#fff;--muted:#9aa4b2;--red:#ad0000}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui;padding:20px;}
+.card{max-width:820px;margin:auto;background:var(--card);border-radius:20px;padding:32px;animation:fadeUp .6s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+#title{font-family:"Noto Nastaliq Urdu",serif;font-size:2.1rem;margin-bottom:10px;text-align:center;}
+#type{text-align:center;color:var(--muted);margin-bottom:22px;font-size:.95rem;}
+#text{font-family:"Noto Nastaliq Urdu",serif;font-size:1.55rem;line-height:2.9;text-align:center;white-space:pre-wrap;}
+
+.actions{margin-top:30px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.btn{padding:10px 22px;border-radius:999px;border:2px solid #fff;background:none;color:#fff;cursor:pointer;font-size:.95rem;transition:.25s}
+.btn:hover{transform:scale(1.06)}
+.btn-like.active{background:#fff;color:#000}
+.btn-fav.active{background:var(--red);border-color:var(--red)}
+.btn-share{border-color:#315a80;color:#315a80}
+.btn-back{border-color:#777;color:#ddd}
+
+/* ===== DICTIONARY ===== */
+.dict-note{
+  margin-top:22px;
+  font-size:12px;
+  color:#aaa;
+  text-align:center;
+}
+.word{
+  position:relative;
+  cursor:pointer;
+  border-bottom:1px dotted #777;
+  padding:0 2px;
+}
+.meaning{
+  position:absolute;
+  bottom:120%;
+  right:50%;
+  transform:translateX(50%) scale(.95);
+  background:#0f1115;
+  border:1px solid #333;
+  padding:10px 12px;
+  border-radius:10px;
+  width:220px;
+  font-size:13px;
+  line-height:1.8;
+  opacity:0;
+  pointer-events:none;
+  transition:.25s ease;
+  z-index:99;
+}
+.word:hover .meaning,
+.word.active .meaning{
+  opacity:1;
+  transform:translateX(50%) scale(1);
+}
 </style>
 </head>
 
 <body>
-<div class="card">
-<h1 id="title"></h1>
-<div id="text"></div>
 
-<div style="text-align:center;margin-top:20px">
-<button class="btn" id="like">پسند آیا</button>
-<button class="btn" id="fav">پسندیدہ</button>
-<button class="btn" onclick="history.back()">واپس</button>
-</div>
+<div class="card">
+  <h1 id="title">لوڈ ہو رہا ہے…</h1>
+  <div id="type"></div>
+  <div id="text"></div>
+
+  <div class="actions">
+    <button class="btn btn-like" id="likeBtn">پسند آیا</button>
+    <button class="btn btn-fav" id="favBtn">پسندیدہ</button>
+    <button class="btn btn-share" id="shareBtn">شیئر کریں</button>
+    <button class="btn btn-back" onclick="location.href='index.html'">واپس جائیں</button>
+  </div>
+
+  <div class="dict-note">
+    موبائل پر لفظ پر کلک کریں، کمپیوٹر پر hover کریں معنی دیکھنے کے لیے
+  </div>
 </div>
 
 <script>
-const SCRIPT="https://script.google.com/macros/s/AKfycbyfRG0Q0L21pdwhtbVxKyaCFUeDVdFr6sAhIah9DLS0zwNGBBUA27SRlqAo83IWF81oQA/exec";
-const user=localStorage.getItem("visitorName");
+const DATA_URL="data.json";
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbzXT7167jMMrwRkEbSSy0CyBiWNQexc4yK3vIqmHSvE6kC3ZUiXS4iyAhNjFiENn1vxEg/exec";
+
+const userName=localStorage.getItem("visitorName");
+if(!userName) location.href="index.html";
+
 const id=new URLSearchParams(location.search).get("id");
 
-function store(k,v){localStorage.setItem(k,JSON.stringify(v))}
-function load(k){return JSON.parse(localStorage.getItem(k)||"[]")}
+function logToSheet(action,title=""){
+  fetch(`${SCRIPT_URL}?name=${encodeURIComponent(userName)}&action=${action}&title=${encodeURIComponent(title)}&notify=${Notification.permission}`);
+}
 
-fetch("data.json").then(r=>r.json()).then(data=>{
+fetch(DATA_URL).then(r=>r.json()).then(data=>{
   const s=data.find(x=>x.id===id);
+  if(!s){title.innerText="شاعری دستیاب نہیں";return;}
+
   title.innerText=s.title;
-  text.innerText=s.text;
+  type.innerText=s.type;
 
-  let favs=load("fav_"+user);
-  let likes=load("like_"+user);
+  let text=s.text;
+  if(s.dictionary){
+    Object.keys(s.dictionary).forEach(w=>{
+      const m=s.dictionary[w];
+      const rg=new RegExp(`\\b${w}\\b`,'g');
+      text=text.replace(rg,
+        `<span class="word">${w}<span class="meaning">${m}</span></span>`
+      );
+    });
+  }
+  document.getElementById("text").innerHTML=text;
 
-  if(favs.includes(id)) fav.classList.add("active");
-  if(likes.includes(id)) like.classList.add("active");
+  let liked=false,fav=false;
 
-  like.onclick=()=>{
-    likes.includes(id)?likes=likes.filter(i=>i!==id):likes.push(id);
-    store("like_"+user,likes);
-    like.classList.toggle("active");
-    fetch(`${SCRIPT}?name=${user}&action=like&title=${encodeURIComponent(s.title)}`);
+  likeBtn.onclick=()=>{
+    liked=!liked;
+    likeBtn.classList.toggle("active",liked);
+    logToSheet(liked?"like":"unlike",s.title);
+  };
+  favBtn.onclick=()=>{
+    fav=!fav;
+    favBtn.classList.toggle("active",fav);
+    logToSheet(fav?"favourite_add":"favourite_remove",s.title);
+  };
+  shareBtn.onclick=()=>{
+    navigator.clipboard.writeText(location.href);
+    logToSheet("share",s.title);
+    alert("لنک کاپی ہوگیا");
   };
 
-  fav.onclick=()=>{
-    favs.includes(id)?favs=favs.filter(i=>i!==id):favs.push(id);
-    store("fav_"+user,favs);
-    fav.classList.toggle("active");
-    fetch(`${SCRIPT}?name=${user}&action=favourite&title=${encodeURIComponent(s.title)}`);
-  };
+  logToSheet("read",s.title);
+});
 
-  fetch(`${SCRIPT}?name=${user}&action=read&title=${encodeURIComponent(s.title)}`);
+// Mobile tap support
+document.addEventListener("click",e=>{
+  document.querySelectorAll(".word").forEach(w=>w.classList.remove("active"));
+  if(e.target.classList.contains("word")) e.target.classList.add("active");
 });
 </script>
+
 </body>
 </html>
