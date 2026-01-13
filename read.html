@@ -4,9 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shayari – Shafay Ali</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-
 <style>
 :root{--bg:#0f1115;--card:#161a22;--text:#fff;--muted:#9aa4b2;--red:#ad0000}
 body{background:var(--bg);color:var(--text);font-family:Inter,system-ui;padding:20px;}
@@ -25,44 +23,16 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui;padding:
 .btn-share{border-color:#315a80;color:#315a80}
 .btn-back{border-color:#777;color:#ddd}
 
-/* ===== DICTIONARY ===== */
-.dict-note{
-  margin-top:22px;
-  font-size:12px;
-  color:#aaa;
-  text-align:center;
-}
-.word{
-  position:relative;
-  cursor:pointer;
-  border-bottom:1px dotted #777;
-  padding:0 2px;
-}
-.meaning{
-  position:absolute;
-  bottom:120%;
-  right:50%;
-  transform:translateX(50%) scale(.95);
-  background:#0f1115;
-  border:1px solid #333;
-  padding:10px 12px;
-  border-radius:10px;
-  width:220px;
-  font-size:13px;
-  line-height:1.8;
-  opacity:0;
-  pointer-events:none;
-  transition:.25s ease;
-  z-index:99;
-}
-.word:hover .meaning,
-.word.active .meaning{
-  opacity:1;
-  transform:translateX(50%) scale(1);
-}
+/* ===== DICTIONARY LIST AT BOTTOM ===== */
+#dict{margin-top:25px;background:#0f1115;padding:15px;border-radius:10px;max-height:280px;overflow-y:auto;}
+#dict h4{margin-bottom:8px;}
+#dict ul{list-style:none;padding-left:0;}
+#dict li{padding:6px 0;cursor:pointer;border-bottom:1px dotted #555;position:relative;transition:.25s ease;}
+#dict li:hover{background:#161a22;}
+.meaning-box{position:absolute;left:105%;top:0;background:#161a22;color:#fff;padding:8px 12px;border-radius:8px;white-space:pre-wrap;opacity:0;pointer-events:none;transition:.3s ease;z-index:99;min-width:180px;}
+li.active .meaning-box{opacity:1;transform:translateX(0);}
 </style>
 </head>
-
 <body>
 
 <div class="card">
@@ -77,69 +47,76 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui;padding:
     <button class="btn btn-back" onclick="location.href='index.html'">واپس جائیں</button>
   </div>
 
-  <div class="dict-note">
-    موبائل پر لفظ پر کلک کریں، کمپیوٹر پر hover کریں معنی دیکھنے کے لیے
-  </div>
+  <div id="dict"><h4>لغت / Dictionary</h4><ul></ul></div>
 </div>
 
 <script>
 const DATA_URL="data.json";
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbzXT7167jMMrwRkEbSSy0CyBiWNQexc4yK3vIqmHSvE6kC3ZUiXS4iyAhNjFiENn1vxEg/exec";
 
-const userName=localStorage.getItem("visitorName");
+const userName = localStorage.getItem("visitorName");
 if(!userName) location.href="index.html";
 
-const id=new URLSearchParams(location.search).get("id");
+const id = new URLSearchParams(location.search).get("id");
 
 function logToSheet(action,title=""){
   fetch(`${SCRIPT_URL}?name=${encodeURIComponent(userName)}&action=${action}&title=${encodeURIComponent(title)}&notify=${Notification.permission}`);
 }
 
-fetch(DATA_URL).then(r=>r.json()).then(data=>{
-  const s=data.find(x=>x.id===id);
-  if(!s){title.innerText="شاعری دستیاب نہیں";return;}
+// Load shayari
+fetch(DATA_URL)
+  .then(r=>r.json())
+  .then(data=>{
+    const s = data.find(x=>x.id===id);
+    if(!s){title.innerText="شاعری دستیاب نہیں"; return;}
+    title.innerText=s.title;
+    type.innerText=s.type;
+    text.innerText=s.text;
 
-  title.innerText=s.title;
-  type.innerText=s.type;
+    let liked=false, fav=false;
 
-  let text=s.text;
-  if(s.dictionary){
-    Object.keys(s.dictionary).forEach(w=>{
-      const m=s.dictionary[w];
-      const rg=new RegExp(`\\b${w}\\b`,'g');
-      text=text.replace(rg,
-        `<span class="word">${w}<span class="meaning">${m}</span></span>`
-      );
-    });
-  }
-  document.getElementById("text").innerHTML=text;
+    likeBtn.onclick=()=>{
+      liked=!liked;
+      likeBtn.classList.toggle("active",liked);
+      logToSheet(liked?"like":"unlike",s.title);
+    };
+    favBtn.onclick=()=>{
+      fav=!fav;
+      favBtn.classList.toggle("active",fav);
+      logToSheet(fav?"favourite_add":"favourite_remove",s.title);
+    };
+    shareBtn.onclick=()=>{
+      navigator.clipboard.writeText(location.href);
+      logToSheet("share",s.title);
+      alert("لنک کاپی ہوگیا");
+    };
 
-  let liked=false,fav=false;
+    // Render dictionary at bottom
+    const dictUl = document.querySelector("#dict ul");
+    dictUl.innerHTML = "";
+    if(s.dictionary){
+      Object.keys(s.dictionary).forEach(word=>{
+        const li = document.createElement("li");
+        li.innerText = word;
+        const div = document.createElement("div");
+        div.className="meaning-box";
+        div.innerText = s.dictionary[word];
+        li.appendChild(div);
 
-  likeBtn.onclick=()=>{
-    liked=!liked;
-    likeBtn.classList.toggle("active",liked);
-    logToSheet(liked?"like":"unlike",s.title);
-  };
-  favBtn.onclick=()=>{
-    fav=!fav;
-    favBtn.classList.toggle("active",fav);
-    logToSheet(fav?"favourite_add":"favourite_remove",s.title);
-  };
-  shareBtn.onclick=()=>{
-    navigator.clipboard.writeText(location.href);
-    logToSheet("share",s.title);
-    alert("لنک کاپی ہوگیا");
-  };
+        // Toggle meaning on click
+        li.onclick = (e)=>{
+          e.stopPropagation();
+          li.classList.toggle("active");
+        };
+        dictUl.appendChild(li);
+      });
+    }
 
-  logToSheet("read",s.title);
-});
+    // Log read
+    logToSheet("read",s.title);
+  })
+  .catch(console.error);
 
-// Mobile tap support
-document.addEventListener("click",e=>{
-  document.querySelectorAll(".word").forEach(w=>w.classList.remove("active"));
-  if(e.target.classList.contains("word")) e.target.classList.add("active");
-});
 </script>
 
 </body>
