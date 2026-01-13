@@ -6,26 +6,74 @@
 <title>Shayari – Admin Panel</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0f1115;--card:#161a22;--text:#fff;--muted:#9aa4b2;--red:#ad0000}
-body{background:var(--bg);color:var(--text);font-family:Inter,system-ui;padding:20px;}
-.card{max-width:820px;margin:auto;background:var(--card);border-radius:20px;padding:32px;animation:fadeUp .6s ease;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
-input,textarea,select,button{width:100%;margin:6px 0;padding:10px;border-radius:6px;border:none;}
-textarea{height:120px;}
-#title{font-family:"Noto Nastaliq Urdu",serif;font-size:2.1rem;margin-bottom:10px;text-align:center;}
-#type{text-align:center;color:var(--muted);margin-bottom:22px;font-size:0.95rem;}
-#text{font-family:"Noto Nastaliq Urdu",serif;font-size:1.55rem;line-height:2.9;text-align:center;white-space:pre-wrap;}
-button{background:var(--red);color:#fff;font-weight:bold;cursor:pointer;}
-#out{background:#161a22;padding:10px;border-radius:8px;max-height:400px;overflow:auto;margin-top:20px;}
-#dict{margin-top:25px;background:#0f1115;padding:15px;border-radius:10px;transition:all .3s ease;}
-#dict h4{margin-bottom:8px;}
-#dict ul{list-style:none;padding-left:0;}
+:root{
+  --bg:#0f1115;
+  --card:#161a22;
+  --text:#fff;
+  --muted:#9aa4b2;
+  --red:#ad0000;
+}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,system-ui;
+  padding:20px;
+  margin:0;
+}
+.card{
+  max-width:900px;
+  margin:auto;
+  background:var(--card);
+  border-radius:20px;
+  padding:32px;
+  box-sizing:border-box;
+}
+h2{font-family:"Noto Nastaliq Urdu",serif;margin-bottom:15px;text-align:center;}
+input,textarea,select,button{
+  width:100%;
+  margin:8px 0;
+  padding:10px;
+  border-radius:8px;
+  border:none;
+  box-sizing:border-box;
+  font-family:"Noto Nastaliq Urdu",serif;
+}
+textarea{min-height:120px;resize:vertical;}
+button{
+  background:var(--red);
+  color:#fff;
+  font-weight:bold;
+  cursor:pointer;
+  transition:.25s ease;
+}
+button:hover{transform:scale(1.03);}
+#out{
+  background:#161a22;
+  padding:12px;
+  border-radius:10px;
+  max-height:400px;
+  overflow:auto;
+  margin-top:15px;
+  white-space:pre-wrap;
+  word-wrap:break-word;
+}
+.actions{
+  display:flex;
+  gap:12px;
+  margin-top:12px;
+  flex-wrap:wrap;
+}
+.actions button{flex:1;}
+@media(max-width:600px){
+  .card{padding:20px;}
+  h2{font-size:1.6rem;}
+}
 </style>
 </head>
 <body>
 
 <div class="card">
-  <h2>➕ نئی شاعری شامل کریں</h2>
+  <h2>نئی شاعری شامل کریں</h2>
   <input id="title" placeholder="عنوان">
   <select id="type">
     <option value="ghazal">غزل</option>
@@ -33,74 +81,78 @@ button{background:var(--red);color:#fff;font-weight:bold;cursor:pointer;}
     <option value="sher">شعر</option>
   </select>
   <textarea id="text" placeholder="شاعری یہاں درج کریں"></textarea>
-  <button onclick="addShayari()">Create JSON Shayari</button>
 
-  <h3>📦 Generated JSON</h3>
+  <div class="actions">
+    <button onclick="addShayari()">Create JSON</button>
+    <button onclick="copyJSON()">Copy JSON</button>
+  </div>
+
+  <h3 style="margin-top:20px;text-align:center;">Generated JSON</h3>
   <pre id="out"></pre>
 </div>
 
 <script>
 const data = [];
 
-// Predefined Urdu meanings for common difficult words
+// Predefined meanings for common hard words
 const predefinedMeanings = {
-  "شافع":"لکھنے والا یا نام",
-  "چھوڑنا":"رہنا یا جانے دینا",
-  "سیکھا":"علم حاصل کیا",
-  "نہیں":"انکار یا رد",
-  "لوگ":"افراد، لوگ",
-  "تمھیں":"آپ کو",
-  "چھوڑتے":"چھوڑ دینا",
+  "ہجر":"جدائی، دوری",
   "محبت":"دل سے لگاؤ",
+  "شاعر":"لکھنے والا",
   "دل":"جذبات کا مرکز",
   "غم":"اداسی، دکھ",
-  "ہجر":"جدائی، دوری",
-  "یاد":"یادداشت، یاد کرنا",
+  "یاد":"یاد رکھنا، یادداشت",
+  "زندگی":"جیون، حیات",
   "وقت":"لمحہ یا دن",
-  "زندگی":"جیون، حیات"
+  "عشق":"دل سے لگاؤ",
+  "رنج":"دکھ، دکھ کا سبب",
+  "درد":"دل کا دکھ",
+  "جفا":"ظلم، ناانصافی"
 };
 
 function getSimpleMeaning(word){
   if(predefinedMeanings[word]) return predefinedMeanings[word];
-  // For unknown words, just show first 2–3 chars as “simple meaning” placeholder
-  return word.slice(0,3) + "…";
+  return word.slice(0,3) + "…"; // simple fallback
 }
 
-function addShayari() {
-  const titleVal = document.getElementById("title").value.trim();
-  const typeVal = document.getElementById("type").value;
-  const textVal = document.getElementById("text").value.trim();
+function addShayari(){
+  const title = document.getElementById("title").value.trim();
+  const type = document.getElementById("type").value;
+  const text = document.getElementById("text").value.trim();
+  if(!title || !text){ alert("عنوان اور شاعری درج کریں"); return; }
 
-  if(!titleVal || !textVal){ alert("عنوان اور شاعری درج کریں"); return; }
-
-  // Split text into words (Urdu words)
-  const words = textVal.match(/\b[^\s]+\b/g) || [];
+  // Extract Urdu words (basic word split)
+  const words = text.match(/\b[^\s]+\b/g) || [];
   const dictionary = {};
-
-  // Add up to 7 words automatically with meaning
   let added = 0;
   for(let w of words){
-    if(added >= 7) break;
+    if(added >= 7) break; // max 7 dictionary words
     if(!dictionary[w]){
       dictionary[w] = getSimpleMeaning(w);
       added++;
     }
   }
 
-  const shayariObj = {
+  const obj = {
     id: Date.now().toString(),
-    title: titleVal,
-    type: typeVal,
-    text: textVal,
-    dictionary: dictionary
+    title,
+    type,
+    text,
+    dictionary
   };
 
-  data.push(shayariObj);
+  data.push(obj);
   render();
 }
 
 function render(){
   document.getElementById("out").textContent = JSON.stringify(data,null,2);
+}
+
+function copyJSON(){
+  const out = document.getElementById("out").textContent;
+  if(!out){ alert("کوئی JSON نہیں ہے"); return; }
+  navigator.clipboard.writeText(out).then(()=>alert("JSON کاپی ہوگیا"));
 }
 </script>
 
